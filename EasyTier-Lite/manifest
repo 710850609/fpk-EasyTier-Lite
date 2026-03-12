@@ -1,7 +1,7 @@
 appname               = EasyTier-Lite
-version=2.5.0-01-20260310_181856
-display_name          = EasyTier-Lite
-desc                  = `<p>飞牛上<a href="https://easytier.cn" target="_blank">EasyTier</a>简化使用的版本，更合适新手使用。</p></br><p>✅</p><p>✅支持打包Windows版本(Easytier管理器)，自动整合当前使用配置，直接开箱组网</p>`
+version=2.5.0-01-20260311_175256
+display_name          = ET
+desc                  = `<p>飞牛上<a href="https://easytier.cn" target="_blank">EasyTier</a>简化使用的版本，更合适新手使用。</p><p>本应用需要以root权限运行，避免使用用户栈模式运行，减少内存使用</p></br><p>✅支持界面查看组网节点情况</p>✅支持直接下载Windows版本(Easytier管理器)，自动整合当前使用配置，直接开箱组网</p>`
 platform=x86
 os_min_version=1.1.8
 source                = thirdparty
@@ -10,3 +10,4 @@ maintainer_url        = https://github.com/EasyTier/EasyTier
 distributor           = BoB
 distributor_url       = https://club.fnnas.com/home.php?mod=space&uid=33130&do=thread&view=me&from=space
 desktop_uidir         = ui
+desktop_applaunchname = EasyTier-Lite.Application

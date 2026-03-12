@@ -1,14 +1,9 @@
+# 设备的主机名
 hostname = ""
-instance_name = ""
 dhcp = true
 ipv4 = "10.0.0.0"
 listeners = [ "tcp://0.0.0.0:11010", "quic://0.0.0.0:11020", "udp://0.0.0.0:11010" ]
-mapped_listeners = []
-exit_nodes = []
 rpc_portal = "0.0.0.0:15888"
-tcp_whitelist = []
-udp_whitelist = []
-port_forward = []
 
 [network_identity]
 network_name = ""
@@ -20,13 +15,26 @@ uri = "https://raw.githubusercontent.com/710850609/fpk-EasyTier-Lite/refs/heads/
 uri = "https://raw.githubusercontent.com/710850609/fpk-EasyTier-Lite/refs/heads/main/peers/peer-2.txt"
 [[peer]]
 uri = "https://raw.githubusercontent.com/710850609/fpk-EasyTier-Lite/refs/heads/main/peers/peer-3.txt"
+[[peer]]
+uri = "https://raw.githubusercontent.com/710850609/fpk-EasyTier-Lite/refs/heads/main/peers/peer-4.txt"
+[[peer]]
+uri = "https://raw.githubusercontent.com/710850609/fpk-EasyTier-Lite/refs/heads/main/peers/peer-5.txt"
 
 [flags]
+# 使用 KCP 代理 TCP 流，提高在 UDP 丢包网络上的延迟和吞吐量 (KCP 代理会优先于 QUIC 代理生效)
 enable_kcp_proxy = true
+# 使用 QUIC 代理 TCP 流，提高在 UDP 丢包网络上的延迟和吞吐量
 enable_quic_proxy = true
-multi_thread = true
+# 延迟优先模式，将尝试使用最低延迟路径转发流量，默认使用最短路径
+latency_first = true
+# 将连接器的套接字绑定到物理设备以避免路由问题
 bind_device = true
+# 通过系统内核转发子网代理数据包，禁用内置NAT
 proxy_forward_by_system = true
-disable_kcp_input = false
+# 不允许使用了与本网络不相同的网络名称和密码的节点通过本节点进行握手或中转
 private_mode = true
+# 禁用UDP打洞功能
 disable_udp_hole_punching = false
+# 使用多线程运行
+multi_thread = true
+multi_thread_count = 2

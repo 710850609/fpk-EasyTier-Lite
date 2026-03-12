@@ -1,11 +1,11 @@
 {
     ".url": {
-        "EasyTier-Lite.Peer": {
-            "title": "EasyTier节点",
+        "EasyTier-Lite.Application": {
+            "title": "ET",
             "icon": "images/icon_{0}.png",
             "type": "iframe",
             "url": "/cgi/ThirdParty/EasyTier-Lite/index.cgi/",
-            "allUsers": false
+            "allUsers": true
         }
     }
 }

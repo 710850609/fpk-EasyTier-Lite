@@ -55,6 +55,7 @@ change_et_version() {
         download_url=${github_proxy_url}/${download_url}
     fi
     local temp_dir="${TRIM_PKGTMP}/core-change"
+    run_cmd "mkdir -p ${temp_dir}"
     local download_file="${temp_dir}/easytier-linux-${arch}-${new_et_version}.zip"
     run_cmd "rm -f ${download_file}"
     log_msg "开始下载: ${download_url} , 保存到 ${download_file}"
@@ -71,6 +72,15 @@ change_et_version() {
 }
 
 download_win() {
+    if [ "$enable_win_package" != "true" ]; then
+        log_msg "未开启生成Windows版本，无需下载"
+        return 0
+    fi
+    local output_file="/var/apps/${TRIM_APPNAME}/shares/${TRIM_APPNAME}/easytier-manager-pro_${cur_et_version}.zip"
+    if [ -f "${output_file}" ]; then
+        log_msg "Windows EasyTier 版本 ${cur_et_version} 已存在，无需下载"
+        return 0
+    fi
     local version_output=$("${BIN_DIR}/easytier-core" --version 2>&1)
     local cur_et_version=$(echo "$version_output" | grep -oP 'easytier-core \K(\d+\.\d+\.\d+)')
     local temp_dir="${TRIM_PKGTMP}/easytier-windows-x86_64"
@@ -117,7 +127,6 @@ download_win() {
     run_cmd "sed -i 's/^dhcp.*/dhcp = \"true\"/' ${temp_dir}/easytier-manager-pro/config/et-fnos.toml"
     run_cmd "sed -i 's/^ipv4.*/ipv4 = \"\"/' ${temp_dir}/easytier-manager-pro/config/et-fnos.toml"
 
-    local output_file="/var/apps/${TRIM_APPNAME}/shares/${TRIM_APPNAME}/easytier-manager-pro.zip"
     run_cmd "cd ${temp_dir} && zip -r ${output_file} ./easytier-manager-pro/"
     log_msg "打包 easytier-manager-pro 成功: ${output_file}"
     run_cmd "rm -rf ${temp_dir}"
