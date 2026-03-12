@@ -3,6 +3,9 @@
 
 import subprocess
 import json
+import os
+import sys
+from urllib.parse import quote
 
 def run_cmd(command, *args, shell=False):
     """
@@ -48,28 +51,121 @@ def run_cmd(command, *args, shell=False):
         else:
             output = {
                 "code": result.returncode,
-                "data": result.stderr.strip() if result.stderr else ""
+                "data": result.stderr.strip() if result.stderr else "执行失败"
             }
-        
+        return output
     except subprocess.TimeoutExpired:
-        output = {
+        return {
             "code": -1,
-            "data": "Command execution timeout"
+            "data": "命令执行超时"
         }
     except Exception as e:
-        output = {
+        return {
             "code": -1,
-            "data": str(e)
+            "data": f"执行错误: {str(e)}"
         }
-    return output
 
 def http_response(status_code, data):
-    """发送HTTP响应"""
+    """
+    返回JSON格式的HTTP响应
+    """
     print(f"Status: {status_code}")
     print("Content-Type: application/json; charset=utf-8")
     print("")
     print(json.dumps(data, ensure_ascii=False))
     sys.exit(0)
+
+def http_response_file(file_path, mime_type="application/octet-stream", filename=None):
+    """CGI 文件下载响应"""
+    
+    # 检查文件
+    if not os.path.isfile(file_path):
+        http_response(404, {"code": -1, "data": "File Not Found: " + file_path})
+        return
+    
+    # 文件名处理
+    if not filename:
+        filename = os.path.basename(file_path)
+    
+    # RFC 5987 编码（只编码非 ASCII）
+    try:
+        filename.encode('ascii')
+        # 纯 ASCII，简单处理
+        disposition = f'attachment; filename="{filename}"'
+    except UnicodeEncodeError:
+        # 含中文，需要编码
+        encoded = quote(filename, safe='')
+        # 同时提供 filename 和 filename* 兼容所有浏览器
+        ascii_name = filename.encode('ascii', 'ignore').decode().replace('"', '')
+        disposition = f'attachment; filename="{ascii_name}"; filename*=UTF-8\'\'{encoded}'
+    
+    # 文件大小
+    file_size = os.path.getsize(file_path)
+    
+    # ===== 关键：必须先发送状态头 =====
+    sys.stdout.buffer.write(b"Status: 200 OK\r\n")
+    sys.stdout.buffer.write(f"Content-Type: {mime_type}\r\n".encode())
+    sys.stdout.buffer.write(f"Content-Disposition: {disposition}\r\n".encode())
+    sys.stdout.buffer.write(f"Content-Length: {file_size}\r\n".encode())
+    sys.stdout.buffer.write(b"\r\n")  # 头结束空行
+    sys.stdout.buffer.flush()
+    
+    # 流式发送文件
+    try:
+        with open(file_path, "rb") as f:
+            while True:
+                chunk = f.read(65536)  # 64KB 块
+                if not chunk:
+                    break
+                sys.stdout.buffer.write(chunk)
+                sys.stdout.buffer.flush()
+    except BrokenPipeError:
+        pass  # 客户端断开
+    except Exception as e:
+        sys.stderr.write(f"Send file error: {e}\n")
+    
+    sys.exit(0)  # 确保 CGI 结束
+
+def http_redirect(url, status_code=302):
+    """
+    重定向到下载URL
+    
+    Args:
+        url: 下载文件的URL地址
+        status_code: HTTP状态码，默认为302临时重定向，也可用301永久重定向
+    """
+    print(f"Status: {status_code}")
+    print(f"Location: {url}")
+    print("Content-Type: text/html; charset=utf-8")
+    print("")
+
+def http_handle():  
+    request_uri = os.environ.get('REQUEST_URI', '')
+    query_string = os.environ.get('QUERY_STRING', '')
+    if 'api.cgi' in request_uri:
+        # 提取 api.cgi 后面的路径
+        path_part = request_uri.split('api.cgi', 1)[1]
+        # 去掉 query string（如果有）
+        if '?' in path_part:
+            path_info = path_part.split('?', 1)[0]
+        else:
+            path_info = path_part
+        if not path_info:
+            path_info = '/'
+    else:
+        path_info = os.environ.get('PATH_INFO', '/')
+
+    if path_info == '/peer':
+        get_peer()
+    elif path_info == '/download_win_package':
+        download_win_package()
+    elif path_info == '/download_android_package':
+        download_android_package()
+    elif path_info == '/download_config_file':
+        download_config_file()
+    else:
+        http_response(404, {"code": -1, "data": "Not Found: " + path_info})
+
 
 def get_peer():
     result = run_cmd('/var/apps/EasyTier-Lite/target/bin/easytier-cli --output json peer')
@@ -77,6 +173,20 @@ def get_peer():
         result['data'] = json.loads(result['data'])
     http_response(200, result)
 
+def download_win_package():
+    http_response_file('/vol1/@appshare/EasyTier-Lite/easytier-manager-pro.zip')
+
+def download_android_package():
+    http_redirect('https://github.com/EasyTier/EasyTier/releases/latest/download/app-universal-release.apk')
+
+def download_config_file():
+    http_response_file('/var/apps/EasyTier-Lite/shares/EasyTier-Lite/config.toml', filename='et-fn.toml') 
+
+
 if __name__ == '__main__':
-    get_peer()
+    try:
+        http_handle()
+    except Exception as e:
+        http_response(500, f"CGI服务异常: {str(e)}")
+
     

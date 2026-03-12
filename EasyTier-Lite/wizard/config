@@ -36,12 +36,7 @@
       {
         "type": "tips",
         "helpText": "修改网络名称或密码，需要所有组网节点修改一致，否则不能组网"
-      }
-    ]
-  },
-  {
-    "stepTitle": "EasyTier核心版本",
-    "items": [
+      },
       {
         "type": "text",
         "field": "et_version",
@@ -63,21 +58,6 @@
         "field": "github_proxy_url",
         "label": "GitHub加速地址",
         "initValue": "https://ghfast.top"
-      }
-    ]
-  },
-  {
-    "stepTitle": "Windows版本",
-    "items": [
-      {
-          "type": "switch",
-          "field": "enable_win_package",
-          "label": "生成Windows版本",
-          "initValue": "false"
-      },
-      {
-        "type": "tips",
-        "helpText": "生成Windows压缩包在:【文件管理】-> 左边栏的【应用文件】 -> 【EasyTier-Lite】文件夹下"
       }
     ]
   }

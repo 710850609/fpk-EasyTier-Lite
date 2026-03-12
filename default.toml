@@ -1,7 +1,7 @@
 # 设备的主机名
 hostname = ""
 dhcp = true
-ipv4 = "10.0.0.0"
+ipv4 = ""
 listeners = [ "tcp://0.0.0.0:11010", "quic://0.0.0.0:11020", "udp://0.0.0.0:11010" ]
 rpc_portal = "0.0.0.0:15888"
 
@@ -37,4 +37,3 @@ private_mode = true
 disable_udp_hole_punching = false
 # 使用多线程运行
 multi_thread = true
-multi_thread_count = 2
