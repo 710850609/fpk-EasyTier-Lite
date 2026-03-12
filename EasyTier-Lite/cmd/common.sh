@@ -3,7 +3,7 @@
 ### This script is called after the user installs the application.
 set -e
 
-LOG_FILE="${TRIM_PKGVAR}/info.log"
+LOG_FILE="${TRIM_PKGVAR}/cmd.log"
 BIN_DIR="${TRIM_APPDEST}/bin"
 CFG_FILE="/var/apps/${TRIM_APPNAME}/shares/${TRIM_APPNAME}/config.toml"
 

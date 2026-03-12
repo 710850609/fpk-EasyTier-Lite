@@ -1,7 +1,7 @@
 appname               = EasyTier-Lite
 version=2.5.0-01-20260312_151453
 display_name          = 易组网
-desc                  = `<p>易组网，是飞牛上<a href="https://easytier.cn" target="_blank">EasyTier</a>简化使用的版本，更合适新手使用。</p></br><p>✅支持界面查看组网节点情况</p>✅支持直接下载Windows版本(Easytier管理器)，自动整合当前使用配置，直接开箱组网</p>`
+desc                  = `<p>飞牛上<a href="https://easytier.cn" target="_blank">EasyTier</a>简化使用的版本，更合适新手简单上手使用，简记名字：易组网。</p></br><p>✅支持界面查看组网节点情况</p><p>✅支持直接下载Windows版本(Easytier管理器)，自动整合当前使用配置，直接开箱组网</p><p>✅默认使用应用仓库定时更新的公共节点，避免官方节点不稳定组网不了的问题</p>`
 platform=x86
 os_min_version=1.1.8
 source                = thirdparty

@@ -6,6 +6,8 @@ import json
 import os
 import sys
 from urllib.parse import quote
+import logging
+
 
 def run_cmd(command, *args, shell=False):
     """
@@ -20,6 +22,7 @@ def run_cmd(command, *args, shell=False):
         JSON 字符串: {"code": 状态码, "stdout": 标准输出, "stderr": 错误输出, "success": 是否成功}
     """
     try:
+        logging.debug(f"执行命令: {command} {' '.join(args)}")
         # 构建命令列表
         if shell:
             # shell 模式：合并为字符串
@@ -60,6 +63,7 @@ def run_cmd(command, *args, shell=False):
             "data": "命令执行超时"
         }
     except Exception as e:
+        logging.error(f"CMD执行错误: {str(e)}\n")
         return {
             "code": -1,
             "data": f"执行错误: {str(e)}"
@@ -122,6 +126,7 @@ def http_response_file(file_path, mime_type="application/octet-stream", filename
     except BrokenPipeError:
         pass  # 客户端断开
     except Exception as e:
+        logging.error(f"Send file error: {e}\n")
         sys.stderr.write(f"Send file error: {e}\n")
     
     sys.exit(0)  # 确保 CGI 结束
@@ -174,16 +179,35 @@ def get_peer():
     http_response(200, result)
 
 def download_win_package():
-    http_response_file('/vol1/@appshare/EasyTier-Lite/easytier-manager-pro.zip')
+    cmd_file = '/var/apps/EasyTier-Lite/target/ui/cgi/download_win.sh'
+    result = run_cmd(f"{cmd_file}")
+    if result['code'] != 0:
+        http_response(500, f"{result['data']}")
+        return
+    output_file = result['data'].strip()
+    http_response_file(output_file)
 
 def download_android_package():
     http_redirect('https://github.com/EasyTier/EasyTier/releases/latest/download/app-universal-release.apk')
 
 def download_config_file():
-    http_response_file('/var/apps/EasyTier-Lite/shares/EasyTier-Lite/config.toml', filename='et-fn.toml') 
+    cmd_file = '/var/apps/EasyTier-Lite/target/ui/cgi/download_config.sh'
+    result = run_cmd(f"{cmd_file}")
+    if result['code'] != 0:
+        http_response(500, f"{result['data']}")
+        return
+    output_file = result['data'].strip()
+    http_response_file(output_file, filename='et-fn.toml')
 
 
 if __name__ == '__main__':
+    logging.basicConfig(
+        level=logging.DEBUG,  # 设置日志级别
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',  # 日志格式
+        datefmt='%Y-%m-%d %H:%M:%S',  # 日期格式
+        filename='/var/apps/EasyTier-Lite/var/cgi.log',  # 输出到文件
+        filemode='a'  # 'a'追加，'w'覆盖
+    )
     try:
         http_handle()
     except Exception as e:

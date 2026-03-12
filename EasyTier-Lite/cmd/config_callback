@@ -7,6 +7,5 @@ source /var/apps/${TRIM_APPNAME}/cmd/common.sh
 
 update_network
 change_et_version
-download_win
 
 exit 0
