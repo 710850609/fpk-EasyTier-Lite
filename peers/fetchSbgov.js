@@ -1,26 +1,18 @@
-async function fetchNigger() {
-  var url = "http://nigger.com.cn:1000/api/nodes?page=1&per_page=50&is_active=true";
-  var response = await fetch(url);
-  var json = await response.json();
-  // console.log("响应内容: ", JSON.stringify(json));
-  if (!json || !json.data || !json.data.items) {
-    console.log("无法获取有效数据");
-    return [];
-  }
-  var items = json.data.items.sort((a, b) => a.health_percentage_24h - b.health_percentage_24h);
-  // console.log("排序后内容: ", JSON.stringify(items));
-  var address = items.map(e => e.address);
-  // console.log("排序后内容: ", JSON.stringify(address));
-  return address;
-}
-
-async function fetchSbgov() {
+export async function fetchSbgov() {
   var url = "http://www.sbgov.cn/api/v1/endpoints/statuses?page=1&pageSize=50";
   // 第一次请求获取 cookie
   var response = await fetch(url, {
     method: "GET",
     headers: {
-      "Accept-Encoding": "application/json",
+        "accept": "*/*",
+        "accept-encoding": "gzip, deflate",
+        "accept-language": "zh-CN,zh;q=0.9",
+        "cache-control": "no-cache",
+        "connection": "keep-alive",
+        "host": "www.sbgov.cn",
+        "pragma": "no-cache",
+        "referer": "http://www.sbgov.cn/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
     },
   });
 
@@ -35,10 +27,16 @@ async function fetchSbgov() {
     var response2 = await fetch(url, {
       method: "GET",
       headers: {
-        "Content-Type": "application/json",
+        "accept": "*/*",
+        "accept-encoding": "gzip, deflate",
+        "accept-language": "zh-CN,zh;q=0.9",
+        "cache-control": "no-cache",
+        "connection": "keep-alive",
+        "host": "www.sbgov.cn",
+        "pragma": "no-cache",
+        "referer": "http://www.sbgov.cn/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
         "Cookie": cookie,
-        "host": "http://www.sbgov.cn/",
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
       },
     });
     var json = await response2.text();
@@ -46,7 +44,8 @@ async function fetchSbgov() {
     json = JSON.parse(json);
   } else {
     console.log("无法获取 cookie");
-    console.log(html)
+    // console.log(html)
+    json = 
     json = JSON.parse(html);
   }
   // console.log(json);
@@ -69,14 +68,3 @@ async function fetchSbgov() {
   console.log("排序后内容: ", JSON.stringify(address));
   return address;
 }
-
-async function fetchPeers() {
-  const peersList = await Promise.all([
-    fetchNigger(), 
-    fetchSbgov()
-  ]);
-  const peers = peersList.flat();
-  console.log(peers)
-}
-
-fetchPeers();

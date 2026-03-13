@@ -14,7 +14,7 @@ CFG_FILE="/var/apps/${TRIM_APPNAME}/shares/${TRIM_APPNAME}/config.toml"
 
 
 log_msg() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> ${LOG_FILE}
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - cgi_sh - $1" >> ${LOG_FILE}
 }
 
 warm_exit() {
@@ -25,10 +25,11 @@ warm_exit() {
 
 run_cmd() {
     log_msg "运行命令: $1"
-    local output=$(eval "$1" 2>&1 | tee -a "${LOG_FILE}")
+    # 执行命令并捕获输出，但不打印到标准输出
+    local output=$(eval "$1" 2>&1)
     local exit_code=$?    
-    # 打印输出
-    echo "$output"
+    # 只将输出写入日志文件，不打印到标准输出
+    log_msg "$output"
     # 返回命令的退出码
     return $exit_code
     # bash -c "$1" >> ${LOG_FILE} 2>&1

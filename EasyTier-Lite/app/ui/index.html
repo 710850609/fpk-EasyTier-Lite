@@ -117,14 +117,20 @@
             min-width: 120px;
         }
         
-        .download-btn:hover {
+        .download-btn:hover:not(:disabled) {
             opacity: 0.8;
             transform: translateY(-1px);
             box-shadow: 0 2px 8px var(--shadow-color);
         }
         
-        .download-btn:active {
+        .download-btn:active:not(:disabled) {
             transform: translateY(0);
+        }
+        
+        .download-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
         
         .download-btn.primary {
@@ -150,27 +156,103 @@
             font-size: 16px;
         }
         
-        /* 暗黑模式切换按钮 */
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--header-bg);
-            border: 2px solid var(--border-color);
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            transition: all 0.3s ease;
-            z-index: 1000;
+        /* 专业加载动画样式 - 参考懒人工具 */
+        .btn-loading {
+            position: relative;
+            overflow: hidden;
         }
         
-        .theme-toggle:hover {
-            transform: scale(1.1);
+        .btn-loading .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: btn-spin 0.8s linear infinite;
+            flex-shrink: 0;
+        }
+        
+        .btn-loading .loading-dots {
+            display: inline-flex;
+            margin-right: 8px;
+            gap: 2px;
+        }
+        
+        .btn-loading .loading-dots .dot {
+            width: 3px;
+            height: 3px;
+            background: currentColor;
+            border-radius: 50%;
+            animation: btn-dots 1.4s infinite ease-in-out both;
+        }
+        
+        .btn-loading .loading-dots .dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+        
+        .btn-loading .loading-dots .dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+        
+        .btn-loading .loading-text {
+            opacity: 0.8;
+        }
+        
+        @keyframes btn-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes btn-dots {
+            0%, 80%, 100% {
+                transform: scale(0);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        /* 脉冲加载动画 */
+        .btn-loading .loading-pulse {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .btn-loading .loading-pulse::before,
+        .btn-loading .loading-pulse::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid currentColor;
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: btn-pulse 2s infinite ease-out;
+        }
+        
+        .btn-loading .loading-pulse::after {
+            animation-delay: 1s;
+        }
+        
+        @keyframes btn-pulse {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
         }
         
         /* 表格容器，添加水平滚动 */
@@ -284,12 +366,6 @@
             th, td {
                 padding: 8px;
             }
-            
-            .theme-toggle {
-                width: 40px;
-                height: 40px;
-                font-size: 16px;
-            }
         }
     </style>
 </head>
@@ -310,33 +386,33 @@
     <!-- 下载按钮区域 -->
     <br></br>
     <div class="button-container">
-        <button class="download-btn primary" onclick="downloadConfig()">
+        <button class="download-btn primary" onclick="downloadConfig(event)">
             <span class="icon">⚙️</span>
-            下载配置文件
+            <span class="show-text">下载配置文件</span>            
         </button>
-        <button class="download-btn primary" onclick="downloadWindows()">
+        <button class="download-btn primary" onclick="downloadWindows(event)">
             <span class="icon">💻</span>
-            下载Win版本
+            <span class="show-text">下载Win版本</span>            
         </button>
-        <button class="download-btn primary" onclick="downloadAndroid()">
+        <button class="download-btn primary" onclick="downloadAndroid(event)">
             <span class="icon">📱</span>
-            下载安卓版本
+            <span class="show-text">下载安卓版本</span>
         </button>
-        <button class="download-btn primary" onclick="downloadHarmony()">
+        <button class="download-btn primary" onclick="downloadHarmony(event)">
             <span class="icon">🔗</span>
-            鸿蒙商店链接
+            <span class="show-text">鸿蒙商店链接</span>            
         </button>
-        <button class="download-btn primary" onclick="downloadIOS()">
+        <button class="download-btn primary" onclick="downloadIOS(event)">
             <span class="icon">🔗</span>
-            IOS TestFlight 链接
+            <span class="show-text">IOS TestFlight 链接</span>            
         </button>
-        <button class="download-btn primary" onclick="reload()">
+        <button class="download-btn primary" onclick="reload(event)">
             <span class="icon">⚡</span>
-            刷新
+            <span class="show-text">刷新</span>   
         </button>
-        <button class="download-btn primary" onclick="test()">
+        <button class="download-btn primary" onclick="test(event)">
             <span class="icon">⚡</span>
-            test
+            <span class="show-text">test</span>   
         </button>
     </div>
 
@@ -445,6 +521,143 @@
         function isInFnApp() {
             return window.flutter_inappwebview !== undefined
         }
+
+        async function copy2CuttingBoard(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                // toast(`已复制到剪贴板: ${text} `, 'success');
+            } catch (err) {
+                console.error('复制到剪切板失败，继续尝试第二种复制方法:', err)
+                // 降级处理                
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();                
+                try {
+                    document.execCommand('copy');
+                    // toast(`已复制到剪贴板: ${text} `, 'success');
+                } catch (err) {
+                    console.error('第二种复制到剪切板失败:', err)
+                    toast(`复制失败，请手动复制: ${text} `, 'error');       
+                }
+                document.body.removeChild(textarea);
+            }            
+        }
+
+        // 下载功能函数 - 增强版，支持多种loading动画
+        async function downloadFile(url, button, filename) {
+            if (isInFnApp()) {
+                toast('飞牛App不支持下载，请用浏览器访问此页面重试', 'error');
+                return;
+            }
+            
+            // 防止重复点击
+            if (button.disabled) {
+                return;
+            }
+            
+            // 禁用按钮并显示loading状态
+            button.disabled = true;
+            const originalText = button.innerHTML;
+            const originalClassName = button.className;
+            
+            // 添加loading类
+            button.classList.add('btn-loading');
+            
+            // 随机选择loading动画类型
+            const loadingTypes = ['spinner', 'dots', 'pulse'];
+            // const selectedType = loadingTypes[Math.floor(Math.random() * loadingTypes.length)];
+            const selectedType = 'spinner';
+            
+            // 根据类型创建loading HTML
+            let showText = button.querySelector('.show-text').innerHTML || '';
+            showText = showText.replace('下载', '');
+            showText += '下载中...';
+            let loadingHTML = '';
+            switch (selectedType) {
+                case 'spinner':
+                    loadingHTML = `<span class="loading-spinner"></span><span class="loading-text">${showText}</span>`;
+                    break;
+                case 'dots':
+                    loadingHTML = `<span class="loading-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span><span class="loading-text">${showText}</span>`;
+                    break;
+                case 'pulse':
+                    loadingHTML = `<span class="loading-pulse"></span><span class="loading-text">${showText}</span>`;
+                    break;
+            }
+            
+            button.innerHTML = loadingHTML;
+            
+            try {
+                const response = await fetch(url);
+                
+                // 检查响应类型
+                const contentType = response.headers.get('content-type');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                // 如果是JSON响应（错误信息）
+                if (contentType && contentType.includes('application/json')) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.data || errorData.message || '下载失败');
+                }
+                
+                // 如果是文件响应
+                if (contentType && (contentType.includes('application/octet-stream') || 
+                    contentType.includes('application/zip') || 
+                    contentType.includes('text/plain'))) {
+                    
+                    // 创建blob并下载
+                    const blob = await response.blob();
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    
+                    // 优先从 content-disposition 获取文件名
+                    let downloadFilename = filename; // 使用默认文件名
+                    const contentDisposition = response.headers.get('content-disposition');
+                    if (contentDisposition) {
+                        // 解析 content-disposition 头
+                        // 格式: attachment; filename="xxx.zip" 或 attachment; filename*=UTF-8''xxx.zip
+                        const filenameMatch = contentDisposition.match(/filename[*]?=(?:UTF-8'')?["']?([^"';]+)["']?/i);
+                        if (filenameMatch && filenameMatch[1]) {
+                            // 解码 UTF-8 编码的文件名
+                            try {
+                                downloadFilename = decodeURIComponent(filenameMatch[1].trim());
+                            } catch (e) {
+                                // 如果解码失败，使用原始文件名
+                                downloadFilename = filenameMatch[1].trim();
+                            }
+                        }
+                    }
+                    
+                    const link = document.createElement('a');
+                    link.href = downloadUrl;
+                    link.download = downloadFilename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(downloadUrl);
+                    // toast('下载成功', 'success');
+                } else {
+                    throw new Error('未知的下载返回类型');
+                }
+                
+            } catch (error) {
+                console.error('下载失败:', error);
+                toast('下载失败: ' + error.message, 'error');
+            } finally {
+                // 恢复按钮状态
+                button.classList.remove('btn-loading');
+                button.className = originalClassName;
+                button.disabled = false;
+                button.innerHTML = originalText;
+            }
+        }
+
+
 
         // 主题管理
         class ThemeManager {
@@ -598,80 +811,36 @@
                 populateTable(data.data);
             } catch (error) {
                 console.error('获取数据失败:', error);
-                toast('获取数据失败，请检查网络连接', 'error')
+                toast('获取数据失败，请检查飞牛网络连接', 'error')
             }
         }
+        
+        function downloadConfig(event) {
+            const button = event.target.closest('button');
+            downloadFile(`${API_URL}download_config_file`, button);
+        }
+
         // 下载功能函数
-        function downloadWindows() {
-            if (isInFnApp()) {
-                toast('飞牛App不支持下载，请用浏览器访问此页面重试', 'error');
-                return;
-            }
-            // 模拟下载Windows版本
-            const link = document.createElement('a');
-            link.href = `${API_URL}download_win_package`;
-            link.click();            
-            toast('开始下载 Windows 版本');
+        function downloadWindows(event) {
+            const button = event.target.closest('button');
+            downloadFile(`${API_URL}download_win_package`, button);
         }
 
-        function downloadAndroid() {
-            if (isInFnApp()) {
-                toast('飞牛App不支持下载，请用浏览器访问此页面重试', 'error');
-                return;
-            }
-            const link = document.createElement('a');
-            link.href = `${API_URL}download_android_package`;
-            link.click();            
-            toast('开始下载 Android 版本');
+        function downloadAndroid(event) {
+            const button = event.target.closest('button');
+            downloadFile(`${API_URL}download_android_package`, button);
         }
 
-        function downloadHarmony() {
+        function downloadHarmony(event) {
             var url = `https://appgallery.huawei.com/app/detail?id=top.frankhan.easytier&channelId=SHARE&source=appshare`;
             this.copy2CuttingBoard(url);
             toast('已复制链接到剪贴板。\n请在浏览器打开链接，以跳转到鸿蒙应用商店下载 EasyTier');
         }
 
-        function downloadIOS() {
+        function downloadIOS(event) {
             var url = `https://testflight.apple.com/join/YWnDyJfM`;
             this.copy2CuttingBoard(url);
             toast('已复制链接到剪贴板。\n请先在 iPhone、iPad 或 Mac 上安装 TestFlight，然后打开复制的链接');
-        }
-
-        function downloadConfig() {
-            if (isInFnApp()) {
-                toast('飞牛App不支持下载，请用浏览器访问此页面重试', 'error');
-                return;
-            }
-            // 创建下载链接
-            const link = document.createElement('a');
-            link.href = `${API_URL}download_config_file`;
-            link.click();
-            toast('开始下载配置文件');
-        }
-
-        async function copy2CuttingBoard(text) {
-            try {
-                await navigator.clipboard.writeText(text);
-                // toast(`已复制到剪贴板: ${text} `, 'success');
-            } catch (err) {
-                console.error('复制到剪切板失败，继续尝试第二种复制方法:', err)
-                // 降级处理                
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                textarea.style.position = 'fixed';
-                textarea.style.opacity = '0';
-                document.body.appendChild(textarea);
-                textarea.select();                
-                try {
-                    document.execCommand('copy');
-                    // toast(`已复制到剪贴板: ${text} `, 'success');
-                } catch (err) {
-                    console.error('第二种复制到剪切板失败:', err)
-                    toast(`复制失败，请手动复制: ${text} `, 'error');       
-                }
-                document.body.removeChild(textarea);
-            }
-            
         }
 
         // 初始化页面

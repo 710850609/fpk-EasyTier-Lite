@@ -55,27 +55,14 @@ def run_cmd(command, *args, shell=False):
             timeout=300  # 5分钟超时
         )
         if result.returncode == 0:
-            output = {
-                "code": 0,
-                "data": result.stdout.strip() if result.stdout else ""
-            }
-        else:
-            output = {
-                "code": result.returncode,
-                "data": result.stderr.strip() if result.stderr else "执行失败"
-            }
-        return output
+            return result.stdout.strip() if result.stdout else ""
+        raise Exception(f"执行命令错误：{command}")
     except subprocess.TimeoutExpired:
-        return {
-            "code": -1,
-            "data": "命令执行超时"
-        }
+        logging.error(f"命令执行超时: {command}",  exc_info=True)
+        raise Exception(f"命令执行超时: {command}")
     except Exception as e:
-        logging.error(f"CMD执行错误: {str(e)}\n")
-        return {
-            "code": -1,
-            "data": f"执行错误: {str(e)}"
-        }
+        logging.error(f"命令执行异常: {command}",  exc_info=True)
+        raise Exception(f"命令执行异常") from e
 
 def http_response(status_code, data):
     """
@@ -87,12 +74,20 @@ def http_response(status_code, data):
     print(json.dumps(data, ensure_ascii=False))
     sys.exit(0)
 
+def http_response_ok(data):
+    http_response(200, {"code": 0, "data": data})
+
+def http_response_error(data, status_code=200):
+    http_response(status_code, {"code": -1, "data": data})
+
+
 def http_response_file(file_path, mime_type="application/octet-stream", filename=None):
     """CGI 文件下载响应"""
     
+    logging.info(f"下载文件： {file_path}")
     # 检查文件
     if not os.path.isfile(file_path):
-        http_response(404, {"code": -1, "data": "File Not Found: " + file_path})
+        http_response_error("File Not Found: " + file_path)
         return
     
     # 文件名处理
@@ -122,7 +117,6 @@ def http_response_file(file_path, mime_type="application/octet-stream", filename
     sys.stdout.buffer.write(b"\r\n")  # 头结束空行
     sys.stdout.buffer.flush()
     
-    logging.info(f"下载文件： {file_path}")
     # 流式发送文件
     try:
         with open(file_path, "rb") as f:
@@ -178,22 +172,17 @@ def http_handle():
     elif path_info == '/download_config_file':
         download_config_file()
     else:
-        http_response(404, {"code": -1, "data": "Not Found: " + path_info})
+        http_response_error("Not Found: " + path_info, 404)
 
 
 def get_peer():
     result = run_cmd('/var/apps/EasyTier-Lite/target/bin/easytier-cli --output json peer')
-    if result['code'] == 0:
-        result['data'] = json.loads(result['data'])
-    http_response(200, result)
+    peer_list = json.loads(result)
+    http_response_ok(peer_list)
 
 def download_win_package():
     cmd_file = '/var/apps/EasyTier-Lite/target/ui/cgi/download_win.sh'
-    result = run_cmd(f"{cmd_file}")
-    if result['code'] != 0:
-        http_response(500, f"{result['data']}")
-        return
-    output_file = result['data'].strip()
+    output_file = run_cmd(f"{cmd_file}")
     http_response_file(output_file)
 
 def download_android_package():
@@ -201,11 +190,7 @@ def download_android_package():
 
 def download_config_file():
     cmd_file = '/var/apps/EasyTier-Lite/target/ui/cgi/download_config.sh'
-    result = run_cmd(f"{cmd_file}")
-    if result['code'] != 0:
-        http_response(500, f"{result['data']}")
-        return
-    output_file = result['data'].strip()
+    output_file = run_cmd(f"{cmd_file}")
     http_response_file(output_file, filename='et-fn.toml')
 
 
@@ -213,7 +198,7 @@ if __name__ == '__main__':
     try:
         http_handle()
     except Exception as e:
-        logging.error(f"CGI服务异常: {str(e)}")
-        http_response(500, f"CGI服务异常: {str(e)}")
+        logging.error(f"CGI服务异常",  exc_info=True)
+        http_response_error(f"CGI服务异常: {str(e)}", 500)
 
     

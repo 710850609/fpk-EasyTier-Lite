@@ -34,7 +34,7 @@ download_win() {
         log_msg "下载 EasyTier 成功: ${et_zip_file}"
     fi
     
-    local mgr_ver=$(run_cmd "curl -s https://api.github.com/repos/EasyTier/easytier-manager/releases/latest | grep -o '\"tag_name\": *\"[^\"]*\"' | grep -o '[0-9.]\+'")
+    local mgr_ver=$("curl -s https://api.github.com/repos/EasyTier/easytier-manager/releases/latest | grep -o '\"tag_name\": *\"[^\"]*\"' | grep -o '[0-9.]\+'")
     log_msg "easytier-manager-pro最新版本: ${mgr_ver}"
     local et_mgr_zip_file="${temp_dir}/easytier-manager-pro-${mgr_ver}.zip"
     if [ -f "${et_mgr_zip_file}" ]; then
@@ -75,6 +75,8 @@ download_win() {
     run_cmd "cd ${unzip_dir} && zip -r ${output_file} ./easytier-manager-pro/"
     log_msg "打包 easytier-manager-pro 成功: ${output_file}"
     run_cmd "rm -rf ${unzip_dir}"
+    
+    # 只输出文件路径到标准输出，这是给 api.cgi 用的
     echo ${output_file}
 }
 
