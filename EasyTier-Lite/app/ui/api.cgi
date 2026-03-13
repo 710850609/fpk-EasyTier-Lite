@@ -9,6 +9,14 @@ from urllib.parse import quote
 import logging
 
 
+logging.basicConfig(
+    level=logging.DEBUG,  # 设置日志级别
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',  # 日志格式
+    datefmt='%Y-%m-%d %H:%M:%S',  # 日期格式
+    filename='/var/apps/EasyTier-Lite/var/cgi.log',  # 输出到文件
+    filemode='a'  # 'a'追加，'w'覆盖
+)
+
 def run_cmd(command, *args, shell=False):
     """
     执行命令并返回 JSON 格式结果
@@ -114,6 +122,7 @@ def http_response_file(file_path, mime_type="application/octet-stream", filename
     sys.stdout.buffer.write(b"\r\n")  # 头结束空行
     sys.stdout.buffer.flush()
     
+    logging.info(f"下载文件： {file_path}")
     # 流式发送文件
     try:
         with open(file_path, "rb") as f:
@@ -188,7 +197,7 @@ def download_win_package():
     http_response_file(output_file)
 
 def download_android_package():
-    http_redirect('https://github.com/EasyTier/EasyTier/releases/latest/download/app-universal-release.apk')
+    http_redirect('https://ghfast.top/https://github.com/EasyTier/EasyTier/releases/latest/download/app-universal-release.apk')
 
 def download_config_file():
     cmd_file = '/var/apps/EasyTier-Lite/target/ui/cgi/download_config.sh'
@@ -201,16 +210,10 @@ def download_config_file():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(
-        level=logging.DEBUG,  # 设置日志级别
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',  # 日志格式
-        datefmt='%Y-%m-%d %H:%M:%S',  # 日期格式
-        filename='/var/apps/EasyTier-Lite/var/cgi.log',  # 输出到文件
-        filemode='a'  # 'a'追加，'w'覆盖
-    )
     try:
         http_handle()
     except Exception as e:
+        logging.error(f"CGI服务异常: {str(e)}")
         http_response(500, f"CGI服务异常: {str(e)}")
 
     
