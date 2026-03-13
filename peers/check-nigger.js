@@ -2,15 +2,15 @@ async function fetchNigger() {
   var url = "http://nigger.com.cn:1000/api/nodes?page=1&per_page=50&is_active=true";
   var response = await fetch(url);
   var json = await response.json();
-  console.log("响应内容: ", JSON.stringify(json));
+  // console.log("响应内容: ", JSON.stringify(json));
   if (!json || !json.data || !json.data.items) {
     console.log("无法获取有效数据");
     return [];
   }
   var items = json.data.items.sort((a, b) => a.health_percentage_24h - b.health_percentage_24h);
-  console.log("排序后内容: ", JSON.stringify(items));
+  // console.log("排序后内容: ", JSON.stringify(items));
   var address = items.map(e => e.address);
-  console.log("排序后内容: ", JSON.stringify(address));
+  // console.log("排序后内容: ", JSON.stringify(address));
   return address;
 }
 
@@ -25,8 +25,6 @@ async function fetchSbgov() {
   });
 
   var html = await response.text();
-  // console.log("响应内容:", html);
-
   // 提取 cookie
   var cookieMatch = html.match(/document\.cookie = '([^']+)'/);
   if (cookieMatch) {
@@ -44,13 +42,14 @@ async function fetchSbgov() {
       },
     });
     var json = await response2.text();
+    // console.log(json)
     json = JSON.parse(json);
   } else {
     console.log("无法获取 cookie");
-    // console.log("响应内容:", html);
+    console.log(html)
     json = JSON.parse(html);
   }
-  console.log(json);
+  // console.log(json);
   // 提取 group = "αEasyTier 服务器 点进看详情" 的所有元素的 key
   var address = (json || []).filter(e => {
     return e.group === "αEasyTier服务器 点进看详情";
@@ -70,3 +69,14 @@ async function fetchSbgov() {
   console.log("排序后内容: ", JSON.stringify(address));
   return address;
 }
+
+async function fetchPeers() {
+  const peersList = await Promise.all([
+    fetchNigger(), 
+    fetchSbgov()
+  ]);
+  const peers = peersList.flat();
+  console.log(peers)
+}
+
+fetchPeers();

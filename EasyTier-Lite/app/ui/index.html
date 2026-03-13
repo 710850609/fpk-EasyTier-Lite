@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>组网节点</title>
+    <script type="module" crossorigin src="/cgi/ThirdParty/EasyTier-Lite/index.cgi/assets/index-Dkg-eJYH.js"></script>
     <style>
         /* CSS 变量定义 - 支持暗黑模式 */
         :root {
@@ -293,6 +294,7 @@
     </style>
 </head>
 <body>
+    <!-- <div id="app"></div> -->
     <div class="table-container">
         <table id="serverTable">
             <thead>
@@ -332,9 +334,26 @@
             <span class="icon">⚡</span>
             刷新
         </button>
+        <button class="download-btn primary" onclick="test()">
+            <span class="icon">⚡</span>
+            test
+        </button>
     </div>
 
     <script>
+        function test() {            
+            const fnTheme = localStorage.getItem('fnos-theme-mode');
+            const appTheme = document.body.getAttribute('theme-mode');
+            if (fnTheme == "10" || appTheme == 'light') {
+                toast(fnTheme + '   亮      ' + appTheme)
+            } else if (fnTheme == "20" || appTheme == 'dark') {
+                toast(fnTheme + '     暗    ' + appTheme)
+            } else {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                toast(fnTheme + '     跟随    ' + appTheme + '      ' + prefersDark)
+            }
+            copy2CuttingBoard(JSON.stringify(window.flutter_inappwebview))
+        }
         // 模拟API接口地址（实际使用时替换为真实接口）
         const API_URL = '/cgi/ThirdParty/EasyTier-Lite/api.cgi/';
         // Mock数据
@@ -376,7 +395,8 @@
         };
         const classNameMap = {
             "cost": {
-                "Local": "local",
+                // "Local": "local",
+                "relay": "local",
                 "p2p": "direct",
             },
         };
@@ -422,32 +442,49 @@
             }, 3000);
         }
 
+        function isInFnApp() {
+            return window.flutter_inappwebview !== undefined
+        }
+
         // 主题管理
         class ThemeManager {
             constructor() {
-                this.themeIcon = document.getElementById('themeIcon');
                 this.init();
             }
 
             init() {
-                // 检查本地存储的主题设置
-                this.followFnOSTheme();
+                // 监听普通浏览器下的主题变化
                 window.addEventListener('storage', (e) => {
                     if (e.key === 'fnos-theme-mode') {
                         this.followFnOSTheme();
                     }
                 });
+                // 监听系统主题变化
                 const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
                 darkModeMediaQuery.addEventListener('change', (e) => {
                     this.followFnOSTheme();
+                });
+                // 监听app主题变化
+                const observer = new MutationObserver((mutations) => {
+                    mutations.forEach((mutation) => {
+                        if (mutation.attributeName === 'theme-mode') {
+                            const currentTheme = document.body.getAttribute('theme-mode');
+                            this.followFnOSTheme();
+                        }
+                    });
+                });
+                observer.observe(document.body, {
+                    attributes: true,
+                    attributeFilter: ['theme-mode']
                 });
             }
 
             followFnOSTheme() {
                 const fnTheme = localStorage.getItem('fnos-theme-mode');
-                if (fnTheme == "10") {
+                const appTheme = document.body.getAttribute('theme-mode');
+                if (fnTheme == "10" || appTheme == 'light') {
                     this.setTheme('light');
-                } else if (fnTheme == "20") {
+                } else if (fnTheme == "20" || appTheme == 'dark') {
                     this.setTheme('dark');
                 } else {
                     // 否则跟随系统设置
@@ -457,19 +494,12 @@
             }
 
             setTheme(theme) {
+                // setTimeout(() => toast('切换到' + theme + '模式'), 3000);
                 document.body.classList.remove('light-mode', 'dark-mode');                
                 if (theme === 'dark') {
                     document.body.classList.add('dark-mode');
                 } else if (theme === 'light') {
                     document.body.classList.add('light-mode');
-                }
-                const themeToggle = document.querySelector('.theme-toggle');
-                if (themeToggle) {
-                    const themeIcon = themeToggle.querySelector('#themeIcon');
-                    if (themeIcon) {
-                        themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
-                        themeToggle.title = theme === 'dark' ? '切换到浅色模式' : '切换到深色模式';
-                    }
                 }
             }
         }
@@ -519,15 +549,26 @@
                         server[key] = server[key].replaceAll(",", "</br>");
                     }
                     const cell = document.createElement('td');
-                    cell.className = classNameMap[key]?.[server[key]] || server[key];
-                    for (const e of Object.keys(valueMap[key] || [])) {
+                    
+                    var className = '';
+                    for (const e of Object.keys(classNameMap[key] || [])) {
                         if (server[key].startsWith(e)) {
-                            server[key] = server[key].replace(e, valueMap[key][e]);
+                            className = classNameMap[key][e];
                             break;
                         }
                     }
+                    cell.className = className;
+
+                    var showText = server[key];
+                    for (const e of Object.keys(valueMap[key] || [])) {
+                        if (server[key].startsWith(e)) {
+                            showText = server[key].replace(e, valueMap[key][e]);
+                            break;
+                        }
+                    }
+                    cell.innerHTML = showText;
                     // cell.textContent = server[key]
-                    cell.innerHTML = server[key]
+                    // cell.innerHTML = server[key]
                     if (key == 'cidr' && server.ipv4 != '') {
                         cell.title = '点击复制IPv4地址';
                         cell.style.cursor = 'pointer';
@@ -625,8 +666,8 @@
         generateTableHeader();
         fetchServerData();
         
-        // 定时刷新数据（每30秒）
-        setInterval(fetchServerData, 10000);
+        // 定时刷新数据
+        setInterval(fetchServerData, 5000);
     </script>
 </body>
 </html>
