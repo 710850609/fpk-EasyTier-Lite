@@ -410,10 +410,10 @@
             <span class="icon">⚡</span>
             <span class="show-text">刷新</span>   
         </button>
-        <button class="download-btn primary" onclick="test(event)">
+        <!-- <button class="download-btn primary" onclick="test(event)">
             <span class="icon">⚡</span>
             <span class="show-text">test</span>   
-        </button>
+        </button> -->
     </div>
 
     <script>
@@ -478,10 +478,6 @@
         };
 
 
-        function reload() {
-            window.location.href = window.location.href
-            // fetchServerData();
-        }
         // 简单的通知函数
         function toast(message, type = 'info') {
             const notification = document.createElement('div');
@@ -800,7 +796,7 @@
         }
 
         // 从API获取数据
-        async function fetchServerData() {
+        async function fetchServerData(callback) {
             try {
                 const response = await fetch(API_URL + 'peer');
                 if (!response.ok) {
@@ -812,6 +808,10 @@
             } catch (error) {
                 console.error('获取数据失败:', error);
                 toast('获取数据失败，请检查飞牛网络连接', 'error')
+            } finally {
+                if (callback) {
+                    callback();
+                }
             }
         }
         
@@ -841,6 +841,22 @@
             var url = `https://testflight.apple.com/join/YWnDyJfM`;
             this.copy2CuttingBoard(url);
             toast('已复制链接到剪贴板。\n请先在 iPhone、iPad 或 Mac 上安装 TestFlight，然后打开复制的链接');
+        }
+
+        function reload(event) {
+            // window.location.href = window.location.href
+            const button = event.target.closest('button');
+            button.disabled = true;
+            const originalText = button.innerHTML;
+            const originalClassName = button.className;
+            button.classList.add('btn-loading');
+            button.innerHTML = `<span class="loading-spinner"></span><span class="loading-text">刷新中...</span>`;
+            fetchServerData(() => {
+                button.classList.remove('btn-loading');
+                button.className = originalClassName;
+                button.disabled = false;
+                button.innerHTML = originalText;
+            });
         }
 
         // 初始化页面
