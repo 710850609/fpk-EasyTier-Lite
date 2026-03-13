@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>组网节点</title>
+    <title>服务器状态表</title>
     <style>
         /* CSS 变量定义 - 支持暗黑模式 */
         :root {
@@ -293,6 +293,22 @@
     </style>
 </head>
 <body>
+    <!-- 下载按钮区域 -->
+    <div class="button-container">
+        <button class="download-btn primary" onclick="downloadWindows()">
+            <span class="icon">💻</span>
+            下载Win版本
+        </button>
+        <button class="download-btn success" onclick="downloadAndroid()">
+            <span class="icon">📱</span>
+            下载安卓版本
+        </button>
+        <button class="download-btn info" onclick="downloadConfig()">
+            <span class="icon">⚙️</span>
+            下载配置文件
+        </button>
+    </div>
+
     <div class="table-container">
         <table id="serverTable">
             <thead>
@@ -305,96 +321,82 @@
             </tbody>
         </table>
     </div>
-    <!-- 下载按钮区域 -->
-    <br></br>
-    <div class="button-container">
-        <button class="download-btn primary" onclick="downloadConfig()">
-            <span class="icon">⚙️</span>
-            下载配置文件
-        </button>
-        <button class="download-btn primary" onclick="downloadWindows()">
-            <span class="icon">💻</span>
-            下载Win版本
-        </button>
-        <button class="download-btn primary" onclick="downloadAndroid()">
-            <span class="icon">📱</span>
-            下载安卓版本
-        </button>
-        <button class="download-btn primary" onclick="downloadHarmony()">
-            <span class="icon">🔗</span>
-            鸿蒙商店链接
-        </button>
-        <button class="download-btn primary" onclick="downloadIOS()">
-            <span class="icon">🔗</span>
-            IOS TestFlight 链接
-        </button>
-        <button class="download-btn primary" onclick="reload()">
-            <span class="icon">⚡</span>
-            刷新
-        </button>
-    </div>
 
     <script>
-        // 模拟API接口地址（实际使用时替换为真实接口）
-        const API_URL = '/cgi/ThirdParty/EasyTier-Lite/api.cgi/';
-        // Mock数据
-        const fallbackData = [
-            {"cidr": "10.0.0.0/24", "ipv4": "10.0.0.0", "hostname": "FeiNiu", "cost": "Local", "lat_ms": "-", "loss_rate": "-", "rx_bytes": "-", "tx_bytes": "-", "tunnel_proto": "-", "nat_type": "Restricted", "id": "1470628219", "version": "2.5.0-88a45d11"}, {"cidr": "", "ipv4": "", "hostname": "tencent-vm", "cost": "p2p", "lat_ms": "40.73", "loss_rate": "2.0%", "rx_bytes": "18.07 MB", "tx_bytes": "3.46 MB", "tunnel_proto": "BodyUrls-tcp://et.sbgov.cn:11010,BodyUrls-tcp://et3.sbgov.cn:11010", "nat_type": "Unknown", "id": "3677262003", "version": "2.4.5-4c4d172e"}, {"cidr": "", "ipv4": "", "hostname": "zheyimiaowangluo", "cost": "p2p", "lat_ms": "61.16", "loss_rate": "0.0%", "rx_bytes": "224.94 kB", "tx_bytes": "603.36 kB", "tunnel_proto": "BodyUrls-tcp://et2.sbgov.cn:11010", "nat_type": "Restricted", "id": "150136517", "version": "2.4.5-4c4d172e"},
-        ];
-        const keyMap = {
-            "cidr": "网段",
-            // "ipv4": "虚拟IPv4",
-            "hostname": "主机名",
-            "cost": "穿透方式",
-            "lat_ms": "延迟",
-            "loss_rate": "丢包率",
-            "rx_bytes": "下载", 
-            "tx_bytes": "上传",
-            "nat_type": "Nat类型",
-            "tunnel_proto": "协议",
-            // "id": "id",
-            "version": "内核版本"
-        };
-        const valueMap = {
-            "cost": {
-                "p2p": "直连",
-                "relay": "中继",
-                "Local": "本地",
-            },
-            "nat_type": {
-                "NoPAT" : "公网NoPAT",
-                "FullCone" : "Nat1全锥",
-                "Restricted" : "Nat2受限",
-                "PortRestricted" : "Nat3端口受限",
-                "Symmetric" : "Nat4对称",
-                "OpenInternet" : "开放互联网",
-                "Unknown" : "未知",
-            },
-            "hostname": {
-                "PublicServer_": ""
-            }
-        };
-        const classNameMap = {
-            "cost": {
-                "Local": "local",
-                "p2p": "direct",
-            },
-        };
-
-
-        function reload() {
-            window.location.href = window.location.href
-            // fetchServerData();
+        // 下载功能函数
+        function downloadWindows() {
+            // 模拟下载Windows版本
+            const link = document.createElement('a');
+            link.href = '/cgi/ThirdParty/EasyTier-Lite/api.cgi/download_win_package';
+            link.download = 'EasyTier-Windows-x64.zip';
+            link.click();
+            
+            // 显示提示
+            showNotification('开始下载 Windows 版本', 'success');
         }
+
+        function downloadAndroid() {
+            // 模拟下载安卓版本
+            const link = document.createElement('a');
+            link.href = '/cgi/ThirdParty/EasyTier-Lite/api.cgi/download_android_package';
+            link.download = 'EasyTier-Android.apk';
+            link.click();
+            
+            // 显示提示
+            showNotification('开始下载 Android 版本', 'success');
+        }
+
+        function downloadConfig() {
+            // 生成配置文件内容
+            const configContent = `# EasyTier 配置文件
+# 生成时间: ${new Date().toLocaleString()}
+
+hostname = "MyEasyTier"
+instance_name = ""
+dhcp = true
+ipv4 = "10.0.0.0"
+listeners = ["tcp://0.0.0.0:11010", "quic://0.0.0.0:11020", "udp://0.0.0.0:11010"]
+
+[network_identity]
+network_name = "MyNetwork"
+network_secret = "my-secret-key"
+
+[[peer]]
+uri = "tcp://public.easytier.top:11010"
+
+[flags]
+enable_kcp_proxy = true
+enable_quic_proxy = true
+multi_thread = true
+bind_device = true
+proxy_forward_by_system = true
+private_mode = true
+`;
+
+            // 创建下载链接
+            const blob = new Blob([configContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'easytier-config.toml';
+            link.click();
+            
+            // 清理
+            setTimeout(() => URL.revokeObjectURL(url), 100);
+            
+            // 显示提示
+            showNotification('配置文件已生成并下载', 'info');
+        }
+
         // 简单的通知函数
-        function toast(message, type = 'info') {
+        function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
             notification.style.cssText = `
                 position: fixed;
                 top: 20px;
                 left: 50%;
                 transform: translateX(-50%);
-                background: ${type === 'success' ? '#67c23a' : type === 'error' ? '#f56c6c' : '#409EFF'};
+                background: ${type === 'success' ? '#67c23a' : type === 'error' ? '#f56c6c' : '#909399'};
                 color: white;
                 padding: 12px 24px;
                 border-radius: 4px;
@@ -404,8 +406,7 @@
                 opacity: 0;
                 transition: opacity 0.3s ease;
             `;
-            // notification.textContent = message;
-            notification.innerText = message;
+            notification.textContent = message;
             document.body.appendChild(notification);
             
             // 显示动画
@@ -432,10 +433,16 @@
             init() {
                 // 检查本地存储的主题设置
                 this.followFnOSTheme();
+                // 监听PC端主题切换事件
                 window.addEventListener('storage', (e) => {
                     if (e.key === 'fnos-theme-mode') {
                         this.followFnOSTheme();
                     }
+                });
+                // 监听系统主题变化 - 使用箭头函数保持this上下文
+                const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+                darkModeMediaQuery.addEventListener('change', (e) => {
+                    this.followFnOSTheme();
                 });
             }
 
@@ -469,14 +476,76 @@
                 }
             }
         }
+
         // 初始化主题管理器
         const themeManager = new ThemeManager();
+
+        // 模拟API接口地址（实际使用时替换为真实接口）
+        const API_URL = '/cgi/ThirdParty/EasyTier-Lite/api.cgi/peer';
+        
+        // 备用数据（当API调用失败时使用）
+        const fallbackData = [
+        {
+            "cidr": "10.0.0.0/24",
+            "ipv4": "10.0.0.0",
+            "hostname": "FeiNiu",
+            "cost": "Local",
+            "lat_ms": "-",
+            "loss_rate": "-",
+            "rx_bytes": "-",
+            "tx_bytes": "-",
+            "tunnel_proto": "-",
+            "nat_type": "Restricted",
+            "id": "1470628219",
+            "version": "2.5.0-88a45d11"
+        },{"cidr": "10.0.0.0/24", "ipv4": "10.0.0.0", "hostname": "FeiNiu", "cost": "Local", "lat_ms": "-", "loss_rate": "-", "rx_bytes": "-", "tx_bytes": "-", "tunnel_proto": "-", "nat_type": "Restricted", "id": "1470628219", "version": "2.5.0-88a45d11"}, {"cidr": "", "ipv4": "", "hostname": "tencent-vm", "cost": "p2p", "lat_ms": "40.73", "loss_rate": "2.0%", "rx_bytes": "18.07 MB", "tx_bytes": "3.46 MB", "tunnel_proto": "BodyUrls-tcp://et.sbgov.cn:11010,BodyUrls-tcp://et3.sbgov.cn:11010", "nat_type": "Unknown", "id": "3677262003", "version": "2.4.5-4c4d172e"}, {"cidr": "", "ipv4": "", "hostname": "zheyimiaowangluo", "cost": "p2p", "lat_ms": "61.16", "loss_rate": "0.0%", "rx_bytes": "224.94 kB", "tx_bytes": "603.36 kB", "tunnel_proto": "BodyUrls-tcp://et2.sbgov.cn:11010", "nat_type": "Restricted", "id": "150136517", "version": "2.4.5-4c4d172e"},
+        ];
+
+        const keyMap = {
+            "cidr": "网段",
+            "ipv4": "虚拟IPv4",
+            "hostname": "主机名",
+            "cost": "穿透方式",
+            "nat_type": "Nat类型",
+            "lat_ms": "延迟",
+            "loss_rate": "丢包率",
+            "rx_bytes": "下载", 
+            "tx_bytes": "上传",
+            "tunnel_proto": "协议",
+            "id": "id",
+            "version": "内核版本"
+        };
+        const valueMap = {
+            "cost": {
+                "Local": "本地",
+                "p2p": "直连",
+            },
+            "nat_type": {
+                "Unknown" : "未知",
+                "OpenInternet" : "开放互联网",
+                "NoPAT" : "公网NoPAT",
+                "FullCone" : "Nat1全锥",
+                "Restricted" : "Nat2受限",
+                "PortRestricted" : "Nat3端口受限",
+                "Symmetric" : "Nat4对称",
+            }
+        };
+        const classNameMap = {
+            "cost": {
+                "Local": "local",
+                "p2p": "direct",
+            },
+        };
 
         // 生成表头函数
         function generateTableHeader() {
             const headerRow = document.querySelector('#tableHeader');
-            headerRow.innerHTML = '';            
+            headerRow.innerHTML = '';
+            
             Object.keys(keyMap).forEach(key => {
+                if (['id', 'cidr'].indexOf(key) > -1) {
+                    return;
+                }
                 const th = document.createElement('th');
                 th.textContent = keyMap[key];
                 headerRow.appendChild(th);
@@ -486,11 +555,13 @@
          function sortPeer(data) {
             const sorted = data.sort((a, b) => {
                 const hasIpA = a.ipv4 && a.ipv4.trim() !== '';
-                const hasIpB = b.ipv4 && b.ipv4.trim() !== '';                
+                const hasIpB = b.ipv4 && b.ipv4.trim() !== '';
+                
                 // ipv4 空的放最后
                 if (!hasIpA && !hasIpB) return 0;
                 if (!hasIpA) return 1;
-                if (!hasIpB) return -1;                
+                if (!hasIpB) return -1;
+                
                 // 有 ipv4 的按数值升序
                 return a.ipv4 > b.ipv4;
             });
@@ -507,36 +578,18 @@
                 const row = document.createElement('tr');
                 // 遍历服务器数据的每个属性
                 Object.keys(keyMap).forEach((key, index) => {
-                    if (key == "cidr") {
-                        if (server['hostname'].startsWith("PublicServer_") && server[key] == '') {
-                            server[key] = "服务器";
-                        }
-                    } else if (key == 'tunnel_proto') {
-                        server[key] = server[key].replaceAll(",", "</br>");
+                    if (['id', 'cidr'].indexOf(key) > -1) {
+                        return;
                     }
                     const cell = document.createElement('td');
+                    cell.textContent = valueMap[key]?.[server[key]] || server[key];
                     cell.className = classNameMap[key]?.[server[key]] || server[key];
-                    for (const e of Object.keys(valueMap[key] || [])) {
-                        if (server[key].startsWith(e)) {
-                            server[key] = server[key].replace(e, valueMap[key][e]);
-                            break;
-                        }
-                    }
-                    // cell.textContent = server[key]
-                    cell.innerHTML = server[key]
-                    if (key == 'cidr' && server.ipv4 != '') {
-                        cell.title = '点击复制IPv4地址';
-                        cell.style.cursor = 'pointer';
-                        cell.onclick = async (event) => {
-                            const ipv4 = server['ipv4'];  // 获取IPv4地址          
-                            copy2CuttingBoard(ipv4);
-                            toast(`已复制到剪贴板: ${ipv4} `);
-                            // 阻止事件冒泡
-                            event.stopPropagation();
-                        };
-                    }
                     row.appendChild(cell);
                 });
+                
+                // 添加操作列
+                const actionCell = document.createElement('td');
+                row.appendChild(actionCell);
                 tableBody.appendChild(row);
             });
         }
@@ -544,77 +597,19 @@
         // 从API获取数据
         async function fetchServerData() {
             try {
-                const response = await fetch(API_URL + 'peer');
+                const response = await fetch(API_URL);
                 if (!response.ok) {
                     throw new Error('API调用失败');
                 }
                 const data = await response.json();
                 // data = fallbackData;
+                console.log(data)
                 populateTable(data.data);
             } catch (error) {
                 console.error('获取数据失败:', error);
-                toast('获取数据失败，请检查网络连接', 'error')
+                // 使用备用数据
+                populateTable(fallbackData);
             }
-        }
-        // 下载功能函数
-        function downloadWindows() {
-            // 模拟下载Windows版本
-            const link = document.createElement('a');
-            link.href = `${API_URL}download_win_package`;
-            link.click();            
-            toast('开始下载 Windows 版本');
-        }
-
-        function downloadAndroid() {
-            const link = document.createElement('a');
-            link.href = `${API_URL}download_android_package`;
-            link.click();            
-            toast('开始下载 Android 版本');
-        }
-
-        function downloadHarmony() {
-            var url = `https://appgallery.huawei.com/app/detail?id=top.frankhan.easytier&channelId=SHARE&source=appshare`;
-            this.copy2CuttingBoard(url);
-            toast('已复制链接到剪贴板。\n请在浏览器打开链接，以跳转到鸿蒙应用商店下载 EasyTier');
-        }
-
-        function downloadIOS() {
-            var url = `https://testflight.apple.com/join/YWnDyJfM`;
-            this.copy2CuttingBoard(url);
-            toast('已复制链接到剪贴板。\n请先在 iPhone、iPad 或 Mac 上安装 TestFlight，然后打开复制的链接');
-        }
-
-        function downloadConfig() {
-            // 创建下载链接
-            const link = document.createElement('a');
-            link.href = `${API_URL}download_config_file`;
-            link.click();
-            toast('开始下载配置文件');
-        }
-
-        async function copy2CuttingBoard(text) {
-            try {
-                await navigator.clipboard.writeText(text);
-                // toast(`已复制到剪贴板: ${text} `, 'success');
-            } catch (err) {
-                console.error('复制到剪切板失败，继续尝试第二种复制方法:', err)
-                // 降级处理                
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                textarea.style.position = 'fixed';
-                textarea.style.opacity = '0';
-                document.body.appendChild(textarea);
-                textarea.select();                
-                try {
-                    document.execCommand('copy');
-                    // toast(`已复制到剪贴板: ${text} `, 'success');
-                } catch (err) {
-                    console.error('第二种复制到剪切板失败:', err)
-                    toast(`复制失败，请手动复制: ${text} `, 'error');       
-                }
-                document.body.removeChild(textarea);
-            }
-            
         }
 
         // 初始化页面
@@ -622,7 +617,7 @@
         fetchServerData();
         
         // 定时刷新数据（每30秒）
-        setInterval(fetchServerData, 10000);
+        setInterval(fetchServerData, 1000);
     </script>
 </body>
 </html>
