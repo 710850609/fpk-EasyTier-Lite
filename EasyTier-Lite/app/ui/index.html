@@ -320,12 +320,16 @@
             <span class="icon">📱</span>
             下载安卓版本
         </button>
-        <button class="download-btn primary" onclick="copy2CuttingBoard(`https://testflight.apple.com/join/YWnDyJfM`)" hov>
-            <span class="icon">📱</span>
+        <button class="download-btn primary" onclick="downloadHarmony()">
+            <span class="icon">🔗</span>
+            鸿蒙商店链接
+        </button>
+        <button class="download-btn primary" onclick="downloadIOS()">
+            <span class="icon">🔗</span>
             IOS TestFlight 链接
         </button>
         <button class="download-btn primary" onclick="reload()">
-            <span class="icon">🦖</span>
+            <span class="icon">⚡</span>
             刷新
         </button>
     </div>
@@ -400,7 +404,8 @@
                 opacity: 0;
                 transition: opacity 0.3s ease;
             `;
-            notification.textContent = message;
+            // notification.textContent = message;
+            notification.innerText = message;
             document.body.appendChild(notification);
             
             // 显示动画
@@ -525,6 +530,7 @@
                         cell.onclick = async (event) => {
                             const ipv4 = server['ipv4'];  // 获取IPv4地址          
                             copy2CuttingBoard(ipv4);
+                            toast(`已复制到剪贴板: ${ipv4} `);
                             // 阻止事件冒泡
                             event.stopPropagation();
                         };
@@ -566,6 +572,18 @@
             toast('开始下载 Android 版本');
         }
 
+        function downloadHarmony() {
+            var url = `https://appgallery.huawei.com/app/detail?id=top.frankhan.easytier&channelId=SHARE&source=appshare`;
+            this.copy2CuttingBoard(url);
+            toast('已复制链接到剪贴板。\n请在浏览器打开链接，以跳转到鸿蒙应用商店下载 EasyTier');
+        }
+
+        function downloadIOS() {
+            var url = `https://testflight.apple.com/join/YWnDyJfM`;
+            this.copy2CuttingBoard(url);
+            toast('已复制链接到剪贴板。\n请先在 iPhone、iPad 或 Mac 上安装 TestFlight，然后打开复制的链接');
+        }
+
         function downloadConfig() {
             // 创建下载链接
             const link = document.createElement('a');
@@ -577,7 +595,7 @@
         async function copy2CuttingBoard(text) {
             try {
                 await navigator.clipboard.writeText(text);
-                toast(`已复制到剪贴板: ${text} `, 'success');
+                // toast(`已复制到剪贴板: ${text} `, 'success');
             } catch (err) {
                 console.error('复制到剪切板失败，继续尝试第二种复制方法:', err)
                 // 降级处理                
@@ -589,7 +607,7 @@
                 textarea.select();                
                 try {
                     document.execCommand('copy');
-                    toast(`已复制到剪贴板: ${text} `, 'success');
+                    // toast(`已复制到剪贴板: ${text} `, 'success');
                 } catch (err) {
                     console.error('第二种复制到剪切板失败:', err)
                     toast(`复制失败，请手动复制: ${text} `, 'error');       
