@@ -1,23 +1,49 @@
 // 等待 flutter_inappwebview 准备就绪
+let flutterInAppWebViewReadyPromise = null;
+
 const waitForFlutterInAppWebView = () => {
     return new Promise((resolve) => {
         if (window.flutter_inappwebview?. _platformReady) {
             // 如果已经准备好了，直接返回
             resolve(window.flutter_inappwebview);
-        } else {
-            resolve({});
-            // 否则，等待框架发出准备就绪的事件
-            // window.addEventListener('flutterInAppWebViewPlatformReady', () => {
-            //     console.debug('等待 flutter_inappwebview 准备就绪');
-            //     resolve(window.flutter_inappwebview);
-            // });
+            return;
         }
+        
+        // 如果已经有等待中的 Promise，直接返回它
+        if (flutterInAppWebViewReadyPromise) {
+            flutterInAppWebViewReadyPromise.then(() => {
+                resolve(window.flutter_inappwebview);
+            });
+            return;
+        }
+        
+        // 创建新的等待 Promise
+        flutterInAppWebViewReadyPromise = new Promise((resolveInner) => {
+            
+            window.addEventListener('flutterInAppWebViewPlatformReady', () => {
+                console.log('flutter_inappwebview 准备就绪');
+                resolveInner();
+            }, { once: true });
+        });
+        
+        flutterInAppWebViewReadyPromise.then(() => {
+            resolve(window.flutter_inappwebview);
+        });
     });
 };
 
+function isInFnApp() {
+    const userAgent = navigator.userAgent;
+    return /FNAppVer/.test(userAgent);
+}
+
 // 封装的调用原生 handler 的通用函数
 async function callNativeHandler(handlerName, parameter = '') {
-    // 1. 等待 WebView 连接准备就绪
+    if (!isInFnApp()) {
+        console.debug('当前环境不是 FNApp 应用，无法调用原生 handler.');
+        return null;
+    }
+    // 1. 等待 WebView 连接准备就绪        
     const flutterInAppWebView = await waitForFlutterInAppWebView();
 
     // 2. 检查 callHandler 方法是否存在
@@ -95,10 +121,6 @@ async function setExitPageTips(tips) {
     return callNativeHandler('setExitPageTips', tips);
 }
 
-// --- 导出 API 函数 ---
-export { getAppMessage, updateTitle, getUserMessage, setExitPageTips };
-
-window.getAppMessage = getAppMessage;
 // --- 使用示例 ---
 async function initMyApp() {
     // 1. 获取应用信息，并设置主题
@@ -116,3 +138,80 @@ async function initMyApp() {
 
 // 在页面加载完成后执行
 // document.addEventListener('DOMContentLoaded', initMyApp);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class FnThemeListener {
+    constructor(callback) {
+        this.callback = callback;
+        this.registerListener();  
+        this.refreshTheme();
+    }
+    registerListener = () => {
+        // 飞牛app 不需要监听改变，只要获取一次即可。因为修改需要退出页面
+        getAppMessage().then((appInfo) => {
+            const themeMode = (appInfo || {})?.nightMode;
+            if (themeMode) {
+                console.log('app', themeMode)
+                this.callback(themeMode)
+            }
+        })
+        // 普通浏览器 监听存储变化
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'fnos-theme-mode') {
+               const themeMode = this.getBrowserThemeMode()
+                console.log('brower', themeMode)
+                this.callback(themeMode)
+            }
+        })
+        // 系统设置 监听存储变化
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+           this.refreshTheme();
+        })
+    }
+
+    refreshTheme = async () => {
+        let themeMode = this.getBrowserThemeMode();
+        if (themeMode) {
+            console.log('system', 'brower', themeMode)
+            this.callback(themeMode)
+            return;
+        }
+        themeMode = await this.getAppThemeMode();
+        if (themeMode) {
+            console.log('system', 'app', themeMode)
+            this.callback(themeMode)
+            return;
+        }
+            console.log('system', themeMode)
+        this.callback(this.getSystemThemeMode())
+    }
+
+    getAppThemeMode = async () => {
+        const appInfo = await getAppMessage();
+        return (appInfo || {})?.nightMode;
+    }
+    getBrowserThemeMode = () => {
+        const themeCode = localStorage.getItem('fnos-theme-mode');
+        if (themeCode == '10') {
+            return 'light';
+        } else if (themeCode == '20') {
+            return 'dark';
+        } else if (themeCode == '30') {
+            return this.getSystemThemeMode();
+        } else {
+            return null;
+        }
+    }
+    getSystemThemeMode = () => {
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    }
+}
+
+
+// --- 导出 API 函数 ---
+// export { getAppMessage, updateTitle, getUserMessage, setExitPageTips };
+
+window.FnThemeListener = FnThemeListener;
+
+setExitPageTips('真的要离开？')

@@ -4,6 +4,7 @@
 import util.http_util as http_util
 import logging
 import tomlkit
+import os
 
 
 def download():    
@@ -14,6 +15,10 @@ def download():
 def copy(): 
     src_file = '/var/apps/EasyTier-Lite/shares/EasyTier-Lite/config.toml'
     tmp_file = '/tmp/EasyTier-Lite/config-copy.toml'
+    
+    # 确保目录存在
+    os.makedirs(os.path.dirname(tmp_file), exist_ok=True)
+    
     with open(src_file, "r", encoding="utf-8") as f:
         doc = tomlkit.parse(f.read())
     # 情况IP

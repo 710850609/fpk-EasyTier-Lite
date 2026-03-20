@@ -20,17 +20,12 @@
 
 <script setup>
 import { shallowRef, onMounted, onUnmounted, watch } from 'vue'
-import { Snackbar, Dialog, StyleProvider, Themes } from '@varlet/ui'
-import { getAppMessage } from './assets/fnapp.js'
+import { Snackbar, StyleProvider, Themes } from '@varlet/ui'
 
 // 允许同时显示多个消息条
 Snackbar.allowMultiple(true)
 const activeTab = shallowRef('nodes')
-// const isDark = shallowRef(false)
-const isMobile = shallowRef(false)
 const currentComponent = shallowRef(null)
-const switchVconsole = shallowRef(false)
-let vconsoleInstance = null
 
 // 动态导入组件
 const loadComponent = async (tab) => {
@@ -61,98 +56,27 @@ watch(activeTab, (newTab) => {
   loadComponent(newTab)
 })
 
-const checkMobile = () => {
-  isMobile.value = window.innerWidth < 768
-}
-
 const changeTheme = (theme) => {
   if (theme === 'dark') {
-    // isDark.value = true
     console.log('md3Dark')
     StyleProvider(Themes.md3Dark)
-    // StyleProvider(Themes.dark)
+    document.body.classList.remove('light-mode')
+    document.body.classList.add('dark-mode')
   } else {
-    // isDark.value = false
-    // console.log('md3Light')
     StyleProvider(Themes.md3Light)
     // StyleProvider(null)
+    document.body.classList.remove('dark-mode')
+    document.body.classList.add('light-mode')
   }
 }
 
-const checkSystemTheme = async () => {
-  const fnTheme = localStorage.getItem('fnos-theme-mode')  
-  // const appTheme = document.body.getAttribute('theme-mode')
-  const appInfo = await getAppMessage();
-  console.log(appInfo)
-  const appTheme = (appInfo || {})?.nightMode;
-  console.log('appTheme', appTheme)
-  
-  if (fnTheme === '10' || appTheme === 'light') {
-    // isDark.value = false
-    console.log('light', fnTheme, appTheme)
-    changeTheme('light')
-  } else if (fnTheme === '20' || appTheme === 'dark') {
-    // isDark.value = true
-    console.log('dark', fnTheme, appTheme) 
-    changeTheme('dark')
-  } else {
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      // isDark.value = true
-      console.log('system-dark', fnTheme, appTheme) 
-      changeTheme('dark')
-    } else {
-      // isDark.value = false
-      console.log('system-light', fnTheme, appTheme) 
-      changeTheme('light')
-    }
-  }
-}
-
-// 切换 VConsole 状态
-const toggleVconsole = () => {
-  if (switchVconsole.value && vconsoleInstance) {
-    vconsoleInstance.destroy()
-    switchVconsole.value = false
-    vconsoleInstance = null
-    return
-  }
-  import('vconsole').then(({ default: VConsole }) => {
-    vconsoleInstance = new VConsole()
-    switchVconsole.value = true
-  })
-}
-
-onMounted(() => {
-  toggleVconsole()
-  setInterval(() => {
-    checkSystemTheme()
-  }, 1000)
-  //  ()
-  checkMobile()
+onMounted(async () => {
+  new FnThemeListener((themeMode) => changeTheme(themeMode));
   // 初始加载第一个组件
   loadComponent(activeTab.value)
-  
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-    checkSystemTheme()
-    // isDark.value = e.matches
-    // if (isDark.value) {
-    //   changeTheme('dark')
-    // } else {
-    //   changeTheme('light')
-    // }
-  })
-  
-  window.addEventListener('storage', (e) => {
-    if (e.key === 'fnos-theme-mode') {
-      checkSystemTheme()
-    }
-  })
-  
-  window.addEventListener('resize', checkMobile)
 })
 
 onUnmounted(() => {
-  window.removeEventListener('resize', checkMobile)
 })
 </script>
 

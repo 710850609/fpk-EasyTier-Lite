@@ -87,7 +87,7 @@
       </table>
       
       <!-- 拖拽刷新按钮 -->
-      <var-fab 
+      <!-- <var-fab 
         type="primary" 
         :loading="loading"
         style="position: fixed; bottom: 100px; right: 20px; z-index: 1000;"
@@ -97,7 +97,7 @@
        <var-chip type="success"><var-icon name="refresh" 
         @click="refreshNetwork" /></var-chip>
         
-      </var-fab>
+      </var-fab> -->
     </div>
 
     <div v-if="peers.length === 0" class="empty-state">

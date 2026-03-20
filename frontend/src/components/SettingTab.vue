@@ -18,7 +18,23 @@
   import { ref, onMounted } from 'vue'
   import { Snackbar, Dialog } from '@varlet/ui'
   
+
+  let vconsoleInstance = null;
   const switchVconsole = ref(false)
+  const toggleVconsole = () => {
+  if (switchVconsole.value && vconsoleInstance) {
+    vconsoleInstance.destroy()
+    switchVconsole.value = false
+    vconsoleInstance = null
+    return
+  }
+  import('vconsole').then(({ default: VConsole }) => {
+    vconsoleInstance = new VConsole()
+    switchVconsole.value = true
+  })
+}
+
+  
 </script>
 
 <style scoped>

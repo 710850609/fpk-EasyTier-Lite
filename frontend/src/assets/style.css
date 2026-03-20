@@ -30,3 +30,42 @@ body {
   --status-online: #10b981;
   --status-offline: #ef4444;
 }
+
+body.dark-mode {
+  --bg-body: #0f172a;
+  --bg-card: #1e293b;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --border-color: #334155;
+  --header-bg: #1e293b;
+  --header-border: #334155;
+  --table-header-bg: #334155;
+  --table-header-text: #f1f5f9;
+  --table-row-hover: #334155;
+  --btn-primary-bg: #2563eb;
+  --btn-primary-text: #ffffff;
+  --btn-secondary-bg: #475569;
+  --btn-secondary-text: #f1f5f9;
+  --status-online: #34d399;
+  --status-offline: #f87171;
+}
+
+/* 手动浅色模式类 - 强制浅色 */
+body.light-mode {
+  --bg-body: #f5f7fb !important;
+  --bg-card: #ffffff !important;
+  --text-primary: #1e293b !important;
+  --text-secondary: #64748b !important;
+  --border-color: #f0f2f5 !important;
+  --header-bg: #ffffff !important;
+  --header-border: #f0f2f5 !important;
+  --table-header-bg: #f8fafc !important;
+  --table-header-text: #1e293b !important;
+  --table-row-hover: #f1f5f9 !important;
+  --btn-primary-bg: #3b82f6 !important;
+  --btn-primary-text: #ffffff !important;
+  --btn-secondary-bg: #e2e8f0 !important;
+  --btn-secondary-text: #475569 !important;
+  --status-online: #10b981 !important;
+  --status-offline: #ef4444 !important;
+}

@@ -1,13 +1,17 @@
+
+import VConsole from 'vconsole';
+new VConsole();
+
 import { createApp } from 'vue'
 import Varlet from '@varlet/ui'
+import './assets/style.css'
+import './assets/fnapp.js'
 import '@varlet/ui/es/style'
 import App from './App.vue'
-import './assets/style.css'
 
 const app = createApp(App)
 app.use(Varlet)
 app.mount('#app')
-
 // import('vconsole').then(({ default: VConsole }) => {
 //   new VConsole()
 // })
