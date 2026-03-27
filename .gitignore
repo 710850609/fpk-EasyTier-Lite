@@ -4,7 +4,7 @@ temp
 EasyTier-Lite/app/bin/*
 EasyTier-Lite/app/ui/assets
 EasyTier-Lite/app/ui/index.html
-EasyTier-Lite/app/server/wheels
+EasyTier-Lite/app/server
 
 
 peers/.venv
