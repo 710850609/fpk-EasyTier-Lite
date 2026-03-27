@@ -12,12 +12,12 @@ export const menuTree = [
   { key: 'config', label: '配置', icon: 'bookmark-outline', title: '配置管理', component: 'Config' },
   { key: 'software', label: '应用', icon: 'shopping-outline', title: '软件下载',
     children: [
-      { key: 'software-windows', label: 'Windows', icon: 'menu-right', component: 'software/Windows' },
-      { key: 'software-macos', label: 'MacOS', icon: 'menu-right', component: 'software/MacOS' },
-      { key: 'software-ios', label: 'IOS', icon: 'menu-right', component: 'software/IOS' },
-      { key: 'software-linux', label: 'Linux', icon: 'menu-right', component: 'software/Linux' },
-      { key: 'software-android', label: 'Android', icon: 'menu-right', component: 'software/Android' },
-      { key: 'software-harmonyos', label: '鸿蒙', icon: 'menu-right', component: 'software/HarmonyOS' }
+      { key: 'softwares-windows', label: 'Windows', icon: 'menu-right', component: 'softwares/Windows' },
+      { key: 'softwares-macos', label: 'MacOS', icon: 'menu-right', component: 'softwares/MacOS' },
+      { key: 'softwares-ios', label: 'IOS', icon: 'menu-right', component: 'softwares/IOS' },
+      { key: 'softwares-linux', label: 'Linux', icon: 'menu-right', component: 'softwares/Linux' },
+      { key: 'softwares-android', label: 'Android', icon: 'menu-right', component: 'softwares/Android' },
+      { key: 'softwares-harmonyos', label: '鸿蒙', icon: 'menu-right', component: 'softwares/HarmonyOS' }
     ]
   },
   { key: 'settings', label: '设置', icon: 'cog-outline', title: '系统设置', component: 'Settings' }
