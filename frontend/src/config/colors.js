@@ -59,6 +59,11 @@ export const freshLightTheme = {
   // 边框和轮廓（清新蓝调）
   '--color-outline': '#7dd3fc',
   '--color-outline-variant': '#bae6fd',
+
+  // Snackbar/Toast 样式
+  '--snackbar-background': '#e2e8f0',
+  '--snackbar-color': '#1e293b',
+  '--snackbar-info-background': '#cbd5e1',
 }
 
 // 清新蓝绿 - 暗色主题
@@ -116,4 +121,9 @@ export const freshDarkTheme = {
   // 边框和轮廓
   '--color-outline': '#475569',
   '--color-outline-variant': '#334155',
+
+  // Snackbar/Toast 样式
+  '--snackbar-background': '#1e293b',
+  '--snackbar-color': 'rgba(255, 255, 255, 0.87)',
+  '--snackbar-info-background': '#334155',
 }

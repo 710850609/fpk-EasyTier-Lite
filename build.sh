@@ -85,7 +85,7 @@ compiling_server() {
     # 下载 wheel 到本地
     app_script_path="EasyTier-Lite/app/server/"
     echo "写入脚本到app"
-    rsync -a --exclude='.venv' --exclude='__pycache__' server/ "${app_script_path}"
+    rsync -a --exclude='.venv' --exclude='__pycache__' --exclude='main.py' server/ "${app_script_path}"
 }
 
 compiling_frontend() {

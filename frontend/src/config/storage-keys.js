@@ -13,3 +13,6 @@ export const THEME_MODE_KEY = 'etLite-theme'
 export const NODES_SELECTED_COLUMNS_KEY = 'etLite-nodes-columns'
 export const NODES_SELECTED_NODE_TYPES_KEY = 'etLite-nodes-rows'
 export const NODES_REFRESH_STEP_KEY = 'etLite-nodes-refresh-step'
+
+// 侧边栏折叠状态
+export const SIDEBAR_COLLAPSED_KEY = 'etLite-sidebar-collapsed'

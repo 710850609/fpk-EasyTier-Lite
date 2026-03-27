@@ -10,13 +10,13 @@ logging.basicConfig(
     level=logging.DEBUG,  # 设置日志级别
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',  # 日志格式
     datefmt='%Y-%m-%d %H:%M:%S',  # 日期格式
-    filename='/var/apps/EasyTier-Lite/var/cgi.log',  # 输出到文件
+    filename=os.environ.get('LOG_FILE', '/var/apps/EasyTier-Lite/var/cgi.log'),  # 输出到文件
     filemode='a'  # 'a'追加，'w'覆盖
 )
 
 def http_handle():
     # 静态文件根目录
-    BASE_PATH = "/var/apps/EasyTier-Lite/target/ui"
+    BASE_PATH = "./"
 
     # 从 REQUEST_URI 里拿到 index.cgi 后面的路径
     REQUEST_URI = os.environ.get("REQUEST_URI", "")

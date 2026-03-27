@@ -58,7 +58,13 @@
 
     <!-- 高级设置 -->
     <var-collapse v-model="advancedOpen" class="advanced-section">
-      <var-collapse-item title="高级设置" name="advanced">        
+      <var-collapse-item name="advanced">
+        <template #title>
+          <div class="collapse-title">
+            <var-icon name="cog" size="24" color="var(--color-primary)" />
+            <span class="section-title">高级设置</span>
+          </div>
+        </template>        
         <div class="advanced-content">
           <!-- 功能开关 -->
           <div class="feature-section">
@@ -301,9 +307,15 @@ onMounted(async () => {
   background: var(--color-surface-container) !important;
 }
 
-:deep(.advanced-section .var-paper) {
+::deep(.advanced-section .var-paper) {
   border-radius: 16px;
   background: var(--color-surface-container) !important;
+}
+
+.collapse-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .advanced-content {

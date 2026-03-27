@@ -64,8 +64,9 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { menuTree } from '../config/menu.js'
+import { SIDEBAR_COLLAPSED_KEY } from '../config/storage-keys.js'
 
 const props = defineProps({
   active: String,
@@ -77,9 +78,23 @@ const emit = defineEmits(['update:active', 'update:collapsed'])
 const expandedKeys = ref([])
 const isCollapsed = ref(props.collapsed || false)
 
+// 页面加载时从 localStorage 恢复折叠状态
+onMounted(() => {
+  const saved = localStorage.getItem(SIDEBAR_COLLAPSED_KEY)
+  if (saved !== null) {
+    isCollapsed.value = saved === 'true'
+    emit('update:collapsed', isCollapsed.value)
+  }
+})
+
 // 监听 props.collapsed 变化
 watch(() => props.collapsed, (val) => {
   isCollapsed.value = val
+})
+
+// 监听 isCollapsed 变化，保存到 localStorage
+watch(isCollapsed, (val) => {
+  localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(val))
 })
 
 const toggleCollapse = () => {

@@ -28,7 +28,8 @@ export default defineConfig(({ mode }) => ({
     },
     proxy: {
       '/cgi': {
-        target: 'https://192.168.220.3:5667',
+        // target: 'http://192.168.220.3:5666',
+        target: 'http://localhost:5666',
         changeOrigin: true,
         secure: false,
         configure: (proxy, options) => {
