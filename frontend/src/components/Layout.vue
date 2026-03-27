@@ -30,6 +30,7 @@ import { componentMap } from '../config/menu.js'
 import { isDark } from '../config/theme.js'
 import { VCONSOLE_ENABLED_KEY } from '../config/storage-keys.js'
 import Empty from '../views/Empty.vue'
+import toast from './toast.js'
 
 const isMobile = ref(window.innerWidth < 768)
 const activeMenu = ref('nodes')
@@ -70,6 +71,7 @@ const loadVConsole = async () => {
   } catch (error) {
     console.error('加载 VConsole 失败:', error)
     localStorage.setItem(VCONSOLE_ENABLED_KEY, 'false')
+    toast.error('加载 VConsole 失败\n' + error.message)
   }
 }
 

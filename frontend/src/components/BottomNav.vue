@@ -91,7 +91,7 @@ const handleSubMenuClick = (key) => {
   left: 0;
   right: 0;
   height: 64px;
-  background: rgba(var(--color-surface-rgb, 255, 255, 255), 0.75);
+  background: rgba(var(--color-surface-rgb, 255, 255, 255), 0.55);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid var(--color-outline-variant);
@@ -103,7 +103,7 @@ const handleSubMenuClick = (key) => {
 
 /* 深色主题适配 */
 .bottom-nav.dark {
-  background: rgba(var(--color-surface-rgb, 30, 30, 30), 0.75);
+  background: rgba(var(--color-surface-rgb, 30, 30, 30), 0.55);
 }
 
 .nav-item {
@@ -129,7 +129,7 @@ const handleSubMenuClick = (key) => {
 
 .submenu-popup {
   padding: 16px;
-  background: var(--color-surface);
+  background: transparent;
   border-radius: 16px 16px 0 0;
 }
 

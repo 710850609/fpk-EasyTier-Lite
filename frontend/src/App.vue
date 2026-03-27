@@ -43,6 +43,15 @@ body {
 /* MD3 主题变量适配 */
 :root {
   --app-primary: var(--color-primary);
+  /* RGB 变量用于 rgba() */
+  --color-surface-rgb: 255, 255, 255;
+  --color-surface-container-rgb: 224, 242, 254;
+}
+
+/* 暗色主题 RGB 变量 - 使用 html.dark 提高优先级 */
+html.dark {
+  --color-surface-rgb: 30, 41, 59;
+  --color-surface-container-rgb: 51, 65, 85;
 }
 
 /* 隐藏 Snackbar 图标 */
@@ -112,14 +121,45 @@ body {
   color: var(--color-on-surface-variant) !important;
 }
 
+/* var-popup 背景适配 - 磨砂玻璃效果（必须在 var-paper 之前定义） */
+.var-popup__content,
+.var-popup__content[var-popup-cover] {
+  background: rgba(var(--color-surface-container-rgb, 224, 242, 254), 0.65) !important;
+  backdrop-filter: blur(12px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+}
+
+/* 底部弹出层磨砂玻璃效果 */
+.var-popup--bottom .var-popup__content,
+.var-popup--bottom .var-popup__content[var-popup-cover] {
+  background: rgba(var(--color-surface-container-rgb, 224, 242, 254), 0.7) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border-radius: 16px 16px 0 0 !important;
+}
+
+/* 顶部弹出层磨砂玻璃效果 */
+.var-popup--top .var-popup__content,
+.var-popup--top .var-popup__content[var-popup-cover] {
+  background: rgba(var(--color-surface-container-rgb, 224, 242, 254), 0.7) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+}
+
 /* var-paper 背景适配 */
 .var-paper {
   background: var(--color-surface-container) !important;
 }
 
-/* var-popup 背景适配 */
-.var-popup__content {
-  background: var(--color-surface-container) !important;
+/* popup 内的 paper 保持透明 */
+.var-popup__content .var-paper {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* popup 遮罩层 - 半透明 */
+.var-popup__overlay {
+  background: rgba(0, 0, 0, 0.3) !important;
 }
 
 /* var-cell 样式适配 */

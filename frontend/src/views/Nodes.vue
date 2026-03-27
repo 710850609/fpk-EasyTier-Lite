@@ -163,9 +163,10 @@ const refreshDataTask = ref();
 
 // 默认选中的列
 const selectedColumns = ref(['ipv4', 'hostname', 'cost', 'lat_ms', 'loss_rate', 'rx_bytes', 'tx_bytes', 'tunnel_proto'])
-// 默认选中的节点类型（全部选中）
+// 默认选中的节点类型
 const selectedNodeTypes = ref(['normal'])
-const refreshStep = ref(3000)
+// 刷新速度
+const refreshStep = ref(3)
 
 // 从 localStorage 加载设置
 const loadSettings = () => {
@@ -208,16 +209,16 @@ watch(refreshStep, (newVal) => {
     clearInterval(refreshDataTask.value)
     refreshDataTask.value = null
   }
-  refreshDataTask.value = setInterval(fetchNodes, refreshStep.value)
+  refreshDataTask.value = setInterval(fetchNodes, refreshStep.value * 1000)
 })
 
 const refreshStepList = [
-  { key: 1000, label: '1秒' },
-  { key: 2000, label: '2秒' },
-  { key: 3000, label: '3秒' },
-  { key: 4000, label: '4秒' },
-  { key: 5000, label: '5秒' },
-  { key: 10000, label: '10秒' },
+  { key: 1, label: '1秒' },
+  { key: 2, label: '2秒' },
+  { key: 3, label: '3秒' },
+  { key: 4, label: '4秒' },
+  { key: 5, label: '5秒' },
+  { key: 10, label: '10秒' },
 ]
 // 所有可用列
 const allColumns = [
@@ -404,7 +405,7 @@ onMounted(async () => {
   loadSettings()
   await fetchNodes()
   loadingSkeleton.value = false
-  refreshDataTask.value = setInterval(fetchNodes, refreshStep.value)
+  refreshDataTask.value = setInterval(fetchNodes, refreshStep.value * 1000)
 })
 
 // 页面销毁时清除定时器
