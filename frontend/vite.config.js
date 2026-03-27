@@ -28,7 +28,7 @@ export default defineConfig(({ mode }) => ({
         secure: false,
         configure: (proxy, options) => {
           proxy.on('proxyReq', (proxyReq, req, res) => {
-            proxyReq.setHeader('authorization', 'trim YY4sNSPpxGn4rTIFKlFIUHXSZdcYBqrqX98ykhO7890=')
+            proxyReq.setHeader('authorization', 'trim HA/SV4nYxWnIkgA9DkT9GOfSjgfL/z5VLfqyEbGChac=')
             console.log('Proxying to:', options.target + req.url)
           })
           proxy.on('error', (err, req, res) => {
