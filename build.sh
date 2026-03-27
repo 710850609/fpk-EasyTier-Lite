@@ -13,6 +13,7 @@ declare -A PARAMS
 PARAMS[build_all]="false"
 PARAMS[build_pre]="true"
 PARAMS[download_proxy]="true"
+PARAMS[proxy_url]="https://ghfast.top"
 PARAMS[arch]="x86_64"
 # 解析 key=value 格式的参数
 for arg in "$@"; do
@@ -36,10 +37,12 @@ done
 build_all="${PARAMS[build_all]}"
 build_pre="${PARAMS[build_pre]}"
 download_proxy="${PARAMS[download_proxy]}"
+proxy_url="${PARAMS[proxy_url]}"
 arch="${PARAMS[arch]}"
 echo "build_all: ${build_all}"
 echo "build_pre: ${build_pre}"
 echo "download_proxy: ${download_proxy}"
+echo "proxy_url: ${proxy_url}"
 echo "arch: ${arch}"
 
 
@@ -108,7 +111,11 @@ compiling_frontend() {
 
 get_et_latest_version() {
     local arch_type=$1
-    local latest_release=$(curl -s https://api.github.com/repos/EasyTier/EasyTier/releases/latest)
+    local featch_url="https://api.github.com/repos/EasyTier/EasyTier/releases/latest"
+    if [ "$download_proxy" == "true" ]; then
+        featch_url="${proxy_url}/https://api.github.com/repos/EasyTier/EasyTier/releases/latest"
+    fi
+    local latest_release=$(curl -s "${featch_url}") 
     if [ -z "$latest_release" ]; then
         echo "获取最新EasyTier版本信息失败"
         exit 1
@@ -164,8 +171,6 @@ download_et() {
     DOWNLOAD_FILE="easytier-linux-${et_platform}-${ET_LATEST_VERSION}.zip"
     # 非当前系统，强制下载最新版本，避免后续版本判断错误
     if [ "${build_all}" == "true" ] || [ ! -f "${DOWNLOAD_FILE}" ]; then
-        local proxy_url="https://gh.llkk.cc"
-        local proxy_url="https://ghfast.top"
         if [ "$download_proxy" == "true" ]; then
             ET_DOWNLOAD_URL=${proxy_url}/${ET_DOWNLOAD_URL}
         fi
@@ -193,8 +198,7 @@ update_app() {
     bash -c "cp -f default.toml $(dirname ${bin_dir})" 2>&1
     echo "更新应用文件完成"
     get_et_version
-    jq ".[0].items |= map(if .field == \"et_version\" then .initValue = \"$ET_VERSION\" else . end)" EasyTier-Lite/wizard/config > temp.json \
-    && mv temp.json EasyTier-Lite/wizard/config || echo "更新 wizard config 失败"
+    { jq ".[0].items |= map(if .field == \"et_version\" then .initValue = \"$ET_VERSION\" else . end)" EasyTier-Lite/wizard/config > temp.json && mv temp.json EasyTier-Lite/wizard/config; } || { echo "更新 wizard config 失败" && exit 1; }
     echo "更新配置向导中的EasyTier版本号为: ${ET_VERSION}"
     bash -c "rm -rf ${temp_dir}" 2>&1
     echo "---------------------------------------"
@@ -222,7 +226,6 @@ build_fpk() {
         fnpack build --directory EasyTier-Lite/  || { echo "打包失败"; exit 1; }
     else
         echo "使用本地 fnpack 脚本进行打包"
-        echo "$(pwd)"
         ./fnpack.sh build --directory EasyTier-Lite || { echo "打包失败"; exit 1; }
     fi 
 
