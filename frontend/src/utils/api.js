@@ -5,7 +5,7 @@
 
 // 使用 Vite 注入的环境变量
 const API_BASE = typeof __API_BASE__ !== 'undefined' ? __API_BASE__ : '/'
-console.log(API_BASE)
+// console.log(API_BASE)
 
 function getFulllUrl(url) {
   return url.startsWith('http') ? url : `${API_BASE}${url}`

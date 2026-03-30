@@ -12,12 +12,12 @@ export const menuTree = [
   { key: 'config', label: '配置', icon: 'bookmark-outline', title: '配置管理', component: 'Config' },
   { key: 'software', label: '应用', icon: 'shopping-outline', title: '软件下载',
     children: [
-      { key: 'softwares-windows', label: 'Windows', icon: '../asserts/windows.svg', component: 'softwares/Windows' },
-      { key: 'softwares-android', label: 'Android', icon: '../asserts/android.svg', component: 'softwares/Android' },
-      { key: 'softwares-macos', label: 'MacOS', icon: '../asserts/mac.svg', component: 'softwares/MacOS' },
-      { key: 'softwares-ios', label: 'IOS', icon: '../asserts/ios.svg', component: 'softwares/IOS' },
-      { key: 'softwares-harmonyos', label: '鸿蒙', icon: '../asserts/harmony.svg', component: 'softwares/HarmonyOS' },
-      { key: 'softwares-linux', label: 'Linux', icon: '../asserts/linux.svg', component: 'softwares/Linux' },
+      { key: 'softwares-windows', label: 'Windows', icon: './asserts/windows.svg', component: 'softwares/Windows' },
+      { key: 'softwares-android', label: 'Android', icon: './asserts/android.svg', component: 'softwares/Android' },
+      { key: 'softwares-macos', label: 'MacOS', icon: './asserts/mac.svg', component: 'softwares/MacOS' },
+      { key: 'softwares-ios', label: 'IOS', icon: './asserts/ios.svg', component: 'softwares/IOS' },
+      { key: 'softwares-harmonyos', label: '鸿蒙', icon: './asserts/harmony.svg', component: 'softwares/HarmonyOS' },
+      { key: 'softwares-linux', label: 'Linux', icon: './asserts/linux.svg', component: 'softwares/Linux' },
     ]
   },
   { key: 'settings', label: '设置', icon: 'cog-outline', title: '系统设置', component: 'Settings' }
