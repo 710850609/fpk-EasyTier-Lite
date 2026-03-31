@@ -8,9 +8,10 @@
 import { ref } from 'vue'
 import { StyleProvider, Themes } from '@varlet/ui'
 import { freshLightTheme, freshDarkTheme } from './colors.js'
+import { THEME_MODE_KEY } from './storage-keys.js'
 
 // localStorage key
-const STORAGE_KEY = 'easytier-theme'
+const STORAGE_KEY = THEME_MODE_KEY
 
 // 主题状态
 const isDark = ref(false)
