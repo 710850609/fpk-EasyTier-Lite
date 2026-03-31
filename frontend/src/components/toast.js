@@ -11,14 +11,10 @@ const typeMap = {
   'loading': 'loading'
 }
 
-// 全局配置：允许多个 Snackbar 同时显示，最多3个
 Snackbar.allowMultiple(true)
-// Snackbar.setMaxCount(3)
 
 // 创建 Toast（clear 方法幂等）
 function createToast(message, type = 'default', duration = 3000) {
-  let cleared = false
-
   const snackbar = Snackbar({
     content: message,
     type: typeMap[type] || '',
@@ -35,7 +31,6 @@ function createToast(message, type = 'default', duration = 3000) {
           }
       })
   })
-
   return snackbar
 }
 

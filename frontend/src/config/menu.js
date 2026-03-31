@@ -18,6 +18,7 @@ export const menuTree = [
       { key: 'softwares-ios', label: 'IOS', icon: './svg/ios.svg', component: 'softwares/IOS' },
       { key: 'softwares-harmonyos', label: 'HarmonyOS | 鸿蒙', icon: './svg/harmony.svg', component: 'softwares/HarmonyOS' },
       { key: 'softwares-linux', label: 'Linux', icon: './svg/linux.svg', component: 'softwares/Linux' },
+      // { key: 'softwares-feiniu', label: '飞牛', icon: './svg/feiniu.png', component: 'softwares/FeiNiu' },
     ]
   },
   { key: 'settings', label: '设置', icon: 'cog-outline', title: '系统设置', component: 'Settings' }

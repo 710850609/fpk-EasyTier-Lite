@@ -3,83 +3,41 @@
     <var-paper class="download-card" :elevation="2">
       <div class="platform-header">
         <div class="platform-info">
-          <h2>EasyTier Linux GUI 版本</h2>
+          <h2>EasyTier 易组网</h2>
         </div>
       </div>
       <div class="version-info">
-        <var-cell>安装应用，并导出飞牛上配置toml文件后。把toml配置文件导入到easytier中，并启动网络即可。</var-cell>
-        <var-cell>
-          其他使用说明，请访问 
-          <var-link type="primary" href="https://easytier.cn/" target="_blank" underline="none">
-            EasyTier官网
-          </var-link>
-        </var-cell>
         <var-space :size="[20, 20]" justify="center">
           <var-cell>
-            <var-link type="primary" underline="none" href="https://github.com/EasyTier/EasyTier/releases" target="_blank">
-              <img src="https://img.shields.io/github/v/tag/EasyTier/EasyTier?color=blue&logo=github" />
-            </var-link>
-          </var-cell>
-          <var-cell>
-            <var-link type="primary" underline="none" href="https://github.com/EasyTier/EasyTier/releases" target="_blank">
-              <img src="https://img.shields.io/github/v/release/EasyTier/EasyTier?color=blue&logo=github" />
+            <var-link type="primary" underline="none" href="https://github.com/710850609/fpk-easytier-lite/releases" target="_blank">
+              <img src="https://img.shields.io/github/v/release/710850609/fpk-easytier-lite?color=blue&logo=github" />
             </var-link>
           </var-cell>
         </var-space>
       </div>
       <var-divider />
-      <!-- 下载卡片网格 -->
       <div class="download-grid">
-        <!-- amd64 deb -->
         <var-paper class="download-item" :elevation="1">
           <div class="item-header">
             <var-icon name="package" size="24" />
-            <span class="item-title">x86_64 deb</span>
+            <span class="item-title">x86_64</span>
           </div>
           <div class="item-actions">
-            <var-button type="primary" size="normal" @click="download('amd64.deb', true)" auto-loading>
+            <var-button type="primary" size="normal" @click="download('x86', true)" auto-loading>
               <var-icon name="download" style="margin-right: 8px;" />
               最新版
-            </var-button>
-            <var-button type="primary" size="normal" @click="download('amd64.deb', false)" auto-loading>
-              <var-icon name="download" style="margin-right: 8px;" />
-              稳定版
             </var-button>
           </div>
         </var-paper>
-
-        <!-- aarch64 deb -->
         <var-paper class="download-item" :elevation="1">
           <div class="item-header">
             <var-icon name="package" size="24" />
-            <span class="item-title">Arm64 deb</span>
+            <span class="item-title">Arm64</span>
           </div>
           <div class="item-actions">
-            <var-button type="primary" size="normal" @click="download('arm64.deb', true)" auto-loading>
+            <var-button type="primary" size="normal" @click="download('aarch64', true)" auto-loading>
               <var-icon name="download" style="margin-right: 8px;" />
               最新版
-            </var-button>
-            <var-button type="primary" size="normal" @click="download('arm64.deb', false)" auto-loading>
-              <var-icon name="download" style="margin-right: 8px;" />
-              稳定版
-            </var-button>
-          </div>
-        </var-paper>
-
-        <!-- amd64 AppImage -->
-        <var-paper class="download-item" :elevation="1">
-          <div class="item-header">
-            <var-icon name="package" size="24" />
-            <span class="item-title">x86_64 AppImage</span>
-          </div>
-          <div class="item-actions">
-            <var-button type="primary" size="normal" @click="download('amd64.AppImage', true)" auto-loading>
-              <var-icon name="download" style="margin-right: 8px;" />
-              最新版
-            </var-button>
-            <var-button type="primary" size="normal" @click="download('amd64.AppImage', false)" auto-loading>
-              <var-icon name="download" style="margin-right: 8px;" />
-              稳定版
             </var-button>
           </div>
         </var-paper>
@@ -89,9 +47,13 @@
 </template>
 
 <script setup>
+import toast from '../../components/toast.js'
 const githubProxy = ref('https://ghfast.top')
 
 const download = (arch, prerelease) => {
+  const loadingToast = toast.loading('功能开发中...')
+  setTimeout(() => loadingToast.clear(), 3000);
+  return;
   return new Promise(async (resolve, reject) => {
     try {
       const fetchUrl = 'https://api.github.com/repos/EasyTier/EasyTier/releases';
@@ -118,7 +80,6 @@ const download = (arch, prerelease) => {
   })
 }
 </script>
-
 
 <style scoped>
 .platform-page {
