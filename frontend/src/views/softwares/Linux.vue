@@ -37,11 +37,11 @@
             <span class="item-title">amd64 deb</span>
           </div>
           <div class="item-actions">
-            <var-button type="primary" size="small" @click="download('amd64.deb', true)" auto-loading>
+            <var-button type="primary" size="normal" @click="download('amd64.deb', true)" auto-loading>
               <var-icon name="download" style="margin-right: 8px;" />
               最新版
             </var-button>
-            <var-button type="primary" size="small" @click="download('amd64.deb', false)" auto-loading>
+            <var-button type="primary" size="normal" @click="download('amd64.deb', false)" auto-loading>
               <var-icon name="download" style="margin-right: 8px;" />
               稳定版
             </var-button>
@@ -55,11 +55,11 @@
             <span class="item-title">aarch64 deb</span>
           </div>
           <div class="item-actions">
-            <var-button type="primary" size="small" @click="download('arm64.deb', true)" auto-loading>
+            <var-button type="primary" size="normal" @click="download('arm64.deb', true)" auto-loading>
               <var-icon name="download" style="margin-right: 8px;" />
               最新版
             </var-button>
-            <var-button type="primary" size="small" @click="download('arm64.deb', false)" auto-loading>
+            <var-button type="primary" size="normal" @click="download('arm64.deb', false)" auto-loading>
               <var-icon name="download" style="margin-right: 8px;" />
               稳定版
             </var-button>
@@ -73,11 +73,11 @@
             <span class="item-title">amd64 AppImage</span>
           </div>
           <div class="item-actions">
-            <var-button type="primary" size="small" @click="download('amd64.AppImage', true)" auto-loading>
+            <var-button type="primary" size="normal" @click="download('amd64.AppImage', true)" auto-loading>
               <var-icon name="download" style="margin-right: 8px;" />
               最新版
             </var-button>
-            <var-button type="primary" size="small" @click="download('amd64.AppImage', false)" auto-loading>
+            <var-button type="primary" size="normal" @click="download('amd64.AppImage', false)" auto-loading>
               <var-icon name="download" style="margin-right: 8px;" />
               稳定版
             </var-button>

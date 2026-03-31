@@ -34,11 +34,11 @@
             <span class="item-title">Apple芯片</span>
           </div>
           <div class="item-actions">
-            <var-button type="primary" size="small" @click="download('aarch64.dmg', true)" auto-loading>
+            <var-button type="primary" size="normal" @click="download('aarch64.dmg', true)" auto-loading>
               <var-icon name="download" style="margin-right: 8px;" />
               最新版
             </var-button>
-            <var-button type="primary" size="small" @click="download('aarch64.dmg', false)" auto-loading>
+            <var-button type="primary" size="normal" @click="download('aarch64.dmg', false)" auto-loading>
               <var-icon name="download" style="margin-right: 8px;" />
               稳定版
             </var-button>
@@ -50,11 +50,11 @@
             <span class="item-title">Intel芯片</span>
           </div>
           <div class="item-actions">
-            <var-button type="primary" size="small" @click="download('x64.dmg', true)" auto-loading>
+            <var-button type="primary" size="normal" @click="download('x64.dmg', true)" auto-loading>
               <var-icon name="download" style="margin-right: 8px;" />
               最新版
             </var-button>
-            <var-button type="primary" size="small" @click="download('x64.dmg', false)" auto-loading>
+            <var-button type="primary" size="normal" @click="download('x64.dmg', false)" auto-loading>
               <var-icon name="download" style="margin-right: 8px;" />
               稳定版
             </var-button>

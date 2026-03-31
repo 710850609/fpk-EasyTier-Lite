@@ -34,11 +34,11 @@
             <span class="item-title">通用安装包</span>
           </div>
           <div class="item-actions">
-            <var-button type="primary" size="small" @click="download('app-universal-release.apk', true)" auto-loading>
+            <var-button type="primary" size="normal" @click="download('app-universal-release.apk', true)" auto-loading>
               <var-icon name="download" style="margin-right: 8px;" />
               最新版
             </var-button>
-            <var-button type="primary" size="small" @click="downloadRelease" auto-loading>
+            <var-button type="primary" size="normal" @click="downloadRelease" auto-loading>
               <var-icon name="download" style="margin-right: 8px;" />
               稳定版
             </var-button>

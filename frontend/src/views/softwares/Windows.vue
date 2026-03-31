@@ -17,10 +17,10 @@
       <div>
         <var-divider />
         <var-space :size="[20, 20]" justify="center">
-          <var-button type="primary" size="large" block @click="download" auto-loading>
+          <var-button type="primary" size="normal" block @click="download" auto-loading>
             <template #default>
               <var-icon name="download" style="margin-right: 8px;" />
-              下载稳定版
+              稳定版
             </template>
           </var-button>
         </var-space>

@@ -30,13 +30,13 @@
       <div>
         <var-divider />
         <var-space :size="[20, 20]" justify="center">
-          <var-button type="primary" size="large" block @click="downloadLatest" auto-loading>
+          <var-button type="primary" size="normal" block @click="downloadLatest" auto-loading>
             <template #default>
               <var-icon name="download" style="margin-right: 8px;" />
               下载最新版
             </template>
           </var-button>
-          <var-button type="primary" size="large" block @click="downloadRelease" auto-loading>
+          <var-button type="primary" size="normal" block @click="downloadRelease" auto-loading>
             <template #default>
               <var-icon name="download" style="margin-right: 8px;" />
               下载稳定版

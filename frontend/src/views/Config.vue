@@ -170,11 +170,13 @@
 
     <div class="actions">
        <var-space justify="center" :size="[40, 40]">
-         <var-button type="primary" size="large" block auto-loading @click="saveConfig">
-           保存并重启服务
+         <var-button type="primary" size="normal" block auto-loading @click="saveConfig">
+            <var-icon name="checkbox-marked-circle" style="margin-right: 8px;" />
+           保存并重启 
          </var-button>
-         <var-button type="primary" size="large" block @click="downloadConfig" v-if="!fastSettingMode">
-           导出配置文件
+         <var-button type="primary" size="normal" block @click="downloadConfig" v-if="!fastSettingMode">
+            <var-icon name="download" style="margin-right: 8px;" />
+           导出配置
          </var-button>
        </var-space>
     </div>
@@ -455,6 +457,16 @@ onMounted(async () => {
 
 :deep(.var-select__placeholder) {
   color: var(--color-text-disabled);
+}
+
+/* Select Chip 样式统一 */
+:deep(.var-chip) {
+  background: var(--color-primary-container) !important;
+  color: var(--color-on-primary-container) !important;
+}
+
+:deep(.var-chip__close) {
+  color: var(--color-on-primary-container) !important;
 }
 
 /* 复选框文字颜色 */
