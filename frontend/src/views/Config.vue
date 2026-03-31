@@ -223,7 +223,7 @@ const config = ref({
     "private_mode": true,
   },
   // 子网代理
-  "proxy_network": [ {"cidr": "10.0.0.0/24"} ]
+  "proxy_network": []
 })
 
 // 功能开关列表
@@ -291,20 +291,18 @@ const saveConfig = async () => {
   const valid = await form.value.validate()
   if (!valid) return
 
-  try {
+  return new Promise((resolve, reject) => {
     let data = {...config.value, isFastConfig: fastSettingMode.value};
     data.peer = data.peer.map(e => ({uri: e}))
     data.proxy_network = data.proxy_network.map(e => ({cidr: e}))
-    return new Promise((resolve) => {
-      api.configs.save(data).then(res => {
-        toast.success('配置保存成功')
-        resolve()
-        // window.location.reload()
-      })
+    api.configs.save(data).then(res => {
+      toast.success('配置保存成功')
+      resolve()
+    }).catch(err => {
+      toast.error('保存失败: ' + err.message)
+      reject(err)
     })
-  } catch (error) {
-    toast.error('保存失败: ' + error.message)
-  }
+  })
 }
 
 const downloadConfig = () => {
@@ -319,6 +317,7 @@ onMounted(async () => {
   })
   api.configs.get().then(data => {
     const json = data.data
+    json.hostname = json.hostname || null
     json.peer = (json.peer || []).map(e => e.uri)
     json.proxy_network = (json.proxy_network || []).map(e => e.cidr)
     config.value = json

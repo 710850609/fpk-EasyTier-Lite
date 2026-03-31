@@ -40,7 +40,12 @@ async function request(url, options = {}) {
     // 根据响应类型解析数据
     const contentType = response.headers.get('content-type')
     if (contentType && contentType.includes('application/json')) {
-      return await response.json()
+      return await response.json().then(data => {
+        if (data.code === 0) {
+          return data
+        }
+        throw new Error(data.data || 'API error')
+      })
     }
     return await response.text()
   } catch (error) {

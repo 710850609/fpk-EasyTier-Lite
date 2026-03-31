@@ -70,6 +70,9 @@ def copy(*kwargs):
 def __deep_merge(base, override):
     """深度合并两个字典，override 中的值会覆盖 base 中的值"""
     for key, value in override.items():
+        # 跳过 null 值，不写入 TOML
+        if value is None:
+            continue
         if key in base and isinstance(base[key], dict) and isinstance(value, dict):
             __deep_merge(base[key], value)
         else:
