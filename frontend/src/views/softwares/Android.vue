@@ -35,11 +35,11 @@
             <span class="item-title">通用安装包</span>
           </div>
           <div class="item-actions">
-            <var-button type="primary" size="normal" @click="download('app-universal-release.apk', true)" auto-loading>
+            <var-button type="primary" size="normal" @click="download(true)" auto-loading>
               <var-icon name="download" style="margin-right: 8px;" />
               最新版
             </var-button>
-            <var-button type="primary" size="normal" @click="downloadRelease" auto-loading>
+            <var-button type="primary" size="normal" @click="download(false)" auto-loading>
               <var-icon name="download" style="margin-right: 8px;" />
               稳定版
             </var-button>
@@ -51,48 +51,12 @@
 </template>
 
 <script setup>
-import { api } from '../../utils/api.js'
+import { downloadEasyTierApk } from '../../utils/github.js'
 
-const githubProxy = ref('https://ghfast.top')
-
-const downloadRelease = () => {
-  return new Promise((resolve, reject) => {
-    let url = `https://github.com/EasyTier/EasyTier/releases/latest/download/app-universal-release.apk`;
-    if (githubProxy.value) {
-      url = `${githubProxy.value}/${url}`;
-    }
-    console.log(url)
-    window.open(url, '_blank')
-    resolve()
-  })
+const download = (prerelease) => {
+  return downloadEasyTierApk(prerelease)
 }
 
-const download = (arch, prerelease) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const fetchUrl = 'https://api.github.com/repos/EasyTier/EasyTier/releases';
-      const response = await fetch(fetchUrl);
-      const releases = await response.json();
-      const resources = releases.find(r => r.prerelease === prerelease);
-      let url = null;
-      if (resources) {
-        const asset = resources.assets.find(e => e.name.startsWith('easytier-gui_') && e.name.endsWith(`_${arch}`));
-        if (asset) {
-              url = asset.browser_download_url;
-          }
-      }
-      if (githubProxy.value) {
-        url = `${githubProxy.value}/${url}`;
-      }
-      console.log(url)
-      window.open(url, '_blank')
-      resolve()
-    } catch (error) {
-      console.error('下载失败:', error)
-      reject(error)
-    }
-  })
-}
 </script>
 
 <style scoped>

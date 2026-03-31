@@ -112,8 +112,14 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  clearInterval(interval)
-  if (ws) ws.close()
+  if (interval) {
+    clearInterval(interval)
+    interval = null
+  }
+  if (ws) {
+    ws.close()
+    ws = null
+  }
 })
 </script>
 

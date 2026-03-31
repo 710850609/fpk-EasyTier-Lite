@@ -76,21 +76,24 @@ const loadVConsole = async () => {
 }
 // ✅ 节流 + 只处理必要逻辑
 let resizeTimer;
+const handleResizeThrottled = () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    // 仅调整输入框位置，不动整体布局
+    handleResize();
+  }, 200);
+}
+
 onMounted(() => {
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      // 仅调整输入框位置，不动整体布局
-      handleResize();
-    }, 100);
-  })
+  window.addEventListener('resize', handleResizeThrottled)
   // 加载 VConsole（如果之前开启过）
   loadVConsole()
 
 })
 
 onUnmounted(() => {
-  window.removeEventListener('resize', handleResize)
+  window.removeEventListener('resize', handleResizeThrottled)
+  clearTimeout(resizeTimer)
 })
 </script>
 

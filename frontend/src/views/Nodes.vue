@@ -174,7 +174,6 @@ const dataLoading = ref(false)
 const activeTab = ref('columnsFilter')
 // 加载骨架屏
 const loadingSkeleton = ref(true)
-const refreshDataTask = ref();
 
 // 默认选中的列
 const selectedColumns = ref(['ipv4', 'hostname', 'cost', 'lat_ms', 'loss_rate', 'rx_bytes', 'tx_bytes'])

@@ -12,7 +12,6 @@
 
 // 从父组件注入当前菜单 key
 const menuKey = inject('activeMenu', '')
-console.log('menuKey', menuKey.value)
 </script>
 
 <style scoped>

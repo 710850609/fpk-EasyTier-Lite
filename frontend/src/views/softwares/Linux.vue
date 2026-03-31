@@ -89,33 +89,10 @@
 </template>
 
 <script setup>
-const githubProxy = ref('https://ghfast.top')
+import { downloadEasyTierGUI } from '../../utils/github.js'
 
 const download = (arch, prerelease) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const fetchUrl = 'https://api.github.com/repos/EasyTier/EasyTier/releases';
-      const response = await fetch(fetchUrl);
-      const releases = await response.json();
-      const resources = releases.find(r => r.prerelease === prerelease);
-      let url = null;
-      if (resources) {
-        const asset = resources.assets.find(e => e.name.startsWith('easytier-gui_') && e.name.endsWith(`_${arch}`));
-        if (asset) {
-              url = asset.browser_download_url;
-          }
-      }
-      if (githubProxy.value) {
-        url = `${githubProxy.value}/${url}`;
-      }
-      console.log(url)
-      window.open(url, '_blank')
-      resolve()
-    } catch (error) {
-      console.error('下载失败:', error)
-      reject(error)
-    }
-  })
+  return downloadEasyTierGUI(arch, prerelease)
 }
 </script>
 
