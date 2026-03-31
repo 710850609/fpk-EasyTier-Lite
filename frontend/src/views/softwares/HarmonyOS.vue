@@ -1,3 +1,35 @@
+<template>
+  <div class="platform-page">
+    <var-paper class="download-card" :elevation="2">
+      <div class="platform-header">
+        <div class="platform-info">
+          <h2>EasyTier 鸿蒙版本</h2>
+        </div>
+      </div>
+      <div class="version-info">
+        <var-cell>安装应用，并导出飞牛上配置toml文件后。把toml配置文件内容复制黏贴到easytier中，并启动网络即可。</var-cell>
+        <var-cell>
+          其他使用说明，请访问 
+          <var-link type="primary" href="https://easytier.cn/guide/gui/easytier-harmonyos.html" target="_blank" underline="none">
+            EasyTier官网
+          </var-link>
+        </var-cell>
+      </div>
+      <div>
+        <var-divider />
+        <var-space :size="[20, 20]" justify="center">
+          <var-button type="primary" size="large" block @click="copyAndOpenLink" auto-loading>
+            <template #default>
+              <var-icon name="share" style="margin-right: 8px;" />
+              前往鸿蒙应用商店
+            </template>
+          </var-button>
+        </var-space>
+      </div>
+    </var-paper>
+  </div>
+</template>
+
 <script setup>
 import { Snackbar } from '@varlet/ui'
 import { copyToClipboard } from '../../utils/clipboard.js'
@@ -9,59 +41,43 @@ const copyAndOpenLink = () => {
 }
 </script>
 
-<template>
-  <var-paper :elevation="2" class="software-page">
-    <h2 class="page-title">鸿蒙客户端</h2>
-
-    <var-paper :elevation="0" class="instructions-section">
-      <var-cell><var-link type="primary" href="https://easytier.cn/guide/gui/easytier-harmonyos.html" target="_blank" underline="none">Easytier相关使用说明</var-link></var-cell>
-      <!-- <var-cell><a href="https://easytier.cn/guide/gui/easytier-harmonyos.html" target="_blank">Easytier相关使用说明</a> -->
-      <!-- </var-cell> -->
-      <var-divider />
-    </var-paper>
-
-    <var-paper :elevation="0" class="download-section">
-      <var-space direction="column" :size="[16, 0]">
-        <var-button type="primary" size="large" @click="copyAndOpenLink" block>
-          <var-icon name="open-in-new" />
-          <span>前往鸿蒙应用商店</span>
-        </var-button>
-      </var-space>
-    </var-paper>
-
-  </var-paper>
-</template>
-
 <style scoped>
-.software-page {
+.platform-page {
   padding: 16px;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
-.page-title {
-  font-size: 20px;
-  font-weight: 600;
-  margin: 0 0 16px 0;
+.download-card {
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
-.download-section,
-.instructions-section {
-  margin-bottom: 16px;
-  padding: 16px;
+.platform-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
-h4 {
-  margin: 16px 0 8px 0;
-  font-size: 16px;
-  font-weight: 600;
+.platform-info h2 {
+  margin: 0;
+  color: var(--color-on-surface);
 }
 
-@media (max-width: 768px) {
-  .software-page {
-    padding: 12px;
-  }
-  
-  .page-title {
-    font-size: 18px;
-  }
+.platform-info p {
+  margin: 4px 0 0;
+  color: var(--color-on-surface-variant);
+}
+
+.version-info {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-outline-variant);
+  font-size: 14px;
+  color: var(--color-on-surface-variant);
 }
 </style>

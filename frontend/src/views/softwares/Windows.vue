@@ -2,42 +2,30 @@
   <div class="platform-page">
     <var-paper class="download-card" :elevation="2">
       <div class="platform-header">
-        <var-icon name="windows" size="48" color="#0078D4" />
         <div class="platform-info">
           <h2>EasyTier 管理器</h2>
         </div>
       </div>
       <div class="version-info">
-        <p>推荐新手使用</p>
-        <p>集成当前配置，解压启动后选择配置，即可组网</p>
-        <p>其他使用说明，请访问 <var-link type="primary" href="https://easytier.cn/guide/gui/easytier-manager.html" target="_blank" underline="none">EasyTier 管理器使用</var-link></p>
-        <var-button 
-          type="primary" 
-          size="large" 
-          block 
-          @click="download"
-          :loading="downloading"
-        >
-          <template #default>
-            <var-icon name="download" style="margin-right: 8px;" />
-            下载最新版
-          </template>
-        </var-button>
+        <var-cell>推荐新手使用</var-cell>
+        <var-cell>集成当前配置，解压启动后选择配置，即可组网</var-cell>
+        <var-cell>其他使用说明，请访问 <var-link type="primary" href="https://easytier.cn/guide/gui/easytier-manager.html" target="_blank" underline="none">EasyTier 管理器使用</var-link></var-cell>
+        <var-cell>
+          <var-link type="primary" underline="none" href="https://github.com/EasyTier/easytier-manager/releases" target="_blank"><img src="https://img.shields.io/github/v/release/EasyTier/easytier-manager?color=blue&logo=github" /></var-link>
+        </var-cell>
+      </div>
+      <div>
+        <var-divider />
+        <var-space :size="[20, 20]" justify="center">
+          <var-button type="primary" size="large" block @click="download" auto-loading>
+            <template #default>
+              <var-icon name="download" style="margin-right: 8px;" />
+              下载稳定版
+            </template>
+          </var-button>
+        </var-space>
       </div>
     </var-paper>
-    <!-- <var-paper class="guide-card" :elevation="1">
-      <h3>使用说明</h3>
-      <div class="screenshot-guide">
-        <img src="" alt="安装步骤1" class="guide-img" />
-        <div class="step-desc">1. 下载后双击安装包，按提示完成安装</div>
-        
-        <img src="" alt="安装步骤2" class="guide-img" />
-        <div class="step-desc">2. 在系统托盘找到 EasyTier 图标，右键打开管理界面</div>
-        
-        <img src="" alt="安装步骤3" class="guide-img" />
-        <div class="step-desc">3. 输入网络名称和密码，点击连接即可加入组网</div>
-      </div>
-    </var-paper> -->
   </div>
 </template>
 
@@ -45,14 +33,12 @@
 import { ref } from 'vue'
 import { api } from '../../utils/api.js'
 
-const downloading = ref(false)
-
 const download = () => {
-  downloading.value = true
-  let url = api.windows.getDownloadUrl()
-  window.open(url, '_blank')
-  downloading.value = false
-  // setTimeout(() => downloading.value = false, 2000)
+  return new Promise((resolve, reject) => {
+    let url = api.windows.getDownloadUrl()
+    window.open(url, '_blank')
+    resolve()
+  })
 }
 </script>
 
@@ -94,34 +80,5 @@ const download = () => {
   border-top: 1px solid var(--color-outline-variant);
   font-size: 14px;
   color: var(--color-on-surface-variant);
-}
-
-.guide-card {
-  padding: 24px;
-  border-radius: 16px;
-}
-
-.guide-card h3 {
-  margin: 0 0 16px 0;
-  color: var(--color-on-surface);
-}
-
-.screenshot-guide {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.guide-img {
-  width: 100%;
-  max-width: 600px;
-  border-radius: 8px;
-  border: 1px solid var(--color-outline-variant);
-}
-
-.step-desc {
-  font-size: 14px;
-  color: var(--color-on-surface-variant);
-  margin-bottom: 16px;
 }
 </style>

@@ -1,94 +1,137 @@
-<script setup>
-import { Snackbar } from '@varlet/ui'
+<template>
+  <div class="platform-page">
+    <var-paper class="download-card" :elevation="2">
+      <div class="platform-header">
+        <div class="platform-info">
+          <h2>EasyTier 安卓版本</h2>
+        </div>
+      </div>
+      <div class="version-info">
+        <var-cell>下载安装APK，并导出飞牛上配置toml文件后。把toml配置文件导入到easytier中，并启动网络即可。</var-cell>
+        <var-cell>
+          其他使用说明，请访问 
+          <var-link type="primary" href="https://easytier.cn/" target="_blank" underline="none">
+            EasyTier官网
+          </var-link>
+        </var-cell>
+        <var-space :size="[20, 20]" justify="center">
+          <var-cell>
+            <var-link type="primary" underline="none" href="https://github.com/EasyTier/EasyTier/releases" target="_blank">
+              <img src="https://img.shields.io/github/v/tag/EasyTier/EasyTier?color=blue&logo=github" />
+            </var-link>
+          </var-cell>
+          <var-cell>
+            <var-link type="primary" underline="none" href="https://github.com/EasyTier/EasyTier/releases" target="_blank">
+              <img src="https://img.shields.io/github/v/release/EasyTier/EasyTier?color=blue&logo=github" />
+            </var-link>
+          </var-cell>
+        </var-space>
+      </div>
+      <div>
+        <var-divider />
+        <var-space :size="[20, 20]" justify="center">
+          <var-button type="primary" size="large" block @click="downloadLatest" auto-loading>
+            <template #default>
+              <var-icon name="download" style="margin-right: 8px;" />
+              下载最新版
+            </template>
+          </var-button>
+          <var-button type="primary" size="large" block @click="downloadRelease" auto-loading>
+            <template #default>
+              <var-icon name="download" style="margin-right: 8px;" />
+              下载稳定版
+            </template>
+          </var-button>
+        </var-space>
+      </div>
+    </var-paper>
+  </div>
+</template>
 
-const downloadAndroid = () => {
-  Snackbar.success('开始下载 Android 版本 EasyTier')
+<script setup>
+import { ref } from 'vue'
+import { api } from '../../utils/api.js'
+
+const githubProxy = ref('https://ghfast.top')
+
+const downloadRelease = () => {
+  return new Promise((resolve, reject) => {
+    let url = `https://github.com/EasyTier/EasyTier/releases/latest/download/app-universal-release.apk`;
+    if (githubProxy.value) {
+      url = `${githubProxy.value}/${url}`;
+    }
+    console.log(url)
+    window.open(url, '_blank')
+    resolve()
+  })
+}
+
+const downloadLatest = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const fetchUrl = 'https://api.github.com/repos/EasyTier/EasyTier/releases';
+      if (githubProxy.value) {
+        fetchUrl = `${githubProxy.value}/${fetchUrl}`;
+      }
+      console.log(fetchUrl)
+      const response = await fetch(fetchUrl);
+      const releases = await response.json();
+      const preRelease = releases.find(r => r.prerelease === true);
+      let url = null;
+      if (preRelease) {
+          // 下载第一个资产文件
+          const asset = preRelease.assets[0];
+          if (asset) {
+              url = asset.browser_download_url;
+          }
+      }
+      window.open(url, '_blank')
+      resolve()
+    } catch (error) {
+      reject(error)
+    }
+  })
 }
 </script>
 
-<template>
-  <var-paper :elevation="2" class="software-page">
-    <h2 class="page-title">安卓客户端</h2>
-
-    <var-paper :elevation="0" class="download-section">
-      <var-cell>下载</var-cell>
-      <var-divider />
-      <var-space direction="column" :size="[16, 0]">
-        <var-button type="primary" size="large" @click="downloadAndroid" block>
-          <var-icon name="download" />
-          <span>下载 Android 版本</span>
-        </var-button>
-        <var-chip size="small" type="primary">最新版本: v1.0.0</var-chip>
-      </var-space>
-    </var-paper>
-
-    <var-paper :elevation="0" class="instructions-section">
-      <var-cell>使用说明</var-cell>
-      <var-divider />
-      <var-space direction="column" :size="[16, 0]">
-        <h4>安装步骤</h4>
-        <var-list>
-          <var-list-item>下载 APK 安装包</var-list-item>
-          <var-list-item>允许安装来自未知来源的应用</var-list-item>
-          <var-list-item>安装 EasyTier 客户端</var-list-item>
-          <var-list-item>启动 EasyTier 客户端</var-list-item>
-          <var-list-item>输入网络名称和密码连接</var-list-item>
-        </var-list>
-
-        <h4>截图说明</h4>
-        <var-row :gutter="16">
-          <var-col :span="12" :xs="24">
-            <var-image
-              src="https://via.placeholder.com/300x500?text=登录界面"
-              fit="cover"
-              :radius="8"
-            />
-            <var-cell>登录界面</var-cell>
-          </var-col>
-          <var-col :span="12" :xs="24">
-            <var-image
-              src="https://via.placeholder.com/300x500?text=主界面"
-              fit="cover"
-              :radius="8"
-            />
-            <var-cell>主界面</var-cell>
-          </var-col>
-        </var-row>
-      </var-space>
-    </var-paper>
-  </var-paper>
-</template>
 
 <style scoped>
-.software-page {
+.platform-page {
   padding: 16px;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
-.page-title {
-  font-size: 20px;
-  font-weight: 600;
-  margin: 0 0 16px 0;
+.download-card {
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
-.download-section,
-.instructions-section {
-  margin-bottom: 16px;
-  padding: 16px;
+.platform-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
-h4 {
-  margin: 16px 0 8px 0;
-  font-size: 16px;
-  font-weight: 600;
+.platform-info h2 {
+  margin: 0;
+  color: var(--color-on-surface);
 }
 
-@media (max-width: 768px) {
-  .software-page {
-    padding: 12px;
-  }
-  
-  .page-title {
-    font-size: 18px;
-  }
+.platform-info p {
+  margin: 4px 0 0;
+  color: var(--color-on-surface-variant);
+}
+
+.version-info {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-outline-variant);
+  font-size: 14px;
+  color: var(--color-on-surface-variant);
 }
 </style>
