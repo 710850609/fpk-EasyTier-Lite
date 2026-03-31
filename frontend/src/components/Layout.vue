@@ -28,8 +28,10 @@ import BottomNav from './BottomNav.vue'
 import { componentMap } from '../config/menu.js'
 import { isDark } from '../config/theme.js'
 import { VCONSOLE_ENABLED_KEY } from '../config/storage-keys.js'
-import Empty from '../views/Empty.vue'
 import toast from './toast.js'
+
+// 动态导入 Empty 组件，避免与 menu.js 中的动态导入冲突
+const Empty = defineAsyncComponent(() => import('../views/Empty.vue'))
 
 const isMobile = ref(window.innerWidth < 768)
 const activeMenu = ref('nodes')

@@ -19,7 +19,7 @@
         <var-space :size="[20, 20]" justify="center">
           <var-button type="primary" size="normal" block @click="download" auto-loading>
             <template #default>
-              <var-icon name="download" style="margin-right: 8px;" />
+              <var-icon name="download"/>
               稳定版
             </template>
           </var-button>
@@ -79,5 +79,45 @@ const download = () => {
   border-top: 1px solid var(--color-outline-variant);
   font-size: 14px;
   color: var(--color-on-surface-variant);
+}
+
+/* 下载卡片网格 */
+.download-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-top: 16px;
+}
+
+.download-item {
+  padding: 20px;
+  border-radius: 12px;
+  background: var(--color-surface-container) !important;
+  display: flex;
+  flex-direction: column;
+}
+
+.item-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  color: var(--color-on-surface);
+}
+
+.item-title {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.item-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.item-actions .var-button {
+  flex: 1;
+  min-width: 90px;
 }
 </style>

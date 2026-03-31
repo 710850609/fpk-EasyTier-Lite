@@ -171,11 +171,11 @@
     <div class="actions">
        <var-space justify="center" :size="[40, 40]">
          <var-button type="primary" size="normal" block auto-loading @click="saveConfig">
-            <var-icon name="checkbox-marked-circle" style="margin-right: 8px;" />
+            <var-icon name="checkbox-marked-circle"/>
            保存并重启 
          </var-button>
          <var-button type="primary" size="normal" block @click="downloadConfig" v-if="!fastSettingMode">
-            <var-icon name="download" style="margin-right: 8px;" />
+            <var-icon name="download"/>
            导出配置
          </var-button>
        </var-space>

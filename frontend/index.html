@@ -5,38 +5,6 @@
     <link rel="icon" type="image/png" href="/icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EasyTier | 易组网</title>
-    <script>
-      // 在页面渲染前应用主题 class，防止闪烁（CSS 变量由 theme.js 在 Vue 加载后应用）
-      // (function() {
-      //   const getSystemTheme = function() {
-      //     return window.matchMedia('(prefers-color-scheme: dark)').matches
-      //   }
-
-      //   // 从 theme.js 使用的 key 读取
-      //   const savedTheme = localStorage.getItem('easytier-theme')
-      //   let isDark = false
-
-      //   if (savedTheme) {
-      //     try {
-      //       const theme = JSON.parse(savedTheme)
-      //       if (theme.mode === 'dark') {
-      //         isDark = true
-      //       } else if (theme.mode === 'system' || !theme.mode) {
-      //         isDark = getSystemTheme()
-      //       }
-      //     } catch (e) {
-      //       isDark = getSystemTheme()
-      //     }
-      //   } else {
-      //     isDark = getSystemTheme()
-      //   }
-
-      //   if (isDark) {
-      //     document.documentElement.classList.add('dark')
-      //     document.documentElement.style.colorScheme = 'dark'
-      //   }
-      // })()
-    </script>
   </head>
   <body>
     <div id="app"></div>

@@ -4,6 +4,7 @@ import { resolve } from 'path'
 import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import { VarletUIResolver } from 'unplugin-vue-components/resolvers'
+import { createHtmlPlugin } from 'vite-plugin-html'
 
 // 生产环境配置
 const BASE = '/cgi/ThirdParty/EasyTier-Lite/index.cgi'
@@ -25,6 +26,13 @@ export default defineConfig(({ mode }) => ({
     Components({
       resolvers: [VarletUIResolver()],
       dts: 'src/components.d.ts'
+    }),
+    // HTML 压缩
+    createHtmlPlugin({
+      minify: true,
+      inject: {
+        data: {}
+      }
     })
   ],
   define: {

@@ -36,11 +36,11 @@
           </div>
           <div class="item-actions">
             <var-button type="primary" size="normal" @click="download(true)" auto-loading>
-              <var-icon name="download" style="margin-right: 8px;" />
+              <var-icon name="download"/>
               最新版
             </var-button>
             <var-button type="primary" size="normal" @click="download(false)" auto-loading>
-              <var-icon name="download" style="margin-right: 8px;" />
+              <var-icon name="download"/>
               稳定版
             </var-button>
           </div>
@@ -58,6 +58,7 @@ const download = (prerelease) => {
 }
 
 </script>
+
 
 <style scoped>
 .platform-page {
@@ -102,36 +103,40 @@ const download = (prerelease) => {
 /* 下载卡片网格 */
 .download-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
   margin-top: 16px;
 }
 
 .download-item {
-  padding: 16px;
+  padding: 20px;
   border-radius: 12px;
   background: var(--color-surface-container) !important;
+  display: flex;
+  flex-direction: column;
 }
 
 .item-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 10px;
+  margin-bottom: 16px;
   color: var(--color-on-surface);
 }
 
 .item-title {
   font-weight: 600;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .item-actions {
   display: flex;
-  gap: 8px;
+  gap: 12px;
+  margin-top: auto;
 }
 
 .item-actions .var-button {
   flex: 1;
+  min-width: 90px;
 }
 </style>
