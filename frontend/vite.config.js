@@ -17,8 +17,7 @@ export default defineConfig(({ mode }) => ({
     // 自动导入 Vue 相关 API
     AutoImport({
       imports: [
-        'vue',
-        'vue-router'
+        'vue'
       ],
       dts: 'src/auto-imports.d.ts'
     }),
