@@ -7,9 +7,12 @@ import logging
 import tomlkit
 import os
 
-ET_CONFIG_DIR = os.getenv('ET_CONFIG_DIR', '/var/apps/EasyTier-Lite/shares/EasyTier-Lite')
-ET_CONFIG_FILE = os.path.join(ET_CONFIG_DIR, 'config.toml')
-ET_CONFIG_INIT_FILE = os.path.join(ET_CONFIG_DIR, '.init')
+TRIM_APPNAME = os.getenv('TRIM_APPNAME', 'EasyTier-Lite')
+TRIM_APPDEST = os.getenv('TRIM_APPDEST', f'/var/apps/{TRIM_APPNAME}/target')
+TRIM_PKGVAR = os.getenv('TRIM_PKGVAR', f'/var/apps/{TRIM_APPNAME}/var')
+
+ET_CONFIG_FILE = f'{TRIM_PKGVAR}/config.toml'
+ET_CONFIG_INIT_FILE = f'{TRIM_PKGVAR}/.init'
 
 def need_setting(*kwargs):
     need_config = Path(ET_CONFIG_INIT_FILE).exists()

@@ -6,7 +6,7 @@ set -e
 LOG_FILE="${TRIM_PKGVAR}/cmd.log"
 BIN_DIR="${TRIM_APPDEST}/bin"
 CFG_FILE="/var/apps/${TRIM_APPNAME}/shares/${TRIM_APPNAME}/config.toml"
-INIT_FILE="/var/apps/${TRIM_APPNAME}/shares/${TRIM_APPNAME}/.init"
+INIT_FILE="${TRIM_PKGVAR}/.init"
 GITHUB_PROXY_URL_CFG_FILE="${TRIM_APPDEST}/github_proxy_url.txt"
 SCRIPT_PATH="${TRIM_APPDEST}/backend"
 

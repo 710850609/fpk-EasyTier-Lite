@@ -6,11 +6,14 @@ import util.process_util as process_util
 import os
 import logging
 
-ET_CONFIG_DIR = os.getenv('ET_CONFIG_DIR', '/var/apps/EasyTier-Lite/shares/EasyTier-Lite')
-ET_CONFIG_FILE = os.path.join(ET_CONFIG_DIR, 'config.toml')
-ET_BIN_DIR = os.environ.get('ET_BIN_DIR', '/var/apps/EasyTier-Lite/target/bin')
-ET_PID_FILE = os.getenv('ET_PID_FILE', '/var/apps/EasyTier-Lite/var/app.pid')
-START_CMD = f"{ET_BIN_DIR}/easytier-core --config-file {ET_CONFIG_FILE}"
+TRIM_APPNAME = os.getenv('TRIM_APPNAME', 'EasyTier-Lite')
+TRIM_APPDEST = os.getenv('TRIM_APPDEST', f'/var/apps/{TRIM_APPNAME}/target')
+TRIM_PKGVAR = os.getenv('TRIM_PKGVAR', f'/var/apps/{TRIM_APPNAME}/var')
+ET_CONFIG_FILE = f'{TRIM_PKGVAR}/config.toml'
+ET_CONFIG_INIT_FILE = f'{TRIM_PKGVAR}/.init'
+ET_PID_FILE = f'{TRIM_PKGVAR}/app.pid'
+START_CMD = f"{TRIM_APPDEST}/easytier-core --config-file {ET_CONFIG_FILE}"
+
 
 # 延迟初始化：使用单例模式
 _pm = None

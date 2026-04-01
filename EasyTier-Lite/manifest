@@ -1,5 +1,5 @@
 appname               = EasyTier-Lite
-version=0.1-c2_5_0-b20260401174017
+version=0.0.1-b20260401174652
 display_name          = 易组网
 desc                  = `<p>飞牛上<a href="https://easytier.cn" target="_blank">EasyTier</a>简化使用的版本，更合适新手简单上手使用，简记名字：易组网。</p></br><p>✅支持界面查看组网节点情况</p>`
 platform=x86

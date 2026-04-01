@@ -15,13 +15,17 @@ PARENT_PROJECT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '.
 # CGI 文件真实路径
 CGI_INDEX = os.path.join(PARENT_PROJECT_PATH, 'EasyTier-Lite', 'app', 'ui', 'index.cgi')
 CGI_API = os.path.join(PARENT_PROJECT_PATH, 'EasyTier-Lite', 'app', 'ui', 'api.cgi')
-ET_BIN_DIR = os.path.join(PARENT_PROJECT_PATH, 'EasyTier-Lite', 'app', 'bin')
+
+TRIM_APPDEST = os.path.join(PARENT_PROJECT_PATH, 'EasyTier-Lite', 'app')
+TRIM_PKGVAR = os.path.join(PARENT_PROJECT_PATH, 'temp', 'var')
+
+# ET_BIN_DIR = os.path.join(PARENT_PROJECT_PATH, 'EasyTier-Lite', 'app', 'bin')
 BACKEND_PATH = os.path.join(PARENT_PROJECT_PATH, 'server')
 LOG_FILE = os.path.join(PARENT_PROJECT_PATH, 'temp', 'server.log')
-ET_CONFIG_DIR = os.path.join(PARENT_PROJECT_PATH, 'temp', 'config')
-ET_PID_FILE = os.path.join(PARENT_PROJECT_PATH, 'temp', 'app.pid')
+# ET_CONFIG_DIR = os.path.join(PARENT_PROJECT_PATH, 'temp', 'config')
+# ET_PID_FILE = os.path.join(PARENT_PROJECT_PATH, 'temp', 'app.pid')
 
-Path(ET_CONFIG_DIR).mkdir(parents=True, exist_ok=True)
+# Path(ET_CONFIG_DIR).mkdir(parents=True, exist_ok=True)
 
 # 配置日志
 logging.basicConfig(
@@ -32,8 +36,8 @@ logging.basicConfig(
 )
 
 logging.info(f"BACKEND_PATH: {BACKEND_PATH}")
-logging.info(f"LOG_FILE: {LOG_FILE}")
-logging.info(f"ET_BIN_DIR: {ET_BIN_DIR}")
+logging.info(f"TRIM_APPDEST: {TRIM_APPDEST}")
+logging.info(f"TRIM_PKGVAR: {TRIM_PKGVAR}")
 
 class CGIProxyHandler(BaseHTTPRequestHandler):
     """处理 HTTP 请求并转发给 CGI 脚本"""
@@ -122,9 +126,11 @@ class CGIProxyHandler(BaseHTTPRequestHandler):
             # 构建环境变量
             env = os.environ.copy()
             env.update({
-                'ET_CONFIG_DIR': ET_CONFIG_DIR,
-                'ET_BIN_DIR': ET_BIN_DIR,
-                'ET_PID_FILE': ET_PID_FILE,
+                # 'ET_CONFIG_DIR': ET_CONFIG_DIR,
+                # 'ET_BIN_DIR': ET_BIN_DIR,
+                # 'ET_PID_FILE': ET_PID_FILE,
+                'TRIM_APPDEST': TRIM_APPDEST,
+                'TRIM_PKGVAR': TRIM_PKGVAR,
                 'BACKEND_PATH': BACKEND_PATH,
                 'LOG_FILE': LOG_FILE,
                 'REQUEST_METHOD': self.command,

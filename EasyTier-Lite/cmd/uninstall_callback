@@ -9,9 +9,9 @@ if [[ "${wizard_data_action}" == "keep" ]]; then
     log_msg "卸载时保留数据"
     exit 0
 else
-    log_msg "删除 ${CFG_FILE}"
+    # log_msg "删除 ${CFG_FILE}"
     log_msg "删除 ${TRIM_PKGVAR}"
-    rm -rf "${CFG_FILE}"
+    # rm -rf "${CFG_FILE}"
     rm -rf "${TRIM_PKGVAR}"
 fi
 

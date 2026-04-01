@@ -1,6 +1,6 @@
 #!/bin/bash
 
-APP_VERSION="0.1"
+APP_VERSION="0.0.1"
 ET_LATEST_VERSION="unknown"
 ET_DOWNLOAD_URL="unknown"
 DOWNLOAD_FILE="unknown"
@@ -209,7 +209,7 @@ update_app() {
 
 build_fpk() {
     get_et_version
-    local fpk_version="${APP_VERSION}-c${ET_VERSION//./_}"
+    local fpk_version="${APP_VERSION}"
     if [ "$build_pre" == 'true' ];then 
         cur_time=$(date +"%Y%m%d%H%M%S")
         echo "当前时间：$cur_time"
