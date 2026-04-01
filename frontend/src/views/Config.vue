@@ -11,6 +11,7 @@
           v-model="config.network_identity.network_name"
           placeholder="网络名称"
           :rules="[(v) => !!v || '网络名称不能为空']"
+          blur-color="var(--color-primary)"
         >
           <template #prepend-icon>
             <var-icon name="wifi" />
@@ -22,6 +23,7 @@
           v-model="config.network_identity.network_secret"
           placeholder="网络密码"
           type="password"
+          blur-color="var(--color-primary)"
         >
           <template #prepend-icon>
             <var-icon name="lock-outline" />
@@ -33,6 +35,7 @@
           v-if="!fastSettingMode"
           v-model="config.ipv4"
           placeholder="IPv4"
+          blur-color="var(--color-primary)"
         >
           <template #prepend-icon>
             <var-icon name="pin-outline" />
@@ -48,10 +51,11 @@
           multiple
           placeholder="公共节点"
           :chip="true"
+          blur-color="var(--color-primary)"
         >
-          <var-cell v-for="peer in ['1']"  icon="tag" title="peer">
+          <var-cell v-for="peer in ['1']"  icon="tag-outline" title="peer">
             <template #>
-              <var-input placeholder="输入公共节点" size="small" v-model="customPeer" />
+              <var-input placeholder="输入公共节点" size="small" v-model="customPeer" blur-color="var(--color-primary)" />
             </template>
             <template #extra>
               <var-button type="primary" size="small" @click="addPeer">添加</var-button>
@@ -121,9 +125,9 @@
               variant="outlined"
               :chip="true"
             >
-              <var-cell icon="tag">
+              <var-cell icon="tag-outline">
                 <template #>
-                  <var-input placeholder="格式: 192.168.1.1/24 或 192.168.1.1/32 等" size="small" v-model="customProxyNetwork" />
+                  <var-input placeholder="格式: 192.168.1.1/24 或 192.168.1.1/32 等" size="small" v-model="customProxyNetwork" blur-color="var(--color-primary)" />
                 </template>
                 <template #extra>
                   <var-button type="primary" size="small" @click="addProxyNetwork">添加</var-button>
