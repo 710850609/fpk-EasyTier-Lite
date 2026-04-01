@@ -44,6 +44,41 @@ export default defineConfig(({ mode }) => ({
       '@': resolve(__dirname, 'src')
     }
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // 代码分割：只分离第三方库，业务代码合并
+        manualChunks: {
+          // 第三方库单独打包（变化少，长期缓存）
+          'vendor': ['vue', '@varlet/ui', '@varlet/touch-emulator']
+        },
+        // 其他所有代码自动合并到 index.js
+        // 入口文件
+        entryFileNames: 'assets/[name]-[hash].js',
+        // chunk 文件（只有 vendor）
+        chunkFileNames: 'assets/[name]-[hash].js',
+        // CSS 文件
+        assetFileNames: (assetInfo) => {
+          const info = assetInfo.name.split('.')
+          const ext = info[info.length - 1]
+          if (/\.(css)$/i.test(assetInfo.name)) {
+            return 'assets/[name]-[hash][extname]'
+          }
+          return 'assets/[name]-[hash][extname]'
+        }
+      }
+    },
+    // 压缩配置
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
+      }
+    },
+    // CSS 代码分割
+    cssCodeSplit: true
+  },
   server: {
     port: 5173,
     host: "0.0.0.0",

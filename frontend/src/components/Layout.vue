@@ -50,12 +50,13 @@ provide('setActiveMenu', handleMenuChange)
 provide('fastSettingMode', fastSettingMode)
 
 const currentComponent = computed(() => {
-  const loader = componentMap[activeMenu.value]
+  const component = componentMap[activeMenu.value]
   // 如果没有对应组件，返回空组件（显示提示或保持当前页面）
-  if (!loader) {
+  if (!component) {
     return Empty
   }
-  return defineAsyncComponent(loader)
+  // 组件已同步加载，直接使用
+  return component
 })
 
 const handleResize = () => {

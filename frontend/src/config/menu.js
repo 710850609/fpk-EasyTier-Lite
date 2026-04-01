@@ -4,7 +4,8 @@
  */
 
 // 使用 import.meta.glob 预加载所有视图组件（包括子目录）
-const viewModules = import.meta.glob('../views/**/*.vue')
+// eager: true 表示同步加载，所有组件合并到主 bundle
+const viewModules = import.meta.glob('../views/**/*.vue', { eager: true })
 
 // 菜单树结构（每个节点单行）
 export const menuTree = [
@@ -46,7 +47,8 @@ const buildComponentMap = () => {
     if (!item.children && item.component) {
       const modulePath = `../views/${item.component}.vue`
       if (viewModules[modulePath]) {
-        map[item.key] = viewModules[modulePath]
+        // eager: true 时，直接取 default 导出
+        map[item.key] = viewModules[modulePath].default
       }
     }
   })

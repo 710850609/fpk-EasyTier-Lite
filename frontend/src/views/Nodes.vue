@@ -1,6 +1,5 @@
 <template>
-  <div class="nodes-page">
-    
+  <div class="nodes-page">    
     <var-sticky>
         <var-alert 
           v-if="showServiceError && !closeShowServiceError"
