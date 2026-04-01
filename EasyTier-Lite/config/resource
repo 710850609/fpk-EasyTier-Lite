@@ -1,18 +1,1 @@
-{
-    "data-share":
-    {
-        "shares":
-        [
-            {
-                "name": "EasyTier-Lite",
-                "permission":
-                {
-                    "rw":
-                    [
-                        "EasyTier-Lite"
-                    ]
-                }
-            }
-        ]
-    }
-}
+{}
