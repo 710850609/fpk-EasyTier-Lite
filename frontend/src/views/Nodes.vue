@@ -1,5 +1,16 @@
 <template>
   <div class="nodes-page">
+    
+    <var-sticky>
+        <var-alert 
+          v-if="showServiceError && !closeShowServiceError"
+          :message="serviceErrorMessage"
+          closeable
+          type="warning"
+          elevation="true"
+          @click="showServiceError = false; closeShowServiceError = true"
+        />
+    </var-sticky>
     <!-- 统计标题栏 -->
     <var-paper class="stats-bar" :elevation="1">
       <div class="stats-content">
@@ -154,6 +165,7 @@
       </template>
       <var-cell title="使用快速设置？" description="填写网络名称和密码，即可完成组网设置（新手推荐）" />
     </var-dialog>
+    
   </div>
 </template>
 
@@ -183,6 +195,10 @@ const selectedNodeTypes = ref(['normal'])
 const refreshStep = ref(3)
 // 节点数据
 const allNodes = ref([])
+const showServiceError = ref(false)
+const closeShowServiceError = ref(false)
+const serviceErrorMessage = ref(false)
+
 
 // 从 localStorage 加载设置
 const loadSettings = () => {
@@ -382,6 +398,13 @@ const fetchNodes = async () => {
     })
   } catch (error) {
     console.error('获取组网信息失败:', error)
+    const status = await api.services.status()
+    showServiceError.value = true
+    if (!status.data.running) {
+      serviceErrorMessage.value = 'EasyTier核心服务未运行，请重启服务后再刷新页面'
+    } else {
+      serviceErrorMessage.value = `EasyTier核心服务异常 -> ${error.message}`
+    }
   } finally {
     dataLoading.value = false
   }

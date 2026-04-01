@@ -18,9 +18,8 @@ function getFulllUrl(url) {
  * @param {Object} options - fetch 选项
  * @returns {Promise} - 返回响应数据
  */
-async function request(url, options = {}) {
-  const toastError = options.toastError || true
-  delete options.toastError
+async function request(url, options = {}, otherOptions = {}) {
+  const toastError = (otherOptions.toastError === undefined || otherOptions.toastError == null) ? true : options.toastError
   const fullUrl = getFulllUrl(url)
   const defaultOptions = {
     headers: {
@@ -60,10 +59,10 @@ async function request(url, options = {}) {
  * @param {Object} params - URL 参数
  * @returns {Promise}
  */
-export function get(url, params = {}) {
+export function get(url, params = {}, otherOptions = {}) {
   const queryString = new URLSearchParams(params).toString()
   const fullUrl = queryString ? `${url}?${queryString}` : url
-  return request(fullUrl, { method: 'GET' })
+  return request(fullUrl, { ...params, method: 'GET' }, otherOptions)
 }
 
 /**
@@ -72,12 +71,12 @@ export function get(url, params = {}) {
  * @param {Object} data - 请求体数据
  * @returns {Promise}
  */
-export function post(url, data = {}, options = {}) {
+export function post(url, data = {}, options = {}, otherOptions = {}) {
   return request(url, {
     method: 'POST',
     body: JSON.stringify(data),
     ...options
-  })
+  }, otherOptions)
 }
 
 /**
@@ -86,12 +85,12 @@ export function post(url, data = {}, options = {}) {
  * @param {Object} data - 请求体数据
  * @returns {Promise}
  */
-export function put(url, data = {}, options = {}) {
+export function put(url, data = {}, options = {}, otherOptions = {}) {
   return request(url, {
     method: 'PUT',
     body: JSON.stringify(data),
     ...options  
-  })
+  }, otherOptions)
 }
 
 /**
@@ -99,15 +98,15 @@ export function put(url, data = {}, options = {}) {
  * @param {string} url - 请求路径
  * @returns {Promise}
  */
-export function del(url, options = {}) {
-  return request(url, { method: 'DELETE', ...options }) 
+export function del(url, options = {}, otherOptions = {}) {
+  return request(url, { method: 'DELETE', ...options }, otherOptions) 
 }
 
 // API 接口定义
 export const api = {
   // 节点相关
   nodes: {
-    getList: () => get('/peers/list'),
+    getList: () => get('/peers/list', {}, {toastError: false}),
   },
   
   // 配置相关
