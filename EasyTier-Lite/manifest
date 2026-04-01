@@ -1,7 +1,7 @@
 appname               = EasyTier-Lite
-version=0.0.1-b20260401181139
+version=0.0.1-b20260401181616
 display_name          = 易组网
-desc                  = `<p>飞牛上<a href="https://easytier.cn" target="_blank">EasyTier</a>简化使用的版本，更合适新手简单上手使用，简记名字：易组网。</p></br><p>✅支持界面查看组网节点情况</p>`
+desc                  = `<p>飞牛上<a href="https://easytier.cn" target="_blank">EasyTier</a>简化使用的版本，更合适新手简单上手使用，简记：易组网（内置EasyTier v2.5.0版本）。</p></br><p>✅支持简单设置即可组网（新手模式设置网络名、网络密码即可）</p><p>✅支持界面查看组网节点情况</p><p>✅支持引导下载其他系统组网软件</p>`
 platform=x86
 os_min_version=1.1.8
 source                = thirdparty
