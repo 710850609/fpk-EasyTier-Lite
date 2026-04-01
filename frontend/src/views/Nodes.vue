@@ -395,6 +395,7 @@ const fetchNodes = async () => {
         peer.type = 'normal'
       }
     })
+    showServiceError.value = false
   } catch (error) {
     console.error('获取组网信息失败:', error)
     const status = await api.services.status()
