@@ -114,7 +114,9 @@ export const api = {
     needSetting: () => get('/configs/need_setting'),
     publicPeers: () => get('/configs/public_peers'),
     save: (data) => post('/configs/save', data),
+    saveToml: (data) => post('/configs/save_toml', {toml: data}),
     get: () => get('/configs/get'),
+    getToml: () => get('/configs/get_toml'),
     getDownloadUrl: () => getFulllUrl('/configs/download')
   },
   // 服务相关

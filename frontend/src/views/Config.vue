@@ -173,10 +173,14 @@
     </var-collapse>
 
     <div class="actions">
-       <var-space justify="center" :size="[40, 40]">
+       <var-space justify="center" :size="[40, 10]">
          <var-button type="primary" size="normal" block auto-loading @click="saveConfig">
             <var-icon name="checkbox-marked-circle"/>
            保存并重启 
+         </var-button>
+         <var-button type="primary" size="normal" block @click="openCodePage" auto-loading v-if="!fastSettingMode">
+            <var-icon name="tag"/>
+           编辑文件
          </var-button>
          <var-button type="primary" size="normal" block @click="downloadConfig" v-if="!fastSettingMode">
             <var-icon name="download"/>
@@ -184,12 +188,35 @@
          </var-button>
        </var-space>
     </div>
+     <var-popup
+       v-model:show="showCodePage"
+       class="code-editor-popup"
+       :close-on-click-overlay="false"
+     >
+      <div class="code-editor-container">
+        <div class="code-editor-header">
+          <span class="editor-title">编辑配置</span>
+          <var-space>
+            <var-button type="info" size="small" round @click="saveToml" auto-loading>
+              <var-icon name="check"/>                
+            </var-button>
+            <var-button type="warning" size="small" round @click="showCodePage = false">
+              <var-icon name="window-close"/>               
+            </var-button>
+          </var-space>
+        </div>
+        <div class="code-editor-content">
+          <CodeEditor v-model="configToml" language="toml" style="height: calc(96vh - 60px);" />
+        </div>
+      </div>
+     </var-popup>
   </div>
 </template>
 
 <script setup>
 import toast from '../components/toast.js'
 import { api } from '../utils/api.js'
+import CodeEditor from '../components/CodeEditor.vue'
 
 // 注入快速设置模式
 const fastSettingMode = inject('fastSettingMode', ref(false))
@@ -200,9 +227,10 @@ const publicPeerOptions = ref([
 ])
 const customPeer = ref('')
 const customProxyNetwork = ref('')
-
 const flagsOpen = ref([])
 const form = ref(null)
+const showCodePage = ref(false)
+const configToml = ref('')
 
 const config = ref({
   "hostname": "",
@@ -316,6 +344,31 @@ const saveConfig = async () => {
 const downloadConfig = () => {
   const url = api.configs.getDownloadUrl();
   window.open(url, '_blank')
+}
+
+const openCodePage = () => {
+  return new Promise((resolve, reject) => {
+     api.configs.getToml().then(res => {
+      configToml.value = res.data
+      showCodePage.value = true
+      resolve()
+    }).catch(e => reject(e))
+  })
+}
+
+// 从代码编辑器保存配置并关闭
+const saveToml = () => {
+  return new Promise((resolve, reject) => {
+    api.configs.saveToml(configToml.value).then(res => {
+      const restartLoading = toast.loading('保存成功，服务重启中...')
+      api.services.restart().then(() => {
+        toast.success('服务重启成功')
+      }).finally(e => {
+        restartLoading.clear()
+        resolve()
+      })
+    }).catch(e => reject(e))
+  });
 }
 
 onMounted(async () => {
@@ -499,6 +552,121 @@ onMounted(async () => {
 @media (max-width: 480px) {
   .feature-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* 代码编辑器弹窗样式 - 专用样式 */
+.code-editor-popup {
+  :deep(.var-popup__content) {
+    width: 98vw !important;
+    height: 96vh !important;
+    max-width: 1600px !important;
+    max-height: 1000px !important;
+    background: #0d1117 !important;
+    border-radius: 16px !important;
+    border: 1px solid rgba(48, 54, 61, 0.4) !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(255, 255, 255, 0.03) inset !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    border-radius: 16px 16px 16px 16px !important; 
+  }
+}
+
+.code-editor-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background: #0d1117;
+}
+
+.code-editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 24px;
+  background: var(--color-primary) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  flex-shrink: 0;
+}
+
+.editor-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-on-primary);
+  letter-spacing: 0.5px;
+}
+
+.code-editor-content {
+  padding: 0;
+  background: #0d1117;
+}
+
+.config-code-block {
+  height: 100%;
+
+  :deep(pre) {
+    background: #0d1117 !important;
+    border-radius: 0 !important;
+    border: none !important;
+    padding: 24px !important;
+    font-size: 14px !important;
+    line-height: 1.7 !important;
+    height: 100% !important;
+    margin: 0 !important;
+    overflow: auto !important;
+  }
+
+  :deep(code) {
+    font-family: 'Fira Code', 'JetBrains Mono', 'Consolas', 'Monaco', monospace !important;
+    font-size: 14px !important;
+  }
+}
+
+/* 滚动条样式 */
+.code-editor-content::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.code-editor-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
+}
+
+.code-editor-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #6366f1 0%, #a855f7 100%);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.code-editor-content::-webkit-scrollbar-thumb:hover {
+  background: #484f58;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .code-editor-popup {
+    :deep(.var-popup__content) {
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
+      border-radius: 0 !important;
+    }
+  }
+
+  .code-editor-header {
+    padding: 12px 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .editor-title {
+    font-size: 14px;
   }
 }
 </style>

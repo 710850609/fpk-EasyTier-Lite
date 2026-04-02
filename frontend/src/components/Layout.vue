@@ -1,5 +1,5 @@
 <template>
-  <div class="layout" :class="{ 'dark': isDark, 'menu-collapsed': isMenuCollapsed }">
+  <div class="layout" :class="{ 'dark': isDark, 'menu-collapsed': isMenuCollapsed, 'is-mobile': isMobile }">
       <side-menu
         v-if="!isMobile"
         :active="activeMenu"
@@ -59,10 +59,6 @@ const currentComponent = computed(() => {
   return component
 })
 
-const handleResize = () => {
-  isMobile.value = window.innerWidth < 768
-}
-
 // 从 localStorage 加载 VConsole（动态导入）
 const loadVConsole = async () => {
   const vconsoleEnabled = localStorage.getItem(VCONSOLE_ENABLED_KEY)
@@ -77,25 +73,30 @@ const loadVConsole = async () => {
     toast.error('加载 VConsole 失败\n' + error.message)
   }
 }
-// ✅ 节流 + 只处理必要逻辑
+
+const handleResize = () => {
+  isMobile.value = window.innerWidth < 768
+}
+
+// 防抖：停止调整 150ms 后才执行，避免频繁计算
 let resizeTimer;
-const handleResizeThrottled = () => {
+const handleResizeDebounced = () => {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
-    // 仅调整输入框位置，不动整体布局
     handleResize();
-  }, 10);
+  }, 150);
 }
 
 onMounted(() => {
-  window.addEventListener('resize', handleResizeThrottled)
+  window.addEventListener('resize', handleResizeDebounced)
+  // 初始化时执行一次，确保状态正确
+  handleResize()
   // 加载 VConsole（如果之前开启过）
   loadVConsole()
-
 })
 
 onUnmounted(() => {
-  window.removeEventListener('resize', handleResizeThrottled)
+  window.removeEventListener('resize', handleResizeDebounced)
   clearTimeout(resizeTimer)
 })
 </script>
@@ -140,6 +141,22 @@ onUnmounted(() => {
   padding: 16px;
 }
 
+/* 移动端样式 - 使用类名控制 */
+.layout.is-mobile {
+  flex-direction: column;
+}
+
+.layout.is-mobile .main-content {
+  width: 100%;
+  margin-left: 0;
+}
+
+.layout.is-mobile .content-wrapper {
+  overflow-y: visible;
+  padding: 0;
+}
+
+/* 媒体查询作为后备 */
 @media (max-width: 767px) {
   .layout {
     flex-direction: column;
