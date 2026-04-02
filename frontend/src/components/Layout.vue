@@ -84,7 +84,7 @@ const handleResizeThrottled = () => {
   resizeTimer = setTimeout(() => {
     // 仅调整输入框位置，不动整体布局
     handleResize();
-  }, 200);
+  }, 10);
 }
 
 onMounted(() => {

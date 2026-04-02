@@ -300,6 +300,7 @@ const saveConfig = async () => {
     let data = {...config.value, isFastConfig: fastSettingMode.value};
     data.peer = data.peer.map(e => ({uri: e}))
     data.proxy_network = data.proxy_network.map(e => ({cidr: e}))
+    data.dhcp = !data.ipv4 || !(data.ipv4.trim())
     api.configs.save(data).then(res => {
       const restartLoading = toast.loading('保存成功，服务重启中...')
       api.services.restart().then(() => {
