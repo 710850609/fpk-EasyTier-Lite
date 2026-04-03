@@ -1,12 +1,12 @@
 name: Build Multi-Platform
 
-# on:
-#   push:
-#     branches: [main, master]
-#     tags: ['v*']
-#   pull_request:
-#     branches: [main, master]
-#   workflow_dispatch:
+on:
+  push:
+    branches: [main1, master1]
+    tags: ['pre/*']
+  pull_request:
+    branches: [main1, master1]
+  workflow_dispatch:
 
 jobs:
   build-windows:

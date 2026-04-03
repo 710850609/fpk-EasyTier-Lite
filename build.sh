@@ -1,6 +1,6 @@
 #!/bin/bash
 
-APP_VERSION="0.0.1"
+APP_VERSION="0.1"
 ET_LATEST_VERSION="unknown"
 ET_DOWNLOAD_URL="unknown"
 DOWNLOAD_FILE="unknown"
@@ -85,9 +85,7 @@ build_backend() {
         -d ${app_script_path}/wheels
         
     echo "写入脚本到app"
-    # rsync -a --exclude='.venv' --exclude='__pycache__' --exclude='test' --exclude='main.py' server/ "${app_script_path}/"
     rsync -a --exclude='.venv' --exclude='__pycache__' --exclude='test' --exclude='dist' --exclude='build' --exclude='*.spec' --exclude='main.py'  --exclude='build.py' --exclude='*.md' server/ "${app_script_path}/"
-    # rsync -a --include='action' --include='action/**' --include='util' --include='util/**' --include='requirements.txt' --exclude='__pycache__' --exclude='*' server/ "${app_script_path}/"
 }
 
 build_frontend() {
@@ -211,7 +209,11 @@ update_app() {
 
 build_fpk() {
     get_et_version
-    local fpk_version="${APP_VERSION}"
+    IFS='.' read -r major minor patch <<< "$ET_VERSION"
+    # ET_LONG_VERSION=$(./version-util.sh -x "$ET_VERSION" | sed 's/^0*//')
+    ET_LONG_VERSION=$(./version-util.sh -x "$ET_VERSION")
+    echo "转换easytier 长版本号: $ET_LONG_VERSION"  # 输出: 200050000
+    local fpk_version="${APP_VERSION}.${ET_LONG_VERSION}"
     if [ "$build_pre" == 'true' ];then 
         cur_time=$(date +"%Y%m%d%H%M%S")
         echo "当前时间：$cur_time"
