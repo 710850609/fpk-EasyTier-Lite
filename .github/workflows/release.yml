@@ -94,7 +94,7 @@ jobs:
             exit 1
           fi
           # 读取版本号
-          release_version=$(sed -n 's/^[[:space:]]*version[[:space:]]*=[[:space:]]*//p' ./OpenList/manifest | sed 's/^"\|"$//g')
+          release_version=$(sed -n 's/^[[:space:]]*version[[:space:]]*=[[:space:]]*//p' ./EasyTier-Lite/manifest | sed 's/^"\|"$//g')
           echo "从manifest中获取release_version: $release_version"
           echo "version=$release_version" >> $GITHUB_OUTPUT
 
@@ -108,7 +108,7 @@ jobs:
               ' "${{ github.workspace }}/CHANGELOG.md" > release_notes.txt
             # 检查是否提取到内容
             if [ ! -s release_notes.txt ]; then
-              echo "- 更新OpenList版本" > release_notes.txt
+              echo "- 更新 EasyTier-Lite 版本" > release_notes.txt
             fi
             echo "更新日志: $(cat release_notes.txt)"            
             {
