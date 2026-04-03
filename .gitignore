@@ -13,6 +13,9 @@ peers/.venv
 server/.venv
 server/*/__pycache__
 server/__pycache__
+server/build
+server/dist
+server/*.spec
 
 
 node_modules

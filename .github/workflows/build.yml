@@ -1,0 +1,112 @@
+name: Build Multi-Platform
+
+on:
+  push:
+    branches: [main, master]
+    tags: ['v*']
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pyinstaller tomlkit requests
+
+      - name: Build Windows x64
+        run: |
+          cd server
+          python build.py
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: EasyTierLite-Server-windows-x64
+          path: EasyTier-Lite/app/bin/EasyTierLite-Server.exe
+
+  build-linux-x64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pyinstaller tomlkit requests
+
+      - name: Build Linux x64
+        run: |
+          cd server
+          python build.py
+
+      - name: Upload Linux x64 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: EasyTierLite-Server-linux-x64
+          path: EasyTier-Lite/app/bin/EasyTierLite-Server
+
+  build-linux-arm64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Build Linux ARM64
+        uses: uraimo/run-on-arch-action@v2
+        with:
+          arch: aarch64
+          distro: ubuntu22.04
+          githubToken: ${{ github.token }}
+          install: |
+            apt-get update -q -y
+            apt-get install -q -y python3 python3-pip
+            pip3 install pyinstaller tomlkit requests
+          run: |
+            cd server
+            python3 build.py
+
+      - name: Upload Linux ARM64 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: EasyTierLite-Server-linux-arm64
+          path: EasyTier-Lite/app/bin/EasyTierLite-Server
+
+  release:
+    needs: [build-windows, build-linux-x64, build-linux-arm64]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            artifacts/EasyTierLite-Server-windows-x64/EasyTierLite-Server.exe
+            artifacts/EasyTierLite-Server-linux-x64/EasyTierLite-Server
+            artifacts/EasyTierLite-Server-linux-arm64/EasyTierLite-Server
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
