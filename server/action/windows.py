@@ -14,6 +14,7 @@ import zipfile
 import logging
 
 et_min_version = "2.5.0"
+GITHUB_PROXY = "https://ghfast.top"
 
 def download(*kwargs):
     output_dir = f"/var/apps/EasyTier-Lite/shares/EasyTier-Lite"

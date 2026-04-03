@@ -25,6 +25,6 @@ export async function fetchAstral() {
     // // console.log("排序后内容: ", JSON.stringify(items));
     // var address = items.map(e => e.address);
     // // console.log("排序后内容: ", JSON.stringify(address));
-    // return address;
+    return address;
     
 }

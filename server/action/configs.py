@@ -15,6 +15,8 @@ TRIM_SHARE_DIR = os.getenv('TRIM_SHARE_DIR', f'/var/apps/{TRIM_APPNAME}/shares/{
 ET_CONFIG_FILE = f'{TRIM_SHARE_DIR}/config.toml'
 ET_CONFIG_INIT_FILE = f'{TRIM_PKGVAR}/.init'
 
+GITHUB_PROXY = "https://ghfast.top"
+
 def need_setting(*kwargs):
     need_config = Path(ET_CONFIG_INIT_FILE).exists()
     http_util.http_response_ok({"needConfig": need_config})
@@ -58,12 +60,12 @@ def public_peers(*kwargs):
             peer_uris.append(i["uri"])
     config_peers_set = set(peer_uris)
     for i in range(1, 6):
-        peer = f'https://raw.githubusercontent.com/710850609/fpk-EasyTier-Lite/refs/heads/main/peers/peer-{i}.txt'
+        peer = f'{GITHUB_PROXY}/https://raw.githubusercontent.com/710850609/fpk-EasyTier-Lite/refs/heads/main/peers/peer-{i}.txt'
         if peer not in config_peers_set:
             peer_uris.append(peer)
     peers = []
     for uri in peer_uris:
-        label = uri.replace('https://raw.githubusercontent.com/710850609/fpk-EasyTier-Lite/refs/heads/main/peers/peer-', '')
+        label = uri.replace(f'{GITHUB_PROXY}/https://raw.githubusercontent.com/710850609/fpk-EasyTier-Lite/refs/heads/main/peers/peer-', '')
         if (len(label) != len(uri)):
             label = "公共节点" + label.replace('.txt', '')
         peers.append({'label': label, 'uri': uri})
