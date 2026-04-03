@@ -34,7 +34,7 @@
         <var-input
           v-if="!fastSettingMode"
           v-model="config.ipv4"
-          placeholder="IPv4"
+          placeholder="虚拟IPv4"
           blur-color="var(--color-primary)"
         >
           <template #prepend-icon>
