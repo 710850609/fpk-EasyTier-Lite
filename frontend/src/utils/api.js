@@ -131,7 +131,7 @@ export const api = {
   },
   // ET 核心相关
   etCore: {
-    version: () => get('/et_core/version'),
+    getVersion: () => get('/et_core/version'),
     install: (data) => post('/et_core/install', data)
   }
 }

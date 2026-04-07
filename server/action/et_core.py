@@ -3,6 +3,7 @@
 
 from pathlib import Path
 import util.http_util as http_util
+import util.common_util as cmd_util
 import logging
 import tomlkit
 import os
@@ -14,12 +15,16 @@ TRIM_SHARE_DIR = os.getenv('TRIM_SHARE_DIR', f'/var/apps/{TRIM_APPNAME}/shares/{
 
 ET_CONFIG_FILE = f'{TRIM_SHARE_DIR}/config.toml'
 ET_CONFIG_INIT_FILE = f'{TRIM_PKGVAR}/.init'
+ET_BIN_DIR = f"{TRIM_APPDEST}/bin"
 
 GITHUB_PROXY = "https://ghfast.top"
 
 def version(*kwargs):
-    version = cmd_util.run_cmd(f'{ET_BIN_DIR}/easytier-core --version')
-    http_util.http_response_ok(version)
+    raw_version = cmd_util.run_cmd(f'{ET_BIN_DIR}/easytier-core --version')
+    version = raw_version.replace('easytier-core ', '')
+    version = version[:version.index('-')]
+    http_util.http_response_ok({ 'version': f'v{version}', 'raw_version': raw_version })
+    # http_util.http_response_ok({ 'version': f'v2.6.0', 'raw_version': raw_version })
 
 def install(data, *kwargs):
     version = data['version']

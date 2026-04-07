@@ -2,6 +2,28 @@ import toast from "../components/toast.js"
 
 const GITHUB_PROXY = 'https://ghfast.top'
 
+export function getVersionList(repo) {  
+  const fetchUrl = `https://api.github.com/repos/${repo}/releases`
+  return fetch(fetchUrl)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`获取 releases 失败: ${response.status}`)
+      }
+      return response.json()
+    })
+    .then(release => {
+      const versionList = []
+      release.forEach(e => {
+        versionList.push({ version: e.tag_name, prerelease: e.prerelease })
+      })
+      return versionList
+    })
+    .catch(error => {
+      toast.error(`${error.message} \n${fetchUrl}`)
+      throw error
+    })
+}
+
 /**
  * 从 GitHub releases 下载资源
  * @param {string} repo - GitHub 仓库，格式：owner/repo

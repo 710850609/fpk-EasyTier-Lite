@@ -44,65 +44,56 @@
       <!-- 当前版本信息 -->
       <var-cell>
         <template #default>
-          <h3>EasyTier-Core</h3>
+          <var-loading type="wave" v-if="isFetchingEtCoreVersion" />
+          <span v-if="!isFetchingEtCoreVersion">{{ etVersion.raw_version }}</span>
           <var-divider />
-          当前版本
         </template>
         <template #description>
-          <var-chip type="primary" size="small">{{ currentVersion || '未安装' }}</var-chip>
+          <var-select variant="outlined" placeholder="可选内核版本" size="small" v-model="etVersion.version">
+            <template #default>
+              <var-option v-for="item in etVersionList" :key="item.version" :label="item.version">
+                <!-- <var-icon class="selected-icon" name="cake-variant" /> -->
+                 <var-cell :title="item.version" border>
+                  <template #extra v-if="!item.prerelease">
+                    <var-badge type="success" position="right-bottom" :offset-x="0" :offset-y="0" value="release">
+                    </var-badge>
+                  </template>
+                 </var-cell>
+                <!-- <span>{{ item.version }} </span> -->
+                    <!-- <var-chip>徽标</var-chip> -->
+              </var-option>
+              <!-- <var-option label="睡觉">
+                <var-icon class="selected-icon" name="weather-night" />
+                <span>睡觉</span>
+              </var-option> -->
+            </template>
+            <!-- <template #selected>
+              <var-icon class="selected-icon" :size="28" :name="value8 === '吃饭' ? 'cake-variant' : 'weather-night'" />
+              <span>{{ value8 }}</span>
+            </template> -->
+            <template #prepend-icon>
+              <!-- <var-icon class="prepend-icon" name="github" :size="28" /> -->
+            </template>
+            <template #append-icon>
+              <var-icon class="append-icon" name="github" :size="28" />
+            </template>
+            <template #arrow-icon="{ focus }">
+              <var-icon name="chevron-down" :transition="300" :class="{ 'arrow-icon-rotate': focus }" />
+            </template>
+          </var-select>
+          <var-cell>
+            <template #description v-if="hasNewVersion">
+              <var-chip type="warning" size="small" plain>有新版本</var-chip>
+            </template>
+            <template #extra>
+              <var-button type="primary" size="small" @click="installEtCore(true)" auto-loading style="min-width: 80px;">
+                <var-icon name="download" />
+                安装           
+              </var-button>
+            </template>
+          </var-cell>
         </template>
       </var-cell>
-       <var-paper :elevation="3">
-          <div class="item-actions">
-            <var-button type="primary" size="normal" @click="download('amd64.deb', true)" auto-loading>
-              <var-icon name="download"  />
-              最新版
-            </var-button>
-            <var-button type="primary" size="normal" @click="download('amd64.deb', false)" auto-loading>
-              <var-icon name="download"  />
-              稳定版
-            </var-button>
-          </div>
-        </var-paper>
-      
-      <!-- 版本选择 -->
-      <!-- <div class="kernel-actions">        
-        <var-select 
-          v-model="selectedVersion" 
-          placeholder="选择版本"
-          size="small"
-          class="version-select"
-        >
-          <var-option 
-            v-for="version in availableVersions" 
-            :key="version"
-            :label="version"
-            :value="version"
-          />
-        </var-select>
-        
-        <div class="action-buttons">
-          <var-button 
-            type="info" 
-            size="small" 
-            @click="fetchLatestVersion"
-            :loading="fetchingVersion"
-          >
-            <var-icon name="refresh" />
-            获取最新
-          </var-button>
-          <var-button 
-            type="primary" 
-            size="small" 
-            @click="installVersion"
-            :loading="installing"
-            :disabled="!selectedVersion"
-          >
-            <var-icon name="download" />
-            安装
-          </var-button>
-        </div>
-      </div> -->
     </var-paper>
 
     <!-- 网络设置 -->
@@ -164,10 +155,15 @@ import { themeOptions, setThemeMode, themeMode } from '../config/theme.js'
 import { VCONSOLE_ENABLED_KEY } from '../config/storage-keys.js'
 import toast from '../components/toast.js'
 import api from '../utils/api.js'
+import { getVersionList } from '../utils/github.js'
 
 const vConsoleEnabled = ref(false)
 const vConsoleInstance = ref(null)
+const isFetchingEtCoreVersion = ref(true)
+const etVersion = ref({ version: '', raw_version: '', latest_version: '' })
+const etVersionList = ref([])
 
+const hasNewVersion = computed(() => etVersion.version && etVersion.latest_version && etVersion.version !== etVersion.latest_version)
 // 计算当前主题模式（从 theme.js 获取）
 const currentThemeMode = computed(() => themeMode.value)
 
@@ -206,70 +202,54 @@ const toggleVConsole = async (val) => {
   }
 }
 
-// 内核版本管理
-const currentVersion = ref('')
-const selectedVersion = ref('')
-const availableVersions = ref([])
-const fetchingVersion = ref(false)
-const installing = ref(false)
-
 // 获取当前版本
-const fetchCurrentVersion = async () => {
+const getEtVersion = async () => {
   try {
-    const { data } = await api.et.getVersion()
-    currentVersion.value = data.version
+    isFetchingEtCoreVersion.value = true
+    const { data } = await api.etCore.getVersion()
+    etVersion.value = data
+    console.log(etVersion.value)
   } catch (e) {
-    currentVersion.value = ''
+    console.error('获取内核版本失败:', e)
+    etVersion.value.raw_version = '获取内核版本失败:' + e.message
+  } finally {
+    isFetchingEtCoreVersion.value = false
   }
 }
 
-// 获取可用版本列表
-const fetchEtCore = async () => {
-  fetchingVersion.value = true
+const getEtVersionList = async () => {
   try {
-    const { data } = await api.etCore.version()
-    availableVersions.value = data.versions || []
-    if (data.latest) {
-      selectedVersion.value = data.latest
-    }
-    toast.success('获取版本列表成功')
+    etVersionList.value = await getVersionList('easyTier/easytier')
+    etVersion.value.latest_version = etVersionList.value[0].version
   } catch (e) {
-    toast.error('获取版本列表失败')
-  } finally {
-    fetchingVersion.value = false
+    console.error('获取版本列表失败:', e)
+    toast.error('获取版本列表失败:' + e.message)
   }
 }
 
-// 安装指定版本
-const installVersion = async () => {
-  if (!selectedVersion.value) return
-  
-  installing.value = true
-  const loading = toast.loading(`正在安装 ${selectedVersion.value}...`)
-  try {
-    await api.et.installVersion(selectedVersion.value)
-    toast.success('安装成功')
-    await fetchCurrentVersion()
-  } catch (e) {
-    toast.error('安装失败')
-  } finally {
-    installing.value = false
-    loading.clear()
-  }
+const installEtCore = async (prerelease = false) => {
+    await getEtVersionList()
+  // return new Promise((resolve, reject) => {
+  //   api.etCore.install({ prerelease: prerelease })
+  //   .then((res) => {
+  //     resolve(res)
+  //   })
+  //   .catch((err) => {
+  //     reject(err)
+  //   })
+  // })
 }
 
 onMounted(() => {
   // 从 localStorage 加载 VConsole 开关状态
   const enabled = localStorage.getItem(VCONSOLE_ENABLED_KEY) === 'true'
   vConsoleEnabled.value = enabled
-
   // 如果之前开启过，自动加载
   if (enabled) {
     loadVConsole()
-  }
-  
-  // 获取当前内核版本
-  fetchCurrentVersion()
+  }  
+  getEtVersion()
+  getEtVersionList()
 })
 </script>
 
