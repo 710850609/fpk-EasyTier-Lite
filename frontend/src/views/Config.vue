@@ -243,10 +243,10 @@
         <div class="code-editor-header">
           <span class="editor-title">编辑配置</span>
           <var-space>
-            <var-button type="primary" size="small" round @click="saveToml" auto-loading elevation="false">
+            <var-button type="primary" size="mini" round @click="saveToml" auto-loading>
               <var-icon name="check"/>                
             </var-button>
-            <var-button type="default" size="small" round @click="showCodePage = false" elevation="false">
+            <var-button type="default" size="mini" round @click="showCodePage = false">
               <var-icon name="window-close"/>               
             </var-button>
           </var-space>
@@ -668,6 +668,16 @@ onMounted(async () => {
   background: var(--color-surface-container) !important;
   border-bottom: 1px solid var(--color-outline);
   flex-shrink: 0;
+}
+
+.code-editor-header :deep(.var-button--mini) {
+  min-width: 24px !important;
+  height: 24px !important;
+  padding: 0 4px !important;
+}
+
+.code-editor-header :deep(.var-button--mini .var-icon) {
+  font-size: 16px !important;
 }
 
 .editor-title {

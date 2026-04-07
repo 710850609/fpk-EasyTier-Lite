@@ -28,7 +28,7 @@
       </div>
       
       <var-cell>
-        <template #description>用于移动端调试</template>
+        <template #description>移动端页面调试</template>
         <template #extra>
           <var-switch v-model="vConsoleEnabled" @change="toggleVConsole" />
         </template>
@@ -43,11 +43,11 @@
       <var-cell>
         <template #description>EasyTier 版本 2.5.0</template>
         <template #extra>
-          <!-- <var-button type="danger" round icon-container>
+          <var-button type="danger" round icon-container>
             <var-icon name="window-close" />
-          </var-button> -->
-          <!-- <var-icon name="close-circle" />
-          <var-icon name="play-circle" /> -->
+          </var-button>
+          <var-icon name="close-circle" />
+          <var-icon name="play-circle" />
         </template>
       </var-cell>
     </var-paper>
