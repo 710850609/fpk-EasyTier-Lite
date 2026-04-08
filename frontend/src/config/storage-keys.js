@@ -16,3 +16,6 @@ export const NODES_REFRESH_STEP_KEY = 'etLite-nodes-refresh-step'
 
 // 侧边栏折叠状态
 export const SIDEBAR_COLLAPSED_KEY = 'etLite-sidebar-collapsed'
+
+// GitHub版本
+export const ET_VERSION_LIST_KEY = 'etLite-version-list'

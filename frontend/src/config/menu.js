@@ -16,9 +16,9 @@ export const menuTree = [
       { key: 'softwares-windows', label: 'Windows', icon: './images/windows.svg', component: 'softwares/Windows' },
       { key: 'softwares-android', label: 'Android', icon: './images/android.svg', component: 'softwares/Android' },
       { key: 'softwares-macos', label: 'MacOS', icon: './images/mac.svg', component: 'softwares/MacOS' },
+      { key: 'softwares-linux', label: 'Linux', icon: './images/linux.svg', component: 'softwares/Linux' },
       { key: 'softwares-ios', label: 'IOS', icon: './images/ios.svg', component: 'softwares/IOS' },
       { key: 'softwares-harmonyos', label: 'HarmonyOS', icon: './images/harmony.svg', component: 'softwares/HarmonyOS' },
-      { key: 'softwares-linux', label: 'Linux', icon: './images/linux.svg', component: 'softwares/Linux' },
       // { key: 'softwares-feiniu', label: '飞牛', icon: './images/feiniu.png', component: 'softwares/FeiNiu' },
     ]
   },

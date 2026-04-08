@@ -111,6 +111,7 @@
               v-model="config.hostname"
               placeholder="留空默认为主机名"
               variant="outlined"
+              size="small"
             />
           </div>
 
@@ -128,6 +129,7 @@
               v-model="config.flags.dev_name"
               placeholder="留空自动生成随机名称"
               variant="outlined"
+              size="small"
             />
           </div>
           <div class="input-section">
@@ -149,6 +151,7 @@
               :rules="(v) => v !== '' && v >= 400 && v <= 1380 || 'MTU值超出范围[400, 1380]'"
               placeholder="留空为默认值1380"
               variant="outlined"
+              size="small"
             />
           </div>
 
@@ -162,6 +165,7 @@
               placeholder="子网网段"
               variant="outlined"
               :chip="true"
+              size="small"
             >
               <var-cell icon="tag-outline">
                 <template #>
@@ -182,7 +186,15 @@
 
           <!-- 监听地址 -->           
           <div class="input-section">
-            <div class="section-subtitle">监听地址</div>
+            <div class="section-subtitle">监听地址
+              <var-tooltip content="部分协议需要较高版本支持，具体可加ET群咨询" :offset-x="50">
+                <var-icon 
+                  name="help-circle-outline" 
+                  size="16" 
+                  class="help-icon"
+                />
+              </var-tooltip>
+            </div>
             <var-select
               v-if="!fastSettingMode"
               v-model="config.listeners"
@@ -300,6 +312,8 @@ const config = ref({
     "multi_thread": true,
     "enable_kcp_proxy": true,
     "private_mode": true,
+    "enable_encryption": true,
+    "enable_ipv6": true,
   },
   // 子网代理
   "proxy_network": []
@@ -322,8 +336,8 @@ const featureSwitches = [
   { key: 'p2p_only', label: '仅 P2P', tooltip: '只允许 P2P 连接，不使用中继' },
   { key: 'disable_p2p', label: '禁用 P2P', tooltip: '关闭点对点直连功能，所有流量通过中继' },
   { key: 'enable_exit_node', label: '启用出口节点', tooltip: '允许此节点作为网络的出口' },
-  { key: 'enable_encryption', label: '禁用加密', tooltip: '关闭数据传输加密，提高性能但降低安全性' },
-  { key: 'enable_ipv6', label: '禁用 IPv6', tooltip: '关闭 IPv6 支持' },
+  { key: 'enable_encryption', label: '启用加密', tooltip: '开启数据传输加密，提高安全性但性能降低' },
+  { key: 'enable_ipv6', label: '启用 IPv6', tooltip: '开启 IPv6 支持' },
   { key: 'no_tun', label: '无 TUN 模式', tooltip: '不使用 TUN 设备。' },
   { key: 'accept_dns', label: '启用魔法 DNS', tooltip: '启用特殊的 DNS 解析功能' },
   { key: 'relay_all_peer_rpc', label: '转发 RPC 包', tooltip: '允许转发 RPC 数据包' },
@@ -396,6 +410,12 @@ const saveConfig = async () => {
     data.dhcp = !data.ipv4 || !(data.ipv4.trim())
     if (data.flags.mtu && typeof data.flags.mtu === 'string') {
       data.flags.mtu = parseInt(data.flags.mtu, 10)
+    }
+    if (data.flags.enable_ipv6 === undefined) {
+      data.ipv6 = true
+    }
+    if (data.flags.enable_encryption === undefined) {
+      data.enable_encryption = true
     }
     api.configs.save(data).then(res => {
       const restartLoading = toast.loading('保存成功，服务重启中...')

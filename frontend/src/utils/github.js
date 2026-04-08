@@ -1,6 +1,30 @@
 import toast from "../components/toast.js"
+import { ET_VERSION_LIST_KEY } from "../config/storage-keys.js"
+import api from './api.js'
 
-const GITHUB_PROXY = 'https://ghfast.top'
+// const GITHUB_PROXY = 'https://ghfast.top'
+
+export function getLatestVersionWithCache(repo, useCache = true) {
+  return new Promise((resolve, reject) => {
+    if (useCache) {
+      const rawData = localStorage.getItem(ET_VERSION_LIST_KEY);
+      if (rawData) {
+        const json = JSON.parse(rawData)
+        if (json.createTime && Date.now() - json.createTime < 1000 * 60 * 60) {
+          resolve(json.data)
+          return
+        }
+      }
+    }
+    getVersionList(repo)
+      .then(versionList => {
+        const data = { createTime: Date.now(), data: versionList }
+        localStorage.setItem(ET_VERSION_LIST_KEY, JSON.stringify(data))
+        resolve(versionList)
+      })
+      .catch(reject)
+  })
+}
 
 export function getVersionList(repo) {  
   const fetchUrl = `https://api.github.com/repos/${repo}/releases`
@@ -22,6 +46,11 @@ export function getVersionList(repo) {
       toast.error(`${error.message} \n${fetchUrl}`)
       throw error
     })
+}
+
+export async function getGithubMirror() {
+  const { data } = await api.settings.getGithubMirrors()
+  return data.selected
 }
 
 /**
@@ -55,9 +84,10 @@ export function downloadFromGithub(repo, matcher, prerelease = false) {
       }
       return asset.browser_download_url
     })
-    .then(url => {
-      if (GITHUB_PROXY) {
-        url = `${GITHUB_PROXY}/${url}`
+    .then(async url => {
+      const githubMirror = await getGithubMirror()
+      if (githubMirror) {
+        url = `${githubMirror}/${url}`
       }
       window.open(url, '_blank')
       return url

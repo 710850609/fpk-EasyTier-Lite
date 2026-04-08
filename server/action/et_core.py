@@ -27,8 +27,8 @@ GITHUB_PROXY = "https://ghfast.top"
 
 def version(*kwargs):
     raw_version = common_util.run_cmd(f'{ET_BIN_DIR}/easytier-core --version')
-    version = raw_version.replace('easytier-core ', '')
-    version = version[:version.index('-')]
+    raw_version = raw_version.replace('easytier-core ', '')
+    version = raw_version[:raw_version.index('-')]
     http_util.http_response_ok({ 'version': f'v{version}', 'raw_version': raw_version })
     # http_util.http_response_ok({ 'version': f'v2.6.0', 'raw_version': raw_version })
 

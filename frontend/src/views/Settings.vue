@@ -20,65 +20,44 @@
       </div>
     </var-paper>
 
-    <!-- 开发者选项 -->
-    <var-paper class="setting-block" :elevation="1">
-      <div class="block-header">
-        <var-icon name="wrench" size="24" color="var(--color-primary)" />
-        <span class="block-title">开发者选项</span>
-      </div>
-      
-      <var-cell>
-        <template #description>移动端页面调试</template>
-        <template #extra>
-          <var-switch v-model="vConsoleEnabled" @change="toggleVConsole" />
-        </template>
-      </var-cell>
-    </var-paper>
-
+    <!-- 内核设置 -->
      <var-paper class="setting-block" :elevation="1">
       <div class="block-header">
         <var-icon name="lock" size="24" color="var(--color-primary)" />
         <span class="block-title">内核</span>
-      </div>      
-      
+      </div>
       <!-- 当前版本信息 -->
       <var-cell>
         <template #default>
           <var-loading type="wave" v-if="isFetchingEtCoreVersion" />
-          <span v-if="!isFetchingEtCoreVersion">{{ etVersion.raw_version }}</span>
-          <var-divider />
+          <div v-if="!isFetchingEtCoreVersion">
+            <span style="font-weight: bold;">EasyTier </span>
+            <span>{{ etVersion.version }}</span>
+          </div>
         </template>
+      </var-cell>
+      <var-cell>
         <template #description>
           <var-select variant="outlined" placeholder="可选内核版本" size="small" v-model="etVersion.selected_version">
             <template #default>
-              <var-option v-for="item in etVersionList" :key="item.version" :label="item.version">
-                <!-- <var-icon class="selected-icon" name="cake-variant" /> -->
-                 <var-cell :title="item.version" border>
-                  <template #extra v-if="!item.prerelease">
-                    <var-badge type="success" position="right-bottom" :offset-x="0" :offset-y="0" value="release">
+              <var-option v-for="item in etVersionList" :key="item.version" :label="item.version" :value="item.version">
+                <var-cell :title="item.version" border>
+                  <template #extra>
+                    <var-badge 
+                      :type="item.prerelease ? 'warning' : 'success'" 
+                      position="right-bottom" 
+                      :value="item.prerelease ? '预发' : '稳定'">
                     </var-badge>
                   </template>
-                 </var-cell>
-                <!-- <span>{{ item.version }} </span> -->
-                    <!-- <var-chip>徽标</var-chip> -->
+                </var-cell>
               </var-option>
-              <!-- <var-option label="睡觉">
-                <var-icon class="selected-icon" name="weather-night" />
-                <span>睡觉</span>
-              </var-option> -->
-            </template>
-            <!-- <template #selected>
-              <var-icon class="selected-icon" :size="28" :name="value8 === '吃饭' ? 'cake-variant' : 'weather-night'" />
-              <span>{{ value8 }}</span>
-            </template> -->
-            <template #prepend-icon>
-              <!-- <var-icon class="prepend-icon" name="github" :size="28" /> -->
             </template>
             <template #append-icon>
-              <var-icon class="append-icon" name="github" :size="28" />
-            </template>
-            <template #arrow-icon="{ focus }">
-              <var-icon name="chevron-down" :transition="300" :class="{ 'arrow-icon-rotate': focus }" />
+              <var-icon 
+                name="refresh" 
+                :class="{ 'is-spinning': isFetchingVersionList }"
+                @click.stop="refreshVersionList" 
+              />
             </template>
           </var-select>
           <var-cell>
@@ -97,53 +76,70 @@
     </var-paper>
 
     <!-- 网络设置 -->
-    <!-- <var-paper class="setting-block" :elevation="1">
+    <var-paper class="setting-block" :elevation="1">
       <div class="block-header">
-        <var-icon name="globe" size="24" color="var(--color-success)" />
-        <span class="block-title">网络加速</span>
-      </div>
-      
-      <var-select v-model="settings.github_mirror" label="GitHub 加速地址">
-        <var-option 
-          v-for="mirror in githubMirrors" 
-          :key="mirror.value"
-          :label="mirror.label"
-          :value="mirror.value"
-        />
-      </var-select>
-      
-      <var-cell class="test-link">
+        <var-icon name="cog" size="24" color="var(--color-primary)" />
+        <span class="block-title">网络</span>
+      </div>      
+      <var-cell>
+        GitHub加速地址
+        <var-loading type="wave" v-if="isFetchingGithubMirrors" />
+      </var-cell>
+      <var-cell>
         <template #description>
-          <a :href="settings.github_mirror" target="_blank" class="mirror-link">
-            测试连接速度 <var-icon name="open-in-new" size="14" />
-          </a>
+          <var-select v-model="githubMirror" label="GitHub 加速地址" variant="outlined" size="small">
+            <var-option 
+              v-for="mirror in githubMirrors" 
+              :key="mirror"
+              :label="mirror"
+              :value="mirror"
+            />
+          </var-select>
         </template>
       </var-cell>
-    </var-paper> -->
+      <var-cell>
+        <template #extra>          
+          <var-button type="primary" size="small" @click="saveGitHubMirror" auto-loading style="min-width: 80px;">
+            <var-icon name="checkbox-marked-circle" />
+            保存           
+          </var-button>
+        </template>
+      </var-cell>
+    </var-paper>
+
+    <!-- 开发者选项 -->
+    <var-paper class="setting-block" :elevation="1">
+      <div class="block-header">
+        <var-icon name="wrench" size="24" color="var(--color-primary)" />
+        <span class="block-title">开发者选项</span>
+      </div>      
+      <var-cell>
+        <template #description>移动端页面调试</template>
+        <template #extra>
+          <var-switch v-model="vConsoleEnabled" @change="toggleVConsole" />
+        </template>
+      </var-cell>
+    </var-paper>
 
     <!-- 关于 -->
     <var-paper class="setting-block" :elevation="1">
       <div class="block-header">
         <var-icon name="information" size="24" color="var(--color-info)" />
         <span class="block-title">关于</span>
-      </div>
-      
+      </div>      
       <var-cell>
         <template #default></template>
         <template #description>
           <div>
-            <span>EasyTier 在飞牛上简化使用的UI，更合适新手上手，快速享受异地网络访问设备，简记：<strong>易组网</strong></span>
+            <var-link type="primary" href="https://github.com/710850609/fpk-easytier-lite" target="_blank" underline="hover">
+              <strong>易组网</strong>
+            </var-link>
+            <div>致力于简化使用 EasyTier</div>
+            <div>降低组网门槛，快速享受异地网络访问</div>
+            <div>享受 EasyTier 免费、不限设备数量、多终端支持等优势</div>
           </div>
-          <var-divider />
-          <div>
-            <var-cell><h3>相关链接</h3></var-cell>
-            <var-cell>
-              <var-link type="primary" href="https://github.com/710850609/fpk-easytier-lite" target="_blank" underline="hover">
-                易组网源码 
-              </var-link>
-              <img src="https://img.shields.io/github/v/release/710850609/fpk-easytier-lite?color=blue&logo=github" />
-            </var-cell>
-          </div>
+          <!-- <var-divider /> -->
+          <!-- <img src="https://img.shields.io/github/v/release/710850609/fpk-easytier-lite?color=blue&logo=github" /> -->
         </template>
       </var-cell>
     </var-paper>
@@ -155,13 +151,17 @@ import { themeOptions, setThemeMode, themeMode } from '../config/theme.js'
 import { VCONSOLE_ENABLED_KEY } from '../config/storage-keys.js'
 import toast from '../components/toast.js'
 import api from '../utils/api.js'
-import { getVersionList } from '../utils/github.js'
+import { getLatestVersionWithCache } from '../utils/github.js'
 
 const vConsoleEnabled = ref(false)
 const vConsoleInstance = ref(null)
 const isFetchingEtCoreVersion = ref(true)
+const isFetchingVersionList = ref(false)
 const etVersion = ref({ version: '', raw_version: '', latest_version: '', selected_version: '' })
 const etVersionList = ref([])
+const githubMirror = ref('')
+const githubMirrors = ref([])
+const isFetchingGithubMirrors = ref(true)
 
 const hasNewVersion = computed(() => etVersion.value.version && etVersion.value.latest_version && etVersion.value.version !== etVersion.value.latest_version)
 // 计算当前主题模式（从 theme.js 获取）
@@ -216,14 +216,28 @@ const getEtVersion = async () => {
   }
 }
 
-const getEtVersionList = async () => {
+const getEtVersionList = async (useCache = true) => {
+  isFetchingVersionList.value = true
   try {
-    etVersionList.value = await getVersionList('easyTier/easytier')
-    etVersion.value.latest_version = etVersionList.value[0].version
-    etVersion.value.selected_version = etVersionList.value[0].version
+    etVersionList.value = await getLatestVersionWithCache('easyTier/easytier', useCache)
+    etVersion.value.latest_version = etVersionList.value[0]?.version || ''
+    if (!etVersion.value.selected_version) {
+      etVersion.value.selected_version = etVersion.value.latest_version
+    }
+    if (!useCache) {
+      toast.success('内核可选版本已刷新')
+    }
   } catch (e) {
     console.error('获取版本列表失败:', e)
+    toast.error('获取版本列表失败')
+  } finally {
+    isFetchingVersionList.value = false
   }
+}
+
+// 刷新版本列表（强制不使用缓存）
+const refreshVersionList = async () => {
+  await getEtVersionList(false)
 }
 
 const installEtCore = async () => {
@@ -240,6 +254,30 @@ const installEtCore = async () => {
   })
 }
 
+const saveGitHubMirror = async () => {
+  try {
+    await api.settings.saveGithubMirror({ url: githubMirror.value })
+    toast.success('GitHub 加速地址已保存')
+  } catch (e) {
+    console.error('保存 GitHub 加速地址失败:', e)
+    toast.error('保存 GitHub 加速地址失败')
+  }
+}
+
+const getGithubMirrors = async () => {
+  try {
+    isFetchingGithubMirrors.value = true
+    const { data } = await api.settings.getGithubMirrors()
+    githubMirror.value = data.selected
+    githubMirrors.value = data.sources
+  } catch (e) {
+    console.error('获取 GitHub 加速地址失败:', e)
+    toast.error('获取 GitHub 加速地址失败')
+  } finally {
+    isFetchingGithubMirrors.value = false
+  }
+}
+
 onMounted(() => {
   // 从 localStorage 加载 VConsole 开关状态
   const enabled = localStorage.getItem(VCONSOLE_ENABLED_KEY) === 'true'
@@ -250,6 +288,7 @@ onMounted(() => {
   }  
   getEtVersion()
   getEtVersionList()
+  getGithubMirrors()
 })
 </script>
 
@@ -290,6 +329,26 @@ onMounted(() => {
 
 .test-link {
   margin-top: 8px;
+}
+
+/* 强制 badge 横向显示 */
+:deep(.var-badge__content) {
+  white-space: nowrap !important;
+  min-width: fit-content !important;
+}
+
+/* 刷新图标旋转动画 */
+.is-spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 :deep(.var-cell__description) {

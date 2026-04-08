@@ -3,7 +3,7 @@
     <var-paper class="download-card" :elevation="2">
       <div class="platform-header">
         <div class="platform-info">
-          <h2>EasyTier MacOS版本</h2>
+          <h2>EasyTier MacOS GUI 版本</h2>
         </div>
       </div>
       <div class="version-info">

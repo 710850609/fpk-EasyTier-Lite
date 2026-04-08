@@ -132,7 +132,12 @@ export const api = {
   // ET 核心相关
   etCore: {
     getVersion: () => get('/et_core/version'),
-    install: (data) => post('/et_core/install', data)
+    install: (data) => post('/et_core/install', data),
+  },
+  // 设置相关
+  settings: {
+    getGithubMirrors: () => get('/settings/github_mirrors'),
+    saveGithubMirror: (data) => post('/settings/save_github_mirror', data),
   }
 }
 
