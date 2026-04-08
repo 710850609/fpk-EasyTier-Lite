@@ -1,63 +1,64 @@
 <template>
   <div class="config-page">
-    <var-paper class="config-section" :elevation="1">
-      <div class="section-header">
-        <var-icon name="cog" size="24" color="var(--color-primary)" />
-        <span class="section-title">{{ fastSettingMode ? '快速设置' : '基础设置' }}</span>
-      </div>
-      
-      <var-form ref="form">
-        <!-- 网络名称 + 网络密码 一行 -->
-        <div class="input-row">
-          <var-input
-            v-model="config.network_identity.network_name"
-            placeholder="网络名称"
-            :rules="[(v) => !!v || '网络名称不能为空']"
-            blur-color="var(--color-primary)"
-          >
-            <template #prepend-icon>
-              <var-icon name="wifi" />
-            </template>
-            <template #label>网络名称</template>
-          </var-input>
-
-          <var-input
-            v-model="config.network_identity.network_secret"
-            placeholder="网络密码"
-            type="password"
-            blur-color="var(--color-primary)"
-          >
-            <template #prepend-icon>
-              <var-icon name="lock-outline" />
-            </template>
-            <template #label>网络密码</template>
-          </var-input>
+    <var-form ref="form">
+      <var-paper class="config-section" :elevation="1">
+        <div class="section-header">
+          <var-icon name="cog" size="24" color="var(--color-primary)" />
+          <span class="section-title">{{ fastSettingMode ? '快速设置' : '基础设置' }}</span>
         </div>
         
-        <span v-if="fastSettingMode" style="font-size: 12px; color: var(--color-warning); margin-top: 8px;"> 将使用动态社区节点用于发现组网节点。如不想用，请刷新页面重新选择正常模式设置，并输入初始节点 </span>
-        <var-select
-          v-if="!fastSettingMode"
-          v-model="config.peer"
-          multiple
-          placeholder="初始节点"
-          :chip="true"
-          blur-color="var(--color-primary)"
-        >
-          <var-cell icon="tag-outline" title="peer">
-            <template #>
-              <var-input placeholder="输入初始节点" size="small" v-model="customPeer" blur-color="var(--color-primary)" />
-            </template>
-            <template #extra>
-              <var-button type="primary" size="small" @click="addPeer">添加</var-button>
-            </template>
-          </var-cell>
-          <var-option 
-            v-for="peer in publicPeerOptions"
-            :key="peer.uri"
-            :label="peer.label || peer.uri"
-            :value="peer.uri"
-          />
-        </var-select>
+          <!-- 网络名称 + 网络密码 一行 -->
+          <div class="input-row">
+            <var-input
+              v-model="config.network_identity.network_name"
+              placeholder="网络名称"
+              :rules="[(v) => !!v || '网络名称不能为空']"
+              blur-color="var(--color-primary)"
+            >
+              <template #prepend-icon>
+                <var-icon name="wifi" />
+              </template>
+              <template #label>网络名称</template>
+            </var-input>
+
+            <var-input
+              v-model="config.network_identity.network_secret"
+              placeholder="网络密码"
+              type="password"
+              blur-color="var(--color-primary)"
+            >
+              <template #prepend-icon>
+                <var-icon name="lock-outline" />
+              </template>
+              <template #label>网络密码</template>
+            </var-input>
+          </div>
+          
+          <span v-if="fastSettingMode" style="font-size: 12px; color: var(--color-warning); margin-top: 8px;"> 将使用动态社区节点用于发现组网节点。如不想用，请刷新页面重新选择正常模式设置，并输入初始节点 </span>
+          <var-select
+            v-if="!fastSettingMode"
+            v-model="config.peer"
+            multiple
+            placeholder="初始节点"
+            :chip="true"
+            blur-color="var(--color-primary)"
+          >
+            <var-cell icon="tag-outline" title="peer">
+              <template #>
+                <var-input placeholder="输入初始节点" size="small" v-model="customPeer" blur-color="var(--color-primary)" />
+              </template>
+              <template #extra>
+                <var-button type="primary" size="small" @click="addPeer">添加</var-button>
+              </template>
+            </var-cell>
+            <var-option 
+              v-for="peer in publicPeerOptions"
+              :key="peer.uri"
+              :label="peer.label || peer.uri"
+              :value="peer.uri"
+            />
+          </var-select>
+      </var-paper>
 
     <!-- 高级设置 -->
     <var-collapse v-if="!fastSettingMode" v-model="flagsOpen" class="flags-section" :class="`var-elevation--2`">
@@ -307,7 +308,7 @@
     </var-collapse-item>
   </var-collapse>
       </var-form>
-    </var-paper>
+
 
     <!-- 操作按钮 -->
     <div class="actions">
