@@ -25,7 +25,7 @@ def save(data, *kwargs):
     with open(ET_CONFIG_FILE, "r", encoding="utf-8") as f:
         doc = tomlkit.parse(f.read())
     if not doc["network_identity"]:
-        doc["network_identity"] = {network_name: '', network_secret: ''}
+        doc["network_identity"] = {"network_name": '', "network_secret": ''}
     __deep_merge(doc, data)
     
     with open(ET_CONFIG_FILE, "w", encoding="utf-8") as f:
@@ -69,20 +69,8 @@ def public_peers(*kwargs):
     for uri in peer_uris:
         label = uri.replace(f'{GITHUB_PROXY}/https://raw.githubusercontent.com/710850609/fpk-EasyTier-Lite/refs/heads/main/peers/peer-', '')
         if (len(label) != len(uri)):
-            label = "公共节点" + label.replace('.txt', '')
+            label = "动态节点" + label.replace('.txt', '')
         peers.append({'label': label, 'uri': uri})
-
-
-
-        
-
-    # for i in range(1, 6):
-    #     peer = f'https://raw.githubusercontent.com/710850609/fpk-EasyTier-Lite/refs/heads/main/peers/peer-{i}.txt'
-    #     if peer_uris.index(peer) == -1:
-    #         peers.append({'label': f'动态社区节点{i}', 'uri': peer})
-    #     else:
-    #         peers.append({'label': f'动态社区节点{i}', 'uri': peer})
-    #         logging.info(f"节点{ipeer}已存在")
     logging.info(f"{peers}")
     http_util.http_response_ok(peers)
 
@@ -114,6 +102,7 @@ def __deep_merge(base, override):
     for key, value in override.items():
         # 跳过 null 值，不写入 TOML
         if value is None:
+            base.pop(key, None)
             continue
         if key in base and isinstance(base[key], dict) and isinstance(value, dict):
             __deep_merge(base[key], value)

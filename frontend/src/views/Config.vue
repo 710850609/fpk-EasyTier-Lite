@@ -6,43 +6,33 @@
         <span class="section-title">{{ fastSettingMode ? '快速设置' : '基础设置' }}</span>
       </div>
       
-      <var-form ref="form" :disabled="false">
-        <var-input
-          v-model="config.network_identity.network_name"
-          placeholder="网络名称"
-          :rules="[(v) => !!v || '网络名称不能为空']"
-          blur-color="var(--color-primary)"
-        >
-          <template #prepend-icon>
-            <var-icon name="wifi" />
-          </template>
-          <template #label>网络名称</template>
-        </var-input>
+      <var-form ref="form">
+        <!-- 网络名称 + 网络密码 一行 -->
+        <div class="input-row">
+          <var-input
+            v-model="config.network_identity.network_name"
+            placeholder="网络名称"
+            :rules="[(v) => !!v || '网络名称不能为空']"
+            blur-color="var(--color-primary)"
+          >
+            <template #prepend-icon>
+              <var-icon name="wifi" />
+            </template>
+            <template #label>网络名称</template>
+          </var-input>
 
-        <var-input
-          v-model="config.network_identity.network_secret"
-          placeholder="网络密码"
-          type="password"
-          blur-color="var(--color-primary)"
-        >
-          <template #prepend-icon>
-            <var-icon name="lock-outline" />
-          </template>
-          <template #label>网络密码</template>
-        </var-input>
-
-        <var-input
-          v-if="!fastSettingMode"
-          v-model="config.ipv4"
-          placeholder="虚拟IPv4"
-          blur-color="var(--color-primary)"
-        >
-          <template #prepend-icon>
-            <var-icon name="pin-outline" />
-          </template>
-          <template #label>IPv4 网段</template>
-        </var-input>
-
+          <var-input
+            v-model="config.network_identity.network_secret"
+            placeholder="网络密码"
+            type="password"
+            blur-color="var(--color-primary)"
+          >
+            <template #prepend-icon>
+              <var-icon name="lock-outline" />
+            </template>
+            <template #label>网络密码</template>
+          </var-input>
+        </div>
         
         <span v-if="fastSettingMode" style="font-size: 12px; color: var(--color-warning); margin-top: 8px;"> 将使用动态社区节点用于发现组网节点。如不想用，请刷新页面重新选择正常模式设置，并输入初始节点 </span>
         <var-select
@@ -53,7 +43,7 @@
           :chip="true"
           blur-color="var(--color-primary)"
         >
-          <var-cell v-for="peer in ['1']"  icon="tag-outline" title="peer">
+          <var-cell icon="tag-outline" title="peer">
             <template #>
               <var-input placeholder="输入初始节点" size="small" v-model="customPeer" blur-color="var(--color-primary)" />
             </template>
@@ -68,8 +58,6 @@
             :value="peer.uri"
           />
         </var-select>
-      </var-form>
-    </var-paper>
 
     <!-- 高级设置 -->
     <var-collapse v-if="!fastSettingMode" v-model="flagsOpen" class="flags-section" :class="`var-elevation--2`">
@@ -104,87 +92,183 @@
             </div>
           </div>
 
-          <!-- 主机名 -->
-          <div class="input-section">
-            <div class="section-subtitle">主机名</div>
-            <var-input
-              v-model="config.hostname"
-              placeholder="留空默认为主机名"
-              variant="outlined"
-              size="small"
-            />
+          <!-- 主机名 + 虚拟IPv4 一行 -->
+          <div class="input-row">
+            <!-- 主机名 -->
+            <div class="input-section">
+              <div class="section-subtitle">主机名</div>
+              <var-input
+                v-model="config.hostname"
+                placeholder="留空默认为主机名"
+                variant="outlined"
+                size="small"
+              />
+            </div>
+
+            <!-- 虚拟IPv4 -->
+            <div class="input-section">
+              <div class="section-subtitle">虚拟IPv4</div>
+              <var-input
+                v-model="config.ipv4"
+                placeholder="固定虚拟IPv4"
+                variant="outlined"
+                size="small"
+              />
+            </div>
           </div>
 
-          <div class="input-section">
-            <div class="section-subtitle">TUN接口名称
-              <var-tooltip content="当多个网络同时使用相同的TUN接口名称时，将会在设置TUN的IP时产生冲突" :offset-x="160">
-                <var-icon 
-                  name="help-circle-outline" 
-                  size="16" 
-                  class="help-icon"
-                />
-              </var-tooltip>
+          <!-- TUN接口名称 + 监听地址 一行 -->
+          <div class="input-row">
+            <!-- TUN接口名称 -->
+            <div class="input-section">
+              <div class="section-subtitle">TUN接口名称
+                <var-tooltip content="当多个网络同时使用相同的TUN接口名称时，将会在设置TUN的IP时产生冲突" :offset-x="160">
+                  <var-icon 
+                    name="help-circle-outline" 
+                    size="16" 
+                    class="help-icon"
+                  />
+                </var-tooltip>
+              </div>
+              <var-input
+                v-model="config.flags.dev_name"
+                placeholder="留空自动生成随机名称"
+                variant="outlined"
+                size="small"
+              />
             </div>
-            <var-input
-              v-model="config.flags.dev_name"
-              placeholder="留空自动生成随机名称"
-              variant="outlined"
-              size="small"
-            />
-          </div>
-          <div class="input-section">
-            <div class="section-subtitle">MTU
-              <var-tooltip content="TUN设备的MTU，默认加密: 1360，非加密: 1380。取值范围 400 ~ 1380" :offset-x="160">
-                <var-icon 
-                  name="help-circle-outline" 
-                  size="16" 
-                  class="help-icon"
-                />
-              </var-tooltip>
+            <div class="input-section">
+              <div class="section-subtitle">MTU
+                <var-tooltip content="TUN设备的MTU，默认加密: 1360，不加密: 1380。取值范围 400 ~ 1380" :offset-x="160">
+                  <var-icon 
+                    name="help-circle-outline" 
+                    size="16" 
+                    class="help-icon"
+                  />
+                </var-tooltip>
+              </div>
+              <var-input
+                v-model="mtuStr"
+                type="number"
+                :rules="(v) => (v === '' || v >= 400 && v <= 1380) || 'MTU值超出范围[400, 1380]'"
+                placeholder="留空默认加密:1360, 不加密:1380"
+                variant="outlined"
+                size="small"
+              />
             </div>
-             <!-- <var-counter :min="400" :max="1380" input-text-size="16px"
-              input-width="55px"
-              button-size="32px" v-model="config.flags.mtu"/> -->
-            <var-input
-              v-model="config.flags.mtu"
-              type="number"
-              :rules="(v) => v !== '' && v >= 400 && v <= 1380 || 'MTU值超出范围[400, 1380]'"
-              placeholder="留空为默认值1380"
-              variant="outlined"
-              size="small"
-            />
           </div>
 
-          <!-- 子网代理CIDR -->
-          <div class="input-section">
-            <div class="section-subtitle">子网代理CIDR</div>
-            <var-select
-              v-if="!fastSettingMode"
-              v-model="config.proxy_network"
-              multiple
-              placeholder="子网网段"
+          <div class="input-row">
+            <div class="input-section">
+              <div class="section-subtitle">线程数
+                <var-tooltip content="仅当开启多线程时生效，取值必须大于2" :offset-x="60">
+                  <var-icon 
+                    name="help-circle-outline" 
+                    size="16" 
+                    class="help-icon"
+                  />
+                </var-tooltip>
+              </div>
+              <var-input
+                v-model="multiThreadCountStr"
+                placeholder="留空默认为2"
+                variant="outlined"
+                type="number"
+                :rules="(v) => (v === '' || v >= 2) || '线程数必须大于等于2'"
+                size="small"
+              />
+            </div>
+            <div class="input-section">
+              <div class="section-subtitle">加密算法</div>
+              <var-select
+              v-model="config.flags.encryption_algorithm"
+              placeholder="留空默认aes-gcm"
               variant="outlined"
               :chip="true"
               size="small"
             >
-              <var-cell icon="tag-outline">
-                <template #>
-                  <var-input placeholder="格式: 192.168.1.1/24 或 192.168.1.1/32 等" size="small" v-model="customProxyNetwork" blur-color="var(--color-primary)" />
-                </template>
-                <template #extra>
-                  <var-button type="primary" size="small" @click="addProxyNetwork">添加</var-button>
-                </template>
-              </var-cell>
               <var-option 
-                v-for="(e, index) in config.proxy_network"
+                v-for="(e, index) in encryptionAlgorithmList"
                 :key="index"
                 :label="e"
                 :value="e"
               />
             </var-select>
+            </div>
           </div>
 
-          <!-- 监听地址 -->           
+          <div class="input-row">
+            <!-- 仅转发白名单网络 -->
+            <div class="input-section">
+              <div class="section-subtitle">转发白名单网络                
+                <var-tooltip content="仅转发白名单网络的流量，支持通配*符字符串。多个网络名称间可以使用英文空格间隔" :offset-x="60">
+                  <var-icon 
+                    name="help-circle-outline" 
+                    size="16" 
+                    class="help-icon"
+                  />
+                </var-tooltip>
+              </div>
+              <var-input
+                v-model="config.flags.relay_network_whitelist"
+                multiple
+                placeholder="网络名称，支持通配*符字符串"
+                variant="outlined"
+                :chip="true"
+                size="small"
+              >
+              </var-input>
+            </div>
+            <!-- 子网代理CIDR -->
+            <div class="input-section">
+              <div class="section-subtitle">子网代理CIDR</div>
+              <var-select
+                v-model="config.proxy_network"
+                multiple
+                placeholder="子网网段"
+                variant="outlined"
+                :chip="true"
+                size="small"
+              >
+                <var-cell icon="tag-outline">
+                  <template #>
+                    <var-input placeholder="格式: 192.168.1.1/24 或 192.168.1.1/32 等" size="small" v-model="customProxyNetwork" blur-color="var(--color-primary)" />
+                  </template>
+                  <template #extra>
+                    <var-button type="primary" size="small" @click="addProxyNetwork">添加</var-button>
+                  </template>
+                </var-cell>
+                <var-option 
+                  v-for="(e, index) in config.proxy_network"
+                  :key="index"
+                  :label="e"
+                  :value="e"
+                />
+              </var-select>
+            </div>            
+          </div>
+
+          <div class="input-row">
+            <div class="input-section">
+              <div class="section-subtitle">默认协议</div>
+              <var-select
+                v-model="config.flags.default_protocol"
+                placeholder="默认协议"
+                variant="outlined"
+                :chip="true"
+                size="small"
+              >
+                <var-option 
+                  v-for="(e, index) in defaultProtocolList"
+                  :key="index"
+                  :label="e.label"
+                  :value="e.value"
+                />
+              </var-select>
+            </div>            
+          </div>
+          
+          <!-- 监听地址 -->
           <div class="input-section">
             <div class="section-subtitle">监听地址
               <var-tooltip content="部分协议需要较高版本支持，具体可加ET群咨询" :offset-x="50">
@@ -196,12 +280,12 @@
               </var-tooltip>
             </div>
             <var-select
-              v-if="!fastSettingMode"
               v-model="config.listeners"
               multiple
               placeholder="监听地址"
               variant="outlined"
               :chip="true"
+              size="small"
             >
               <var-cell icon="tag-outline">
                 <template #>
@@ -214,14 +298,16 @@
               <var-option 
                 v-for="(e, index) in listenerOptions"
                 :key="index"
-                :label="e"
-                :value="e"
-              />
-            </var-select>
-          </div>
+              :label="e"
+              :value="e"
+            />
+          </var-select>
         </div>
-      </var-collapse-item>
-    </var-collapse>
+      </div>
+    </var-collapse-item>
+  </var-collapse>
+      </var-form>
+    </var-paper>
 
     <!-- 操作按钮 -->
     <div class="actions">
@@ -278,11 +364,7 @@ import CodeEditor from '../components/CodeEditor.vue'
 
 // 注入快速设置模式
 const fastSettingMode = inject('fastSettingMode', ref(false))
-const publicPeerOptions = ref([
-  // 'tcp://easytier.public.com:11010',
-  // 'udp://easytier.public.com:11011',
-  // 'wss://easytier.public.com:11012'
-])
+const publicPeerOptions = ref([])
 const customPeer = ref('')
 const customProxyNetwork = ref('')
 const customListener = ref('')
@@ -290,9 +372,11 @@ const flagsOpen = ref([])
 const form = ref(null)
 const showCodePage = ref(false)
 const configToml = ref('')
+const encryptionAlgorithmList = ref(['aes-gcm','xor','chacha20','aes-gcm','aes-gcm-256','openssl-aes128-gcm','openssl-aes256-gcm','openssl-chacha20'])
+const defaultProtocolList = ref([ {'label': '默认','value': ''}, {'label': 'tcp','value': 'tcp'}, {'label': 'udp','value': 'udp'}, {'label': 'quic','value': 'quic'}, {'label': 'wg','value': 'wg'}, {'label': 'ws','value': 'ws'}, {'label': 'wss','value': 'wss'}, {'label': 'faketcp','value': 'faketcp'}])
 
 const config = ref({
-  "hostname": "",
+  "hostname": undefined,
   "dhcp": true,
   "ipv4": '',
   "network_identity": {
@@ -331,7 +415,7 @@ const featureSwitches = [
   { key: 'disable_tcp_hole_punching', label: '禁用 TCP 打洞', tooltip: '关闭 TCP 协议的 NAT 打洞功能' },
   { key: 'disable_udp_hole_punching', label: '禁用 UDP 打洞', tooltip: '关闭 UDP 协议的 NAT 打洞功能' },
   { key: 'disable_sym_hole_punching', label: '禁用对称 NAT 打洞', tooltip: '关闭对称型 NAT 的打洞功能' },  
-  { key: 'use_smoltcp', label: '使用用户态协议站', tooltip: '使用用户态TCP/IP协议栈，避免系统防火墙问题无法子网代理或KCP代理' },
+  { key: 'use_smoltcp', label: '使用用户态协议栈', tooltip: '使用用户态TCP/IP协议栈，避免系统防火墙问题无法子网代理或KCP代理' },
   { key: 'proxy_forward_by_system', label: '系统转发', tooltip: '启用系统级 IP 转发' },
   { key: 'p2p_only', label: '仅 P2P', tooltip: '只允许 P2P 连接，不使用中继' },
   { key: 'disable_p2p', label: '禁用 P2P', tooltip: '关闭点对点直连功能，所有流量通过中继' },
@@ -339,7 +423,7 @@ const featureSwitches = [
   { key: 'enable_encryption', label: '启用加密', tooltip: '开启数据传输加密，提高安全性但性能降低' },
   { key: 'enable_ipv6', label: '启用 IPv6', tooltip: '开启 IPv6 支持' },
   { key: 'no_tun', label: '无 TUN 模式', tooltip: '不使用 TUN 设备。' },
-  { key: 'accept_dns', label: '启用魔法 DNS', tooltip: '启用特殊的 DNS 解析功能' },
+  { key: 'accept_dns', label: '启用魔法 DNS', tooltip: '魔法 DNS 目前仅支持在 Windows 和 MacOS 上自动配置系统 DNS，Linux 上需要手动配置 DNS 服务器为 100.100.100.101 才可正常使用' },
   { key: 'relay_all_peer_rpc', label: '转发 RPC 包', tooltip: '允许转发 RPC 数据包' },
   { key: 'bind_device', label: '仅使用物理网卡', tooltip: '只使用物理网卡进行通信，排除虚拟网卡' },
   { key: 'user_stack', label: '使用用户态协议栈', tooltip: '使用用户态网络协议栈代替内核协议栈' },
@@ -364,19 +448,19 @@ const addListener = () => {
   customProxyNetwork.value = ''
 }
 
-// 监听端口字符串（用于输入框）
-const listenPortStr = computed({
-  get: () => String(config.value.flags.listen_port),
+// MTU 字符串（用于输入框）
+const mtuStr = computed({
+  get: () => config.value.flags.mtu !== null && config.value.flags.mtu !== undefined ? String(config.value.flags.mtu) : '',
   set: (val) => {
-    config.value.flags.listen_port = val ? parseInt(val, 10) : 0
+    config.value.flags.mtu = val === '' ? null : parseInt(val, 10)
   }
 })
 
-// MTU 字符串（用于输入框）
-const mtuStr = computed({
-  get: () => String(config.value.flags.mtu),
+// 线程数字符串（用于输入框）
+const multiThreadCountStr = computed({
+  get: () => config.value.flags.multi_thread_count !== null && config.value.flags.multi_thread_count !== undefined ? String(config.value.flags.multi_thread_count) : '',
   set: (val) => {
-    config.value.flags.mtu = val ? parseInt(val, 10) : 0
+    config.value.flags.multi_thread_count = val === '' ? null : parseInt(val, 10)
   }
 })
 
@@ -399,23 +483,27 @@ const addProxyNetwork = () => {
   customProxyNetwork.value = ''
 }
 
+const ensureInt = (str) => {
+  if (str && typeof str === 'string') {
+    return parseInt(str, 10)
+  }
+  return str
+}
+
 const saveConfig = async () => {
   const valid = await form.value.validate()
   if (!valid) return
 
   return new Promise((resolve, reject) => {
-    let data = {...config.value, isFastConfig: fastSettingMode.value};
+    let data = {...config.value};
     data.peer = data.peer.map(e => ({uri: e}))
     data.proxy_network = data.proxy_network.map(e => ({cidr: e}))
     data.dhcp = !data.ipv4 || !(data.ipv4.trim())
-    if (data.flags.mtu && typeof data.flags.mtu === 'string') {
-      data.flags.mtu = parseInt(data.flags.mtu, 10)
-    }
     if (data.flags.enable_ipv6 === undefined) {
-      data.ipv6 = true
+      data.flags.enable_ipv6 = true
     }
     if (data.flags.enable_encryption === undefined) {
-      data.enable_encryption = true
+      data.flags.enable_encryption = true
     }
     api.configs.save(data).then(res => {
       const restartLoading = toast.loading('保存成功，服务重启中...')
@@ -452,6 +540,7 @@ const saveToml = () => {
       api.services.restart().then(() => {
         toast.success('服务重启成功')
       }).finally(e => {
+        loadConfig()
         restartLoading.clear()
         resolve()
       })
@@ -459,14 +548,9 @@ const saveToml = () => {
   });
 }
 
-onMounted(async () => {
-  // 加载公共节点
-  api.configs.publicPeers().then(data => {
-    publicPeerOptions.value = data.data
-  })
+const loadConfig = () => {
   api.configs.get().then(data => {
     const json = data.data
-    json.hostname = json.hostname || null
     json.peer = (json.peer || []).map(e => e.uri)
     json.proxy_network = (json.proxy_network || []).map(e => e.cidr)
     if (json.listeners) {
@@ -476,11 +560,36 @@ onMounted(async () => {
         }
       })
     }
+    // 兼容处理
     if (json.flags.mtu) {
-      json.flags.mtu = String(json.flags.mtu)
+      json.flags.mtu = ensureInt(json.flags.mtu)
     }
-    config.value = json
+    if (json.flags.multi_thread_count) {
+      json.flags.multi_thread_count = ensureInt(json.flags.multi_thread_count)
+    }
+    // 处理空值时，展示placeholder提示
+    config.value = {
+      ...config.value,
+      ...json,
+      hostname: json.hostname || undefined,
+      ipv4: json.ipv4 || undefined,
+      flags: {
+        ...config.value.flags,
+        ...json.flags,
+        mtu: json.flags?.mtu || undefined,
+        multi_thread_count: json.flags?.multi_thread_count || undefined
+      }
+    }
+    console.log(config.value)
   })
+}
+
+onMounted(async () => {
+  // 加载公共节点
+  api.configs.publicPeers().then(data => {
+    publicPeerOptions.value = data.data
+  })
+  loadConfig()
 })
 </script>
 
@@ -578,6 +687,19 @@ onMounted(async () => {
 .input-section {
   display: flex;
   flex-direction: column;
+}
+
+/* 两列布局 */
+.input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .input-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 .actions {
