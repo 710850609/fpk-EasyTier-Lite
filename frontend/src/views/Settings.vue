@@ -136,7 +136,7 @@
             </var-link>
             <div>致力于简化使用 EasyTier</div>
             <div>降低组网门槛，快速享受异地网络访问</div>
-            <div>享受 EasyTier 免费、不限设备数量、多终端支持等优势</div>
+            <div>享受 EasyTier 免费、不限设备数量、多类型终端支持等优势</div>
           </div>
           <!-- <var-divider /> -->
           <!-- <img src="https://img.shields.io/github/v/release/710850609/fpk-easytier-lite?color=blue&logo=github" /> -->
@@ -245,6 +245,7 @@ const installEtCore = async () => {
     api.etCore.install({ version: etVersion.value.selected_version })
     .then((res) => {
       toast.success(res.data || `安装内核版本 ${etVersion.value.selected_version} 成功`)
+      getEtVersion()
       resolve(res)
     })
     .catch((err) => {
