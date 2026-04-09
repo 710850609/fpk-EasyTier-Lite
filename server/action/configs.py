@@ -9,7 +9,6 @@ import requests
 import logging
 import tomlkit
 import json
-from tomlkit.items import Comment
 import os
 
 TRIM_APPNAME = os.getenv('TRIM_APPNAME', 'EasyTier-Lite')
@@ -142,16 +141,16 @@ def public_peers(data, *kwargs):
         if peer not in config_peers_set:
             peer_uris.append(peer)
     peers = []
+    baseUrl = 'https://raw.githubusercontent.com/710850609/EasyTier-Lite/refs/heads/main/peers/peer-'
     for uri in peer_uris:
         label = uri
-        logging.info(f"label1: {label}")
-        if github_proxy and github_proxy != '':
-            label = uri.replace(f"{github_proxy}/", '')
-            logging.info(f"label2: {label}")
-        label = label.replace(f'https://raw.githubusercontent.com/710850609/EasyTier-Lite/refs/heads/main/peers/peer-', '')
-        logging.info(f"label3: {label}")
-        if (len(label) != len(uri)):
-            label = "动态节点" + label.replace('.txt', '')
+        matchIndex = uri.index(baseUrl)
+        if matchIndex > -1:
+            label = '动态节点' + uri[matchIndex + len(baseUrl):].replace('.txt', '')
+            if matchIndex > 0:
+                github_proxy = uri[:matchIndex - 1]
+                github_proxy = github_proxy.replace('https://', '')
+                label = f'{label}({github_proxy})'
         peers.append({'label': label, 'uri': uri})
     logging.info(f"{peers}")
     http_util.http_response_ok(peers)
