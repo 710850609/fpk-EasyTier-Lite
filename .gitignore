@@ -10,6 +10,11 @@ EasyTier-Lite/app/backend
 
 
 peers/.venv
+peers/src/.venv
+peers/src/__pycache__
+peers/*.log
+
+
 server/.venv
 server/*/__pycache__
 server/__pycache__

@@ -61,13 +61,22 @@ def http_handle():
     request_body = ''
     if content_length > 0:
         request_body = sys.stdin.read(content_length)
-    # 解析 JSON 请求体
     request_data = None
     if request_body:
         try:
             request_data = json.loads(request_body)
         except json.JSONDecodeError:
             request_data = None
+    if query_string:
+        query_params = {}
+        for param in query_string.split('&'):
+            if '=' in param:
+                key, value = param.split('=', 1)
+                query_params[key] = value
+        if request_data is None:
+            request_data = query_params
+        else:
+            request_data.update(query_params)
     
     module_name = f"action.{path_params[1]}"
     function_name = path_params[2]

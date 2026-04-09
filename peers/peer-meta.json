@@ -1,0 +1,34 @@
+{
+  "count": 7,
+  "baseUrl": "https://github.com/710850609/EasyTier-Lite/raw/refs/heads/main/peer",
+  "peers": [
+    {
+      "url": "tcp://103.184.47.79:11010",
+      "fileName": "peer-1.txt"
+    },
+    {
+      "url": "tcp://47.96.28.190:9994",
+      "fileName": "peer-2.txt"
+    },
+    {
+      "url": "tcp://106.15.202.147:11010",
+      "fileName": "peer-3.txt"
+    },
+    {
+      "url": "tcp://112.19.8.19:11010",
+      "fileName": "peer-4.txt"
+    },
+    {
+      "url": "udp://ec.6mahua.top:11010",
+      "fileName": "peer-5.txt"
+    },
+    {
+      "url": "tcp://ros.scpsl.com.cn:11010",
+      "fileName": "peer-6.txt"
+    },
+    {
+      "url": "tcp://sh.vomiku.com:7910",
+      "fileName": "peer-7.txt"
+    }
+  ]
+}

@@ -33,6 +33,9 @@ def get_latest_version(api_url) -> str:
 def get_github_proxy() -> str:
     """获取 GitHub 代理 URL"""
     try:
+        if not Path(github_proxy_file).exists():
+            logging.warning(f"GitHub加速配置文件不存在: {github_proxy_file}，不使用加速")
+            return None
         cfg_path = Path(github_proxy_file);
         if cfg_path.exists():
             content = cfg_path.read_text().strip()

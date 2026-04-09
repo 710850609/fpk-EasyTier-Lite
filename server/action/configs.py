@@ -4,6 +4,8 @@
 from pathlib import Path
 from datetime import datetime
 import util.http_util as http_util
+import util.github_util as github_util
+import requests
 import logging
 import tomlkit
 from tomlkit.items import Comment
@@ -16,6 +18,7 @@ TRIM_SHARE_DIR = os.getenv('TRIM_SHARE_DIR', f'/var/apps/{TRIM_APPNAME}/shares/{
 
 ET_CONFIG_FILE = f'{TRIM_SHARE_DIR}/config.toml'
 ET_CONFIG_INIT_FILE = f'{TRIM_PKGVAR}/.init'
+ET_PEER_META_FILE = f'{TRIM_PKGVAR}/peer-meta.json'
 
 GITHUB_PROXY = "https://ghfast.top"
 
@@ -69,7 +72,7 @@ def save(data, *kwargs):
     Path(ET_CONFIG_INIT_FILE).unlink(missing_ok=True)
     http_util.http_response_ok('配置保存成功')
 
-def save_with_comment(data, *kwargs):    
+def save_with_comment(data, *kwargs):
     with open(ET_CONFIG_FILE, "r", encoding="utf-8") as f:
         src_doc = tomlkit.parse(f.read())
     if not src_doc["network_identity"]:
@@ -120,20 +123,26 @@ def get_toml(*kwargs):
     with open(ET_CONFIG_FILE, "r", encoding="utf-8") as f:
         http_util.http_response_ok(f.read())
 
-def public_peers(*kwargs):
+def public_peers(data, *kwargs):
+    refresh = data and 'refresh' in data and data['refresh'] or False
+    peer_meta = __get_public_peers(refresh)
     peer_uris = []
     with open(ET_CONFIG_FILE, "r", encoding="utf-8") as f:
         doc = tomlkit.parse(f.read())
         for i in (doc["peer"] or []):
             peer_uris.append(i["uri"])
     config_peers_set = set(peer_uris)
-    for i in range(1, 6):
-        peer = f'{GITHUB_PROXY}/https://raw.githubusercontent.com/710850609/fpk-EasyTier-Lite/refs/heads/main/peers/peer-{i}.txt'
+
+    github_proxy = github_util.get_github_proxy();
+    for item in peer_meta["peers"]:
+        peer = f"{peer_meta["baseUrl"]}/{item['fileName']}"
+        if github_proxy:
+            peer = f"{github_proxy}/{peer}"
         if peer not in config_peers_set:
             peer_uris.append(peer)
     peers = []
     for uri in peer_uris:
-        label = uri.replace(f'{GITHUB_PROXY}/https://raw.githubusercontent.com/710850609/fpk-EasyTier-Lite/refs/heads/main/peers/peer-', '')
+        label = uri.replace(f'{github_proxy}/https://raw.githubusercontent.com/710850609/EasyTier-Lite/refs/heads/main/peers/peer-', '')
         if (len(label) != len(uri)):
             label = "动态节点" + label.replace('.txt', '')
         peers.append({'label': label, 'uri': uri})
@@ -180,3 +189,27 @@ def __get_comment(key):
     if key and key in CONFIG_COMMENTS and CONFIG_COMMENTS[key]:
         return CONFIG_COMMENTS[key]
     return None
+
+def __get_public_peers(refresh=False):
+    if refresh or not Path(ET_PEER_META_FILE).exists():
+        return __download_peer_meta()
+    else:
+        with open(ET_PEER_META_FILE, "r", encoding="utf-8") as f:
+            return f.readlines()
+
+def __download_peer_meta():
+    try:
+        github_proxy = github_util.get_github_proxy()
+        peer_meta_url = f"https://github.com/710850609/EasyTier-Lite/raw/refs/heads/main/peers/peer-meta.json"
+        logging.info(f"使用GitHub代理: {github_proxy}")
+        if github_proxy and github_proxy != '':
+            peer_meta_url = f"{github_proxy}/{peer_meta_url}"
+        response = requests.get(peer_meta_url, timeout=30)
+        response.raise_for_status()
+        data = response.json()
+        with open(ET_PEER_META_FILE, "w", encoding="utf-8") as f:
+            f.write(json.dumps(data, ensure_ascii=False, indent=2))
+        return data
+    except Exception as e:
+        logging.error(f"获取节点元数据失败: {e}")
+        raise

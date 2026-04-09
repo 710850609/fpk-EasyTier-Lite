@@ -14,10 +14,6 @@ uri = "https://ghfast.top/https://raw.githubusercontent.com/710850609/fpk-EasyTi
 uri = "https://ghfast.top/https://raw.githubusercontent.com/710850609/fpk-EasyTier-Lite/refs/heads/main/peers/peer-2.txt"
 [[peer]]
 uri = "https://ghfast.top/https://raw.githubusercontent.com/710850609/fpk-EasyTier-Lite/refs/heads/main/peers/peer-3.txt"
-[[peer]]
-uri = "https://ghfast.top/https://raw.githubusercontent.com/710850609/fpk-EasyTier-Lite/refs/heads/main/peers/peer-4.txt"
-[[peer]]
-uri = "https://ghfast.top/https://raw.githubusercontent.com/710850609/fpk-EasyTier-Lite/refs/heads/main/peers/peer-5.txt"
 
 [flags]
 # 使用 KCP 代理 TCP 流，提高在 UDP 丢包网络上的延迟和吞吐量 (KCP 代理会优先于 QUIC 代理生效)
