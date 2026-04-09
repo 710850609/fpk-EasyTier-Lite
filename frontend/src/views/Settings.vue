@@ -118,20 +118,20 @@
         <var-icon name="information" size="24" color="var(--color-info)" />
         <span class="block-title">关于</span>
       </div>      
+      <var-divider />
       <var-cell>
-        <template #default></template>
         <template #description>
-          <div>
-            <var-link type="primary" href="https://github.com/710850609/fpk-easytier-lite" target="_blank" underline="hover">
-              <strong>易组网</strong>
-            </var-link>
-            <div>致力于简化使用 EasyTier</div>
-            <div>降低组网门槛，快速享受异地网络访问</div>
-            <div>享受 EasyTier 免费、不限设备数量、多类型终端支持等优势</div>
-          </div>
-          <!-- <var-divider /> -->
-          <!-- <img src="https://img.shields.io/github/v/release/710850609/fpk-easytier-lite?color=blue&logo=github" /> -->
+          <strong>易组网</strong>
         </template>
+        <template #extra>
+          <!-- <img src="https://img.shields.io/github/v/release/710850609/fpk-easytier-lite?color=blue&logo=github" /> -->
+          <a href='https://github.com/710850609/fpk-easytier-lite' target="_blank"><img alt="GitHub stars" src="https://img.shields.io/github/stars/710850609/fpk-easytier-lite?logo=github"></a>
+        </template>
+      </var-cell>
+      <var-cell>
+        <div>致力于简化使用 EasyTier</div>
+        <div>降低组网门槛，快速访问异地网络设备</div>
+        <div>享受 EasyTier 免费、不限设备数量、支持多类型终端等优势</div>
       </var-cell>
     </var-paper>
   </div>

@@ -23,6 +23,7 @@ def save_github_mirror(data, *kwargs):
     try:
         cfg_path = Path(GITHUB_PROXY_FILE)
         cfg_path.write_text(url.strip())
+        http_util.http_response_ok('保存成功')
     except Exception as e:
         logging.error(f"保存代理配置失败: {e}")
         http_util.http_response_error(f"保存代理配置失败：{e}")

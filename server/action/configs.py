@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 
 from pathlib import Path
+from datetime import datetime
 import util.http_util as http_util
 import logging
 import tomlkit
+from tomlkit.items import Comment
 import os
 
 TRIM_APPNAME = os.getenv('TRIM_APPNAME', 'EasyTier-Lite')
@@ -17,17 +19,81 @@ ET_CONFIG_INIT_FILE = f'{TRIM_PKGVAR}/.init'
 
 GITHUB_PROXY = "https://ghfast.top"
 
+CONFIG_COMMENTS = {
+    'latency_first': '延迟优先模式，将尝试使用最低延迟路径转发流量，默认使用最短路径',
+    'multi_thread': '使用多线程运行时，默认为单线程',
+    "multi_thread_count": "使用的线程数，默认为2，仅在多线程模式下有效。取值必须大于2",
+    'private_mode': '不允许使用了与本网络不相同的网络名称和密码的节点通过本节点进行握手或中转',
+    'enable_kcp_proxy': '使用 KCP 代理 TCP 流，提高在 UDP 丢包网络上的延迟和吞吐量(KCP 代理会优先于 QUIC 代理生效)',
+    'enable_quic_proxy': '使用 QUIC 代理 TCP 流，提高在 UDP 丢包网络上的延迟和吞吐量',
+    'disable_kcp_input': '不允许其他节点使用 KCP 代理 TCP 流到此节点',
+    'disable_quic_input': '不允许其他节点使用 QUIC 代理 TCP 流到此节点',
+    'disable_tcp_hole_punching': '禁用TCP打洞功能',
+    'disable_udp_hole_punching': '禁用UDP打洞功能',
+    'disable_sym_hole_punching': '禁用基于生日攻击的对称NAT (NAT4) UDP 打洞功能，该打洞方式可能会被运营商封锁',
+    'use_smoltcp': '为子网代理和 KCP 代理启用smoltcp堆栈',
+    'proxy_forward_by_system': '通过系统内核转发子网代理数据包，禁用内置NAT',
+    'p2p_only': '仅与已经建立P2P连接的对等节点通信',
+    'disable_p2p': '禁用P2P通信，只通过--peers指定的节点转发数据包',
+    'enable_exit_node': '允许此节点成为出口节点',
+    'enable_encryption': '启用对等节点通信的加密，默认为false，必须与对等节点相同',
+    "encryption_algorithm": '密支持：默认"aes-gcm"、"xor"、"chacha20"、"aes-gcm"、"aes-gcm-256"、"openssl-aes128-gcm"、"openssl-aes256-gcm"、"openssl-chacha20"',
+    'enable_ipv6': '启用IPv6',
+    'disable-ipv6': '不使用IPv6',
+    'no_tun': '不创建TUN设备，可以使用子网代理访问节点 ',
+    'accept_dns': '启用魔法DNS。使用魔法DNS，您可以使用域名访问其他节点，例如：<hostname>.et.net',
+    "relay_all_peer_rpc": "转发所有对等节点的RPC数据包，即使对等节点不在转发网络白名单中。",
+    "relay_network_whitelist": "仅转发白名单网络的流量，支持通配符字符串。多个网络名称间可以使用英文空格间隔。",
+    "bind_device": "将连接器的套接字绑定到物理设备以避免路由问题",
+    'user_stack': '使用用户态网络协议栈代替内核协议栈',
+    "mtu": "TUN设备的MTU，默认为非加密时为1380，加密时为1360",
+    "default_protocol": "连接到对等节点时使用的默认协议",
+    "dev_name": "可自定义TUN接口名称",
+    "hostname": "用于标识此设备的主机名",
+    "rpc_portal": "用于管理的RPC门户地址",
+}
+
 def need_setting(*kwargs):
     need_config = Path(ET_CONFIG_INIT_FILE).exists()
     http_util.http_response_ok({"needConfig": need_config})
 
-def save(data, *kwargs):
+def save(data, *kwargs):    
     with open(ET_CONFIG_FILE, "r", encoding="utf-8") as f:
         doc = tomlkit.parse(f.read())
     if not doc["network_identity"]:
         doc["network_identity"] = {"network_name": '', "network_secret": ''}
     __deep_merge(doc, data)
-    
+    # 头部注释
+    with open(ET_CONFIG_FILE, "w", encoding="utf-8") as f:
+        f.write(tomlkit.dumps(doc))
+    Path(ET_CONFIG_INIT_FILE).unlink(missing_ok=True)
+    http_util.http_response_ok('配置保存成功')
+
+def save_with_comment(data, *kwargs):    
+    with open(ET_CONFIG_FILE, "r", encoding="utf-8") as f:
+        src_doc = tomlkit.parse(f.read())
+    if not src_doc["network_identity"]:
+        src_doc["network_identity"] = {"network_name": '', "network_secret": ''}
+    __deep_merge(src_doc, data)
+    # 将原配置的所有内容复制到新文档
+    doc = tomlkit.document()
+    for key, value in src_doc.body:
+        if key == "flags":
+            flags_table = tomlkit.table()        
+            for fKey, fValue in value.items():
+                comment = __get_comment(fKey)                
+                if comment and fValue:
+                    flags_table.add(tomlkit.comment(comment))
+                    pass
+                flags_table.add(fKey, fValue)
+            doc["flags"] = flags_table
+        elif key is not None:
+            logging.info(f"key: {key}   --其他-->  value: {value}")
+            comment = __get_comment(key)                
+            if comment and value:
+                doc.add(tomlkit.comment(comment))
+            doc.add(key, value)
+    # 头部注释
     with open(ET_CONFIG_FILE, "w", encoding="utf-8") as f:
         f.write(tomlkit.dumps(doc))
     Path(ET_CONFIG_INIT_FILE).unlink(missing_ok=True)
@@ -109,3 +175,8 @@ def __deep_merge(base, override):
         else:
             base[key] = value
     return base    
+
+def __get_comment(key):
+    if key and key in CONFIG_COMMENTS and CONFIG_COMMENTS[key]:
+        return CONFIG_COMMENTS[key]
+    return None

@@ -395,7 +395,6 @@ const config = ref({
     "bind_device": true,
     "multi_thread": true,
     "enable_kcp_proxy": true,
-    "private_mode": true,
     "enable_encryption": true,
     "enable_ipv6": true,
   },
@@ -408,7 +407,7 @@ const featureSwitches = [
   { key: 'latency_first', label: '开启延迟优先模式', tooltip: '优先选择延迟最低的连接路径' },
   { key: 'multi_thread', label: '启用多线程', tooltip: '启用多线程处理，提高性能' },
   { key: 'private_mode', label: '启用私有模式', tooltip: '启用私有模式，限制节点发现' },
-  { key: 'enable_kcp_proxy', label: '启用 KCP 代理', tooltip: '使用 KCP 协议进行数据传输，提高弱网环境下的稳定性' },
+  { key: 'enable_kcp_proxy', label: '启用 KCP 代理', tooltip: '使用 KCP 协议进行数据传输，提高弱网环境下的稳定性 (KCP 代理会优先于 QUIC 代理生效)' },
   { key: 'enable_quic_proxy', label: '启用 QUIC 代理', tooltip: '使用 QUIC 协议进行代理传输' },
   { key: 'disable_kcp_input', label: '禁用 KCP 输入', tooltip: '关闭 KCP 协议的入站连接' },
   { key: 'disable_quic_input', label: '禁用 QUIC 输入', tooltip: '关闭 QUIC 协议的入站连接' },
@@ -509,6 +508,10 @@ const saveConfig = async () => {
       const restartLoading = toast.loading('保存成功，服务重启中...')
       api.services.restart().then(() => {
         toast.success('服务重启成功')
+        if (fastSettingMode.value) {
+          toast.info('退出快速设置模式')
+          fastSettingMode.value = false
+        }
       }).finally(e => {
         restartLoading.clear()
         resolve()
@@ -539,8 +542,8 @@ const saveToml = () => {
       const restartLoading = toast.loading('保存成功，服务重启中...')
       api.services.restart().then(() => {
         toast.success('服务重启成功')
-      }).finally(e => {
         loadConfig()
+      }).finally(e => {
         restartLoading.clear()
         resolve()
       })
@@ -561,10 +564,10 @@ const loadConfig = () => {
       })
     }
     // 兼容处理
-    if (json.flags.mtu) {
+    if (json.flags?.mtu) {
       json.flags.mtu = ensureInt(json.flags.mtu)
     }
-    if (json.flags.multi_thread_count) {
+    if (json.flags?.multi_thread_count) {
       json.flags.multi_thread_count = ensureInt(json.flags.multi_thread_count)
     }
     // 处理空值时，展示placeholder提示

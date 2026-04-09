@@ -356,10 +356,16 @@ const parseNatType = (node) => {
     return 'Nat3'
   } else if (node.nat_type === 'Symmetric') {
     return 'Nat4'
+  } else if (node.nat_type === 'SymmetricEasyInc') {
+    return 'Nat4(对称递增型)'
+  } else if (node.nat_type === 'SymmetricEasyDec') {
+    return 'Nat4(对称递减型)'
+  } else if (node.nat_type === 'SymUdpFirewall') {
+    return '对称UDP防火墙'
   } else if (['NoPAT', 'NoPat'].includes(node.nat_type)) {
-    return `公网(${node.nat_type})`
+    return `无PAT`
   } else if (node.nat_type === 'OpenInternet') {
-    return '开放互联网'
+    return '开放网络'
   } else if (node.nat_type === 'Unknown') {
     return '未知'
   } else {
