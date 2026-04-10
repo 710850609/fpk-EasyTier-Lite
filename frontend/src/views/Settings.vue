@@ -152,7 +152,6 @@ import api from '../utils/api.js'
 import { getLatestVersionWithCache } from '../utils/github.js'
 import SvgIcon from '@jamescoyle/vue-icon'
 import { mdiBrightness6, mdiAccessPointNetwork, mdiDevTo, mdiShieldLock } from '@mdi/js'
-import { mdilMemory } from '@mdi/light-js'
 
 const vConsoleEnabled = ref(false)
 const vConsoleInstance = ref(null)

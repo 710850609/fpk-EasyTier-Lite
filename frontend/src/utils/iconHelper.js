@@ -10,10 +10,13 @@
  */
 
 // 导入 @mdi/js 图标（按需导入，支持 Tree Shaking）
-import * as mdiIcons from '@mdi/js'
+// import * as mdiIcons from '@mdi/js'
 
 // 导入 @mdi/light-js 图标（轻量版）
-import * as mdilIcons from '@mdi/light-js'
+// import * as mdilIcons from '@mdi/light-js'
+
+// 改成 Tree Shaking 按需导入
+import { mdiMicrosoftWindows, mdiAndroid, mdiPenguin, mdiLaptop, mdiApple, mdiCellphone } from '@mdi/js'
 
 /**
  * 获取图标路径
