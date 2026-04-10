@@ -58,17 +58,17 @@
               />
             </template>
           </var-select>
-          <var-cell>
-            <template #description v-if="hasNewVersion">
-              <var-chip type="warning" size="small" plain>有新版本</var-chip>
-            </template>
-            <template #extra>
-              <var-button type="primary" size="small" @click="installEtCore(true)" auto-loading style="min-width: 80px;">
-                <var-icon name="download" />
-                安装           
-              </var-button>
-            </template>
-          </var-cell>
+        </template>
+      </var-cell>
+      <var-cell>
+        <template #description v-if="hasNewVersion">
+          <var-chip type="warning" size="small" plain>有新版本</var-chip>
+        </template>
+        <template #extra>
+          <var-button type="primary" size="small" @click="installEtCore(true)" auto-loading style="min-width: 80px;">
+            <var-icon name="download" />
+            安装           
+          </var-button>
         </template>
       </var-cell>
     </var-paper>

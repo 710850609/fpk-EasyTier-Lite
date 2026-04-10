@@ -144,7 +144,7 @@ def public_peers(data, *kwargs):
     baseUrl = 'https://raw.githubusercontent.com/710850609/EasyTier-Lite/refs/heads/main/peers/peer-'
     for uri in peer_uris:
         label = uri
-        matchIndex = uri.index(baseUrl)
+        matchIndex = uri.find(baseUrl)
         if matchIndex > -1:
             label = '动态节点' + uri[matchIndex + len(baseUrl):].replace('.txt', '')
             if matchIndex > 0:
@@ -152,7 +152,6 @@ def public_peers(data, *kwargs):
                 github_proxy = github_proxy.replace('https://', '')
                 label = f'{label}({github_proxy})'
         peers.append({'label': label, 'uri': uri})
-    logging.info(f"{peers}")
     http_util.http_response_ok(peers)
 
 def download(*kwargs):    

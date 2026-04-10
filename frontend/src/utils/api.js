@@ -112,7 +112,7 @@ export const api = {
   // 配置相关
   configs: {
     needSetting: () => get('/configs/need_setting'),
-    publicPeers: () => get('/configs/public_peers'),
+    publicPeers: (params = {}) => get('/configs/public_peers', params),
     save: (data) => post('/configs/save', data),
     saveToml: (data) => post('/configs/save_toml', {toml: data}),
     get: () => get('/configs/get'),

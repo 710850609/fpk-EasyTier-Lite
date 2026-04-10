@@ -9,33 +9,42 @@
         
           <!-- 网络名称 + 网络密码 一行 -->
           <div class="input-row">
-            <var-input
-              v-model="config.network_identity.network_name"
-              placeholder="网络名称"
-              :rules="[(v) => !!v || '网络名称不能为空']"
-              blur-color="var(--color-primary)"
-            >
-              <template #prepend-icon>
-                <var-icon name="wifi" />
-              </template>
-              <template #label>网络名称</template>
-            </var-input>
-
-            <var-input
+            <var-cell>
+              <var-input
+                v-model="config.network_identity.network_name"
+                placeholder="网络名称"
+                size="small"
+                :clearable="true"
+                :rules="[(v) => !!v || '网络名称不能为空']"
+                blur-color="var(--color-primary)"
+              >
+                <template #prepend-icon>
+                  <var-icon name="wifi" />
+                </template>
+                <template #label>网络名称</template>
+              </var-input>
+            </var-cell>
+            <var-cell>
+              <var-input
               v-model="config.network_identity.network_secret"
               placeholder="网络密码"
               type="password"
+              :rules="[(v) => !!v || '网络密码不能为空']"
+              size="small"
+              :clearable="true"
               blur-color="var(--color-primary)"
             >
               <template #prepend-icon>
                 <var-icon name="lock-outline" />
               </template>
               <template #label>网络密码</template>
-            </var-input>
+              </var-input>
+            </var-cell>
           </div>
           
           <span v-if="fastSettingMode" style="font-size: 12px; color: var(--color-warning); margin-top: 8px;"> 将使用动态社区节点用于发现组网节点。如不想用，请刷新页面重新选择正常模式设置，并输入初始节点 </span>
-          <var-select
+          <var-cell>
+          <var-select variant="outlined" size="small"
             v-if="!fastSettingMode"
             v-model="config.peer"
             multiple
@@ -43,21 +52,31 @@
             :chip="true"
             blur-color="var(--color-primary)"
           >
-            <var-cell icon="tag-outline" title="peer">
-              <template #>
-                <var-input placeholder="输入初始节点" size="small" v-model="customPeer" blur-color="var(--color-primary)" />
-              </template>
-              <template #extra>
-                <var-button type="primary" size="small" @click="addPeer">添加</var-button>
-              </template>
-            </var-cell>
-            <var-option 
-              v-for="peer in publicPeerOptions"
-              :key="peer.uri"
-              :label="peer.label || peer.uri"
-              :value="peer.uri"
-            />
+            <template #default>
+              <var-cell icon="tag-outline" title="peer">
+                <template #>
+                  <var-input placeholder="输入初始节点" size="small" v-model="customPeer" blur-color="var(--color-primary)" />
+                </template>
+                <template #extra>
+                  <var-button type="primary" size="small" @click="addPeer">添加</var-button>
+                </template>
+              </var-cell>
+              <var-option 
+                v-for="peer in publicPeerOptions"
+                :key="peer.uri"
+                :label="peer.label || peer.uri"
+                :value="peer.uri"
+              />
+            </template>
+            <template #append-icon>
+              <var-icon 
+                name="refresh" 
+                :class="{ 'is-spinning': isRefreshingPublicPeerOptions }"
+                @click.stop="refreshPublicPeerOptions" 
+              />
+            </template>
           </var-select>
+          </var-cell>
       </var-paper>
 
       <!-- 高级设置 -->
@@ -316,7 +335,7 @@
             <var-icon name="upload"/>
             导入配置
          </var-button> -->
-        <var-button style="min-width: 180px;" type="primary" size="normal" block auto-loading @click="saveConfig">
+        <var-button style="min-width: 180px;" type="primary" size="normal" block auto-loading @click="saveConfig" :disabled="isLoadingConfig">
             <var-icon name="checkbox-marked-circle"/>
             保存重启 
         </var-button>
@@ -371,7 +390,9 @@ const customListener = ref('')
 const flagsOpen = ref([])
 const form = ref(null)
 const showCodePage = ref(false)
+const isLoadingConfig = ref(true)
 const configToml = ref('')
+const isRefreshingPublicPeerOptions = ref(false)
 const encryptionAlgorithmList = ref(['aes-gcm','xor','chacha20','aes-gcm','aes-gcm-256','openssl-aes128-gcm','openssl-aes256-gcm','openssl-chacha20'])
 const defaultProtocolList = ref([ {'label': '默认','value': ''}, {'label': 'tcp','value': 'tcp'}, {'label': 'udp','value': 'udp'}, {'label': 'quic','value': 'quic'}, {'label': 'wg','value': 'wg'}, {'label': 'ws','value': 'ws'}, {'label': 'wss','value': 'wss'}, {'label': 'faketcp','value': 'faketcp'}])
 
@@ -551,7 +572,21 @@ const saveToml = () => {
   });
 }
 
+const refreshPublicPeerOptions = () => {
+  isRefreshingPublicPeerOptions.value = true
+  return new Promise((resolve, reject) => {
+    api.configs.publicPeers({ 'refresh': true }).then(data => {
+      publicPeerOptions.value = data.data
+      toast.success('刷新可选节点成功')
+    }).finally(() => {
+      isRefreshingPublicPeerOptions.value = false
+      resolve()
+    })
+  })
+}
+
 const loadConfig = () => {
+  isLoadingConfig.value = true
   api.configs.get().then(data => {
     const json = data.data
     json.peer = (json.peer || []).map(e => e.uri)
@@ -583,6 +618,9 @@ const loadConfig = () => {
         multi_thread_count: json.flags?.multi_thread_count || undefined
       }
     }
+    isLoadingConfig.value = false
+  }).catch(e => {
+    isLoadingConfig.value = false
   })
 }
 
@@ -877,6 +915,20 @@ onMounted(async () => {
 
 .code-editor-content::-webkit-scrollbar-thumb:hover {
   background: #484f58;
+}
+
+/* 刷新图标旋转动画 */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.is-spinning {
+  animation: spin 1s linear infinite;
 }
 
 /* 移动端适配 */

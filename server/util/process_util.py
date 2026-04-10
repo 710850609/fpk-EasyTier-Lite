@@ -77,14 +77,14 @@ class ProcessManager:
 
             # 等待一小段时间检查进程是否立即失败
             import time
-            time.sleep(0.5)
+            time.sleep(1)
 
             # 检查进程是否还在运行
             if process.poll() is not None:
                 # 进程已退出，读取错误信息
                 _, stderr = process.communicate()
                 error_msg = stderr.decode('utf-8', errors='ignore').strip() if stderr else "未知错误"
-                raise RuntimeError(f"进程启动失败: {error_msg}")
+                raise RuntimeError(f"{error_msg}")
 
             pid = process.pid
 
