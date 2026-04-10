@@ -458,11 +458,7 @@ const config = ref({
     "network_secret": '',
   },
   "rpc_portal": "",
-  "listeners": [
-    "tcp://0.0.0.0:11010",
-    "udp://0.0.0.0:11010",
-    "quic://0.0.0.0:11013",
-  ],
+  "listeners": [],
   "peer": [],
   // 功能开关
   "flags": {

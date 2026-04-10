@@ -217,7 +217,7 @@ build_fpk() {
     if [ "$build_pre" == 'true' ];then 
         cur_time=$(date +"%Y%m%d%H%M%S")
         echo "当前时间：$cur_time"
-        fpk_version="${fpk_version}-b${cur_time}"
+        fpk_version="${fpk_version}-${cur_time}"
     fi
     sed -i "s|^[[:space:]]*version[[:space:]]*=.*|version=${fpk_version}|" 'EasyTier-Lite/manifest'
     echo "设置 manifest 的 version 为: ${fpk_version}"

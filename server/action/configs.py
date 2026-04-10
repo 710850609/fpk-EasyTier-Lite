@@ -125,10 +125,16 @@ def public_peers(data, *kwargs):
     refresh = data and 'refresh' in data and data['refresh'] or False
     peer_meta = __get_public_peers(refresh)
     peer_uris = []
-    with open(ET_CONFIG_FILE, "r", encoding="utf-8") as f:
-        doc = tomlkit.parse(f.read())
-        for i in (doc.get("peer") or []):
-            peer_uris.append(i["uri"])
+    if Path(ET_CONFIG_FILE).exists():
+        try:
+            with open(ET_CONFIG_FILE, "r", encoding="utf-8") as f:
+                doc = tomlkit.parse(f.read())
+                for i in (doc.get("peer") or []):
+                    peer_uris.append(i["uri"])
+        except Exception as e:
+            logging.error(f"解析配置文件失败: {e}")
+            # 配置文件解析失败时，返回空列表，不影响获取公共节点
+            pass
     config_peers_set = set(peer_uris)
 
     github_proxy = github_util.get_github_proxy();
