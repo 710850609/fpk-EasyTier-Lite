@@ -5,6 +5,7 @@ import util.http_util as http_util
 import util.process_util as process_util
 import os
 import logging
+from pathlib import Path
 
 TRIM_APPNAME = os.getenv('TRIM_APPNAME', 'EasyTier-Lite')
 TRIM_APPDEST = os.getenv('TRIM_APPDEST', f'/var/apps/{TRIM_APPNAME}/target')
