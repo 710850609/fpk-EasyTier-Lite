@@ -9,11 +9,11 @@ network_name = ""
 network_secret = ""
 
 [[peer]]
-uri = "https://ghfast.top/https://raw.githubusercontent.com/710850609/fpk-EasyTier-Lite/refs/heads/main/peers/peer-1.txt"
+uri = "https://ghfast.top/https://raw.githubusercontent.com/710850609/EasyTier-Lite/refs/heads/main/peers/peer-1.txt"
 [[peer]]
-uri = "https://ghfast.top/https://raw.githubusercontent.com/710850609/fpk-EasyTier-Lite/refs/heads/main/peers/peer-2.txt"
+uri = "https://ghfast.top/https://raw.githubusercontent.com/710850609/EasyTier-Lite/refs/heads/main/peers/peer-2.txt"
 [[peer]]
-uri = "https://ghfast.top/https://raw.githubusercontent.com/710850609/fpk-EasyTier-Lite/refs/heads/main/peers/peer-3.txt"
+uri = "https://ghfast.top/https://raw.githubusercontent.com/710850609/EasyTier-Lite/refs/heads/main/peers/peer-3.txt"
 
 [file_logger]
 # 文件日志级别 off error warn info debug
