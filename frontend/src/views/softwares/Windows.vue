@@ -3,12 +3,16 @@
     <var-paper class="download-card" :elevation="2">
       <div class="platform-header">
         <div class="platform-info">
-          <h2>EasyTier 管理器</h2>
+          <h2>
+            EasyTier 管理器 
+            <var-badge type="info">
+               <template #value>新手推荐</template>
+            </var-badge>
+          </h2>
         </div>
       </div>
       <div class="version-info">
-        <var-cell>推荐新手使用</var-cell>
-        <var-cell>集成当前配置，解压启动后选择配置，即可组网</var-cell>
+        <var-cell>集成当前配置、EasyTier内核，解压启动后选择配置，即可组网</var-cell>
         <var-cell>其他使用说明，请访问 <var-link type="primary" href="https://easytier.cn/guide/gui/easytier-manager.html" target="_blank" underline="none">EasyTier 管理器使用</var-link></var-cell>
         <var-cell>
           <var-link type="primary" underline="none" href="https://github.com/EasyTier/easytier-manager/releases" target="_blank"><img src="https://img.shields.io/github/v/release/EasyTier/easytier-manager?color=blue&logo=github" /></var-link>
@@ -26,11 +30,92 @@
         </var-space>
       </div>
     </var-paper>
+
+    <var-paper class="download-card" :elevation="2">
+      <div class="platform-header">
+        <div class="platform-info">
+          <h2>EasyTier Windows GUI 版本</h2>
+        </div>
+      </div>
+      <div class="version-info">
+        <var-cell>安装应用，并导出飞牛上配置toml文件后。把toml配置文件导入到easytier中，并启动网络即可。</var-cell>
+        <var-cell>
+          其他使用说明，请访问 
+          <var-link type="primary" href="https://easytier.cn/" target="_blank" underline="none">
+            EasyTier官网
+          </var-link>
+        </var-cell>
+        <var-space :size="[20, 20]" justify="center">
+          <var-cell>
+            <var-link type="primary" underline="none" href="https://github.com/EasyTier/EasyTier/releases" target="_blank">
+              <img src="https://img.shields.io/github/v/tag/EasyTier/EasyTier?color=blue&logo=github" />
+            </var-link>
+          </var-cell>
+          <var-cell>
+            <var-link type="primary" underline="none" href="https://github.com/EasyTier/EasyTier/releases" target="_blank">
+              <img src="https://img.shields.io/github/v/release/EasyTier/EasyTier?color=blue&logo=github" />
+            </var-link>
+          </var-cell>
+        </var-space>
+      </div>
+      <var-divider />
+      <div class="download-grid">
+        <var-paper class="download-item" :elevation="1">
+          <div class="item-header">
+            <var-icon name="package" size="24" />
+            <span class="item-title">64位系统(Intel/AMD CPU)</span>
+          </div>
+          <div class="item-actions">
+            <var-button type="primary" size="normal" @click="downloadGithub('x64-setup.exe', true)" auto-loading>
+              <var-icon name="download"/>
+              最新版
+            </var-button>
+            <var-button type="primary" size="normal" @click="downloadGithub('x64-setup.exe', false)" auto-loading>
+              <var-icon name="download"/>
+              稳定版
+            </var-button>
+          </div>
+        </var-paper>
+        <var-paper class="download-item" :elevation="1">
+          <div class="item-header">
+            <var-icon name="package" size="24" />
+            <span class="item-title">32位系统(Intel/AMD CPU)</span>
+          </div>
+          <div class="item-actions">
+            <var-button type="primary" size="normal" @click="downloadGithub('x86-setup.exe', true)" auto-loading>
+              <var-icon name="download"/>
+              最新版
+            </var-button>
+            <var-button type="primary" size="normal" @click="downloadGithub('x86-setup.exe', false)" auto-loading>
+              <var-icon name="download"/>
+              稳定版
+            </var-button>
+          </div>
+        </var-paper>
+        <var-paper class="download-item" :elevation="1">
+          <div class="item-header">
+            <var-icon name="package" size="24" />
+            <span class="item-title">64位系统(Arm CPU)</span>
+          </div>
+          <div class="item-actions">
+            <var-button type="primary" size="normal" @click="downloadGithub('arm64-setup.exe', true)" auto-loading>
+              <var-icon name="download" />
+              最新版
+            </var-button>
+            <var-button type="primary" size="normal" @click="downloadGithub('arm64-setup.exe', false)" auto-loading>
+              <var-icon name="download"/>
+              稳定版
+            </var-button>
+          </div>
+        </var-paper>
+      </div>
+    </var-paper>
   </div>
 </template>
 
 <script setup>
 import { api } from '../../utils/api.js'
+import { downloadEasyTierGUI } from '../../utils/github.js'
 
 const download = () => {
   return new Promise((resolve, reject) => {
@@ -38,6 +123,11 @@ const download = () => {
     window.open(url, '_blank')
     resolve()
   })
+}
+
+
+const downloadGithub = (arch, prerelease) => {
+  return downloadEasyTierGUI(arch, prerelease)
 }
 </script>
 

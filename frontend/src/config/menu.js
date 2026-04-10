@@ -1,6 +1,12 @@
 /**
  * 菜单配置
  * 统一维护应用的所有菜单项
+ * 
+ * 图标配置方式：
+ * 1. Varlet 内置图标: icon: 'format-list-checkbox' (字符串)
+ * 2. @mdi/js 图标: icon: { type: 'mdi', name: 'mdiHome' } - name 为库的导出名称
+ * 3. @mdi/light-js 图标: icon: { type: 'mdil/light', name: 'mdilPencil' } - name 为库的导出名称
+ * 4. 图片路径: icon: './images/windows.svg'
  */
 
 // 使用 import.meta.glob 预加载所有视图组件（包括子目录）
@@ -13,12 +19,18 @@ export const menuTree = [
   { key: 'config', label: '配置', icon: 'bookmark-outline', title: '配置管理', component: 'Config' },
   { key: 'software', label: '应用', icon: 'shopping-outline', title: '软件下载',
     children: [
-      { key: 'softwares-windows', label: 'Windows', icon: './images/windows.svg', component: 'softwares/Windows' },
-      { key: 'softwares-android', label: 'Android', icon: './images/android.svg', component: 'softwares/Android' },
-      { key: 'softwares-macos', label: 'MacOS', icon: './images/mac.svg', component: 'softwares/MacOS' },
-      { key: 'softwares-linux', label: 'Linux', icon: './images/linux.svg', component: 'softwares/Linux' },
-      { key: 'softwares-ios', label: 'IOS', icon: './images/ios.svg', component: 'softwares/IOS' },
-      { key: 'softwares-harmonyos', label: 'HarmonyOS', icon: './images/harmony.svg', component: 'softwares/HarmonyOS' },
+      // { key: 'softwares-windows', label: 'Windows', icon: './images/windows.svg', component: 'softwares/Windows' },
+      // { key: 'softwares-android', label: 'Android', icon: './images/android.svg', component: 'softwares/Android' },
+      // { key: 'softwares-macos', label: 'MacOS', icon: './images/mac.svg', component: 'softwares/MacOS' },
+      // { key: 'softwares-linux', label: 'Linux', icon: './images/linux.svg', component: 'softwares/Linux' },
+      // { key: 'softwares-ios', label: 'IOS', icon: './images/ios.svg', component: 'softwares/IOS' },
+      // { key: 'softwares-harmonyos', label: 'HarmonyOS', icon: './images/harmony.svg', component: 'softwares/HarmonyOS' },
+      { key: 'softwares-windows', label: 'Windows', icon: { type: 'mdi', name: 'mdiMicrosoftWindows' }, component: 'softwares/Windows' },
+      { key: 'softwares-android', label: 'Android', icon: { type: 'mdi', name: 'mdiAndroid' }, component: 'softwares/Android' },
+      { key: 'softwares-macos', label: 'MacOS', icon: { type: 'mdi', name: 'mdiLaptop' }, component: 'softwares/MacOS' },
+      { key: 'softwares-linux', label: 'Linux', icon: { type: 'mdi', name: 'mdiPenguin' }, component: 'softwares/Linux' },
+      { key: 'softwares-ios', label: 'IOS', icon: { type: 'mdi', name: 'mdiApple' }, component: 'softwares/IOS' },
+      { key: 'softwares-harmonyos', label: 'HarmonyOS', icon: { type: 'mdi', name: 'mdiCellphone' }, component: 'softwares/HarmonyOS' },
       // { key: 'softwares-feiniu', label: '飞牛', icon: './images/feiniu.png', component: 'softwares/FeiNiu' },
     ]
   },

@@ -24,7 +24,19 @@
             :class="{ active: active?.startsWith(menu.key) }"
             @click="isCollapsed ? showSubmenuPopup(menu, $event) : toggleExpand(menu.key)"
           >
-            <var-icon :name="menu.icon" class="menu-icon" />
+            <!-- Varlet 内置图标 -->
+            <var-icon v-if="isVarletIcon(menu.icon)" :name="menu.icon" class="menu-icon" />
+            <!-- SVG 图标 (@mdi/js 或 @mdi/light-js) -->
+            <svg-icon
+              v-else-if="isSvgIcon(menu.icon)"
+              type="mdi"
+              :path="getIconPath(menu.icon)"
+              class="menu-icon"
+              width="24"
+              height="24"
+            />
+            <!-- 图片图标 -->
+            <img v-else-if="isImageIcon(menu.icon)" :src="menu.icon" class="menu-icon" />
             <span v-if="!isCollapsed" class="menu-title">{{ menu.label }}</span>
             <var-icon
               v-if="!isCollapsed"
@@ -42,7 +54,18 @@
               :class="{ active: active === child.key }"
               @click="handleClick(child.key)"
             >
-              <var-icon :name="child.icon" size="18" />
+              <!-- Varlet 内置图标 -->
+              <var-icon v-if="isVarletIcon(child.icon)" :name="child.icon" size="18" />
+              <!-- SVG 图标 (@mdi/js 或 @mdi/light-js) -->
+              <svg-icon
+                v-else-if="isSvgIcon(child.icon)"
+                type="mdi"
+                :path="getIconPath(child.icon)"
+                width="18"
+                height="18"
+              />
+              <!-- 图片图标 -->
+              <img v-else-if="isImageIcon(child.icon)" :src="child.icon" class="submenu-icon" />
               <span>{{ child.label }}</span>
             </div>
           </div>
@@ -55,7 +78,19 @@
           :class="{ active: active === menu.key }"
           @click="handleClick(menu.key)"
         >
-          <var-icon :name="menu.icon" class="menu-icon" />
+          <!-- Varlet 内置图标 -->
+          <var-icon v-if="isVarletIcon(menu.icon)" :name="menu.icon" class="menu-icon" />
+          <!-- SVG 图标 (@mdi/js 或 @mdi/light-js) -->
+          <svg-icon
+            v-else-if="isSvgIcon(menu.icon)"
+            type="mdi"
+            :path="getIconPath(menu.icon)"
+            class="menu-icon"
+            width="24"
+            height="24"
+          />
+          <!-- 图片图标 -->
+          <img v-else-if="isImageIcon(menu.icon)" :src="menu.icon" class="menu-icon" />
           <span v-if="!isCollapsed" class="menu-title">{{ menu.label }}</span>
         </div>
       </template>
@@ -79,8 +114,18 @@
             :class="{ active: active === child.key }"
             @click="handleSubmenuClick(child.key)"
           >
-            <img v-if="child.icon?.startsWith('./')" :src="child.icon" class="submenu-icon" />
-            <var-icon v-else :name="child.icon" size="18" />
+            <!-- Varlet 内置图标 -->
+            <var-icon v-if="isVarletIcon(child.icon)" :name="child.icon" size="18" />
+            <!-- SVG 图标 (@mdi/js 或 @mdi/light-js) -->
+            <svg-icon
+              v-else-if="isSvgIcon(child.icon)"
+              type="mdi"
+              :path="getIconPath(child.icon)"
+              width="18"
+              height="18"
+            />
+            <!-- 图片图标 -->
+            <img v-else-if="isImageIcon(child.icon)" :src="child.icon" class="submenu-icon" />
             <span>{{ child.label }}</span>
           </div>
         </div>
@@ -92,11 +137,15 @@
 <script setup>
 import { menuTree } from '../config/menu.js'
 import { SIDEBAR_COLLAPSED_KEY } from '../config/storage-keys.js'
+import SvgIcon from '@jamescoyle/vue-icon'
+import { isVarletIcon, isImageIcon, isSvgIcon, getIconPath } from '../utils/iconHelper.js'
 
 const props = defineProps({
   active: String,
   collapsed: Boolean
 })
+
+
 
 const emit = defineEmits(['update:active', 'update:collapsed'])
 
