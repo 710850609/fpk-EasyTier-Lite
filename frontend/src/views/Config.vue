@@ -90,7 +90,12 @@
             </var-select>
           </var-cell>
           <var-cell v-if="fastSettingMode">
-            <span  style="font-size: 14px; color: var(--color-warning); margin-top: 8px;"> 默认使用动态社区节点用于发现组网节点。如不想用，请刷新页面重新选择正常模式设置，并输入初始节点 </span>
+            <p>
+              <span  style="font-size: 14px; color: var(--color-warning); margin-top: 8px;">默认使用动态社区节点用于发现组网节点。如不想用，请刷新页面重新选择正常模式设置，并输入初始节点</span>
+            </p>
+            <p>
+              <span  style="font-size: 14px; color: var(--color-warning); margin-top: 8px;">默认生成随机网络名称、网络密码，请按需修改，如不需要直接保存重启即可</span>
+            </p>
           </var-cell>
         </var-skeleton>
       </var-paper>
