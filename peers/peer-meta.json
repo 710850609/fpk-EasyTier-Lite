@@ -3,7 +3,7 @@
   "baseUrl": "https://raw.githubusercontent.com/710850609/EasyTier-Lite/refs/heads/main/peers",
   "peers": [
     {
-      "url": "tcp://106.15.202.147:11010",
+      "url": "tcp://kddi10gbps.xzcloudnode.sbs:49784",
       "fileName": "peer-1.txt"
     },
     {
@@ -11,19 +11,19 @@
       "fileName": "peer-2.txt"
     },
     {
-      "url": "tcp://39.108.52.138:11010",
+      "url": "tcp://106.15.202.147:11010",
       "fileName": "peer-3.txt"
     },
     {
-      "url": "tcp://103.184.47.79:11010",
+      "url": "tcp://39.108.52.138:11010",
       "fileName": "peer-4.txt"
     },
     {
-      "url": "tcp://112.19.8.19:11010",
+      "url": "tcp://103.184.47.79:11010",
       "fileName": "peer-5.txt"
     },
     {
-      "url": "udp://et.ruixuan.online:11010",
+      "url": "tcp://112.19.8.19:11010",
       "fileName": "peer-6.txt"
     },
     {
@@ -31,11 +31,11 @@
       "fileName": "peer-7.txt"
     },
     {
-      "url": "tcp://et.ruixuan.online:11010",
+      "url": "udp://et.ruixuan.online:11010",
       "fileName": "peer-8.txt"
     },
     {
-      "url": "tcp://sh.vomiku.com:7910",
+      "url": "tcp://et.ruixuan.online:11010",
       "fileName": "peer-9.txt"
     },
     {
@@ -43,15 +43,15 @@
       "fileName": "peer-10.txt"
     },
     {
-      "url": "tcp://kddi10gbps.xzcloudnode.sbs:49784",
+      "url": "tcp://sh.vomiku.com:7910",
       "fileName": "peer-11.txt"
     },
     {
-      "url": "udp://mukongyun.top:11010",
+      "url": "tcp://ros.scpsl.com.cn:11010",
       "fileName": "peer-12.txt"
     },
     {
-      "url": "tcp://ros.scpsl.com.cn:11010",
+      "url": "udp://mukongyun.top:11010",
       "fileName": "peer-13.txt"
     },
     {
