@@ -15,6 +15,7 @@ ET_CONFIG_FILE = f'{TRIM_SHARE_DIR}/config.toml'
 ET_CONFIG_INIT_FILE = f'{TRIM_PKGVAR}/.init'
 ET_PID_FILE = f'{TRIM_PKGVAR}/app.pid'
 START_CMD = f"{TRIM_APPDEST}/bin/easytier-core --config-file {ET_CONFIG_FILE}"
+ET_RESTART_FLAG_FILE = f'{TRIM_PKGVAR}/.restart'
 
 
 # 延迟初始化：使用单例模式
@@ -50,7 +51,15 @@ def start(http_response=True, *kwargs):
 
 def restart(*kwargs):
     pm = _get_process_manager()
-    if (pm.status()):
-        pm.stop()
-    pm.start()
+    logging.info(f"重启ET服务...")
+    try:
+        if (pm.status()):
+            logging.info(f"停止ET服务...")
+            Path(ET_RESTART_FLAG_FILE).touch()
+            pm.stop()
+        logging.info(f"启动ET服务...")
+        pm.start()
+        Path(ET_RESTART_FLAG_FILE).touch()
+    finally:
+        Path(ET_RESTART_FLAG_FILE).unlink(missing_ok=True)
     http_util.http_response_ok({})

@@ -3,7 +3,7 @@ set -e
 source /var/apps/${TRIM_APPNAME}/cmd/common.sh
 
 PID_FILE="${TRIM_PKGVAR}/app.pid"
-KEEP_RUNNING_FILE="${TRIM_APPDEST}/.running"
+RESTART_FLAG_FILE="${TRIM_APPDEST}/.restart"
 
 # write the command to start your program here 
 CMD="${BIN_DIR}/easytier-core --config-file ${CFG_FILE}"
@@ -100,9 +100,9 @@ status)
     # check application status command. exit 0 if running, exit 3 if not running
     if status; then 
         exit 0
-    # elif [ -f "${KEEP_RUNNING_FILE}" ]; then
-    #     # 优先根据keep_running文件判断是否运行
-    #     exit 0
+    elif [ -f "${RESTART_FLAG_FILE}" ]; then
+        # 优先根据restart_flag文件判断是否运行
+        exit 0
     else 
         exit 3
     fi

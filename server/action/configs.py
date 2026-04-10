@@ -20,8 +20,6 @@ ET_CONFIG_FILE = f'{TRIM_SHARE_DIR}/config.toml'
 ET_CONFIG_INIT_FILE = f'{TRIM_PKGVAR}/.init'
 ET_PEER_META_FILE = f'{TRIM_PKGVAR}/peer-meta.json'
 
-GITHUB_PROXY = "https://ghfast.top"
-
 CONFIG_COMMENTS = {
     'latency_first': '延迟优先模式，将尝试使用最低延迟路径转发流量，默认使用最短路径',
     'multi_thread': '使用多线程运行时，默认为单线程',

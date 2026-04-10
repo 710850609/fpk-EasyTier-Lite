@@ -13,12 +13,22 @@ import action.configs as configs
 import zipfile
 import logging
 
+TRIM_APPNAME = os.getenv('TRIM_APPNAME', 'EasyTier-Lite')
+TRIM_APPDEST = os.getenv('TRIM_APPDEST', f'/var/apps/{TRIM_APPNAME}/target')
+TRIM_PKGVAR = os.getenv('TRIM_PKGVAR', f'/var/apps/{TRIM_APPNAME}/var')
+TRIM_SHARE_DIR = os.getenv('TRIM_SHARE_DIR', f'/var/apps/{TRIM_APPNAME}/shares/{TRIM_APPNAME}')
+TRIM_PKGTMP = os.getenv('TRIM_PKGTMP', f'/var/apps/{TRIM_APPNAME}/tmp')
+
+ET_CONFIG_FILE = f'{TRIM_SHARE_DIR}/config.toml'
+ET_CONFIG_INIT_FILE = f'{TRIM_PKGVAR}/.init'
+ET_BIN_DIR = f"{TRIM_APPDEST}/bin"
+
+GITHUB_PROXY_FILE = f"{TRIM_APPDEST}/github_proxy_url.txt";
 et_min_version = "2.5.0"
-GITHUB_PROXY = "https://ghfast.top"
 
 def download(*kwargs):
-    output_dir = f"/var/apps/EasyTier-Lite/shares/EasyTier-Lite"
-    download_temp_dir = f"/var/apps/EasyTier-Lite/tmp"
+    output_dir = TRIM_SHARE_DIR
+    download_temp_dir = TRIM_PKGTMP
     et_version = et_util.get_latest_version()
     et_package = et_util.download_package(download_temp_dir, 'windows', 'x86_64', et_version)
     et_mgr_version = _get_et_mgr_latest_version()
@@ -40,7 +50,10 @@ def _get_et_mgr_package(et_mgr_version: str, download_dir: str):
         logging.debug(f"已存在缓存:{download_file}")
         return download_file;
     logging.debug(f"不存在缓存，开始下载 {download_file}");
-    download_url = f"{GITHUB_PROXY}/https://github.com/EasyTier/easytier-manager/releases/download/v{last_version}/easytier-manager-pro.zip"
+    download_url = f"https://github.com/EasyTier/easytier-manager/releases/download/v{last_version}/easytier-manager-pro.zip"
+    github_proxy = github_util.get_github_proxy()
+    if github_proxy and github_proxy != '':
+        download_url = f"{github_proxy}/{download_url}"
     download_temp_file = f"{download_dir}/easytier-manager-pro-v{last_version}.zip.{int(time.time())}"
     github_util.download_file(download_url, download_temp_file, f"easytier-windows-pro-v{last_version}.zip")
     common_util.move(download_temp_file, download_file)
