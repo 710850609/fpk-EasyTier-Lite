@@ -1,1 +1,1 @@
-tcp://c.oee.icu:60006
+udp://boi.de5.net:11010

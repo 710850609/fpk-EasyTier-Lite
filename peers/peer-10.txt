@@ -1,1 +1,1 @@
-tcp://et.ruixuan.online:11010
+udp://ec.6mahua.top:11010

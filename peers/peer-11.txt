@@ -1,1 +1,1 @@
-udp://ec.6mahua.top:11010
+tcp://kddi10gbps.xzcloudnode.sbs:49784

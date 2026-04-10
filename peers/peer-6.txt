@@ -1,1 +1,1 @@
-tcp://112.19.8.19:11010
+udp://et.ruixuan.online:11010
