@@ -1,1 +1,1 @@
-udp://ec.6mahua.top:11010
+tcp://e.927425.xyz:10063

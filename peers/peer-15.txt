@@ -1,1 +1,1 @@
-udp://mukongyun.top:11010
+udp://boi.de5.net:11010

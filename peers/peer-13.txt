@@ -1,1 +1,1 @@
-tcp://et.117657.xyz:11010
+tcp://sh.vomiku.com:7910
