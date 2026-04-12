@@ -1,1 +1,1 @@
-tcp://et.ruixuan.online:11010
+udp://boi.de5.net:11010
