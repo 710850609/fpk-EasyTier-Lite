@@ -77,7 +77,7 @@ class ProcessManager:
 
             # 等待一小段时间检查进程是否立即失败
             import time
-            time.sleep(1)
+            time.sleep(2)
 
             # 检查进程是否还在运行
             if process.poll() is not None:

@@ -3,7 +3,7 @@ set -e
 source /var/apps/${TRIM_APPNAME}/cmd/common.sh
 
 PID_FILE="${TRIM_PKGVAR}/app.pid"
-RESTART_FLAG_FILE="${TRIM_APPDEST}/.restart"
+RESTART_FLAG_FILE="${TRIM_PKGVAR}/.restart"
 
 # write the command to start your program here 
 CMD="${BIN_DIR}/easytier-core --config-file ${CFG_FILE}"
