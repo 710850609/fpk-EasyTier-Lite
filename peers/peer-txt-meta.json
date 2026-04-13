@@ -2,7 +2,52 @@
   "count": 1,
   "updateTime": 1776058125724,
   "peers": {
+    "txt://0.ethub1.v6.army": {
+      "createTime": 1776058125723,
+      "updateTime": 1776058125723,
+      "relay": 0
+    },
     "txt://1.ethub1.v6.army": {
+      "createTime": 1776058125723,
+      "updateTime": 1776058125723,
+      "relay": 0
+    },
+    "txt://2.ethub1.v6.army": {
+      "createTime": 1776058125723,
+      "updateTime": 1776058125723,
+      "relay": 0
+    },
+    "txt://3.ethub1.v6.army": {
+      "createTime": 1776058125723,
+      "updateTime": 1776058125723,
+      "relay": 0
+    },
+    "txt://4.ethub1.v6.army": {
+      "createTime": 1776058125723,
+      "updateTime": 1776058125723,
+      "relay": 0
+    },
+    "txt://5.ethub1.v6.army": {
+      "createTime": 1776058125723,
+      "updateTime": 1776058125723,
+      "relay": 0
+    },
+    "txt://6.ethub1.v6.army": {
+      "createTime": 1776058125723,
+      "updateTime": 1776058125723,
+      "relay": 0
+    },
+    "txt://7.ethub1.v6.army": {
+      "createTime": 1776058125723,
+      "updateTime": 1776058125723,
+      "relay": 0
+    },
+    "txt://8.ethub1.v6.army": {
+      "createTime": 1776058125723,
+      "updateTime": 1776058125723,
+      "relay": 0
+    },
+    "txt://9.ethub1.v6.army": {
       "createTime": 1776058125723,
       "updateTime": 1776058125723,
       "relay": 0

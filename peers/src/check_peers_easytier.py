@@ -424,26 +424,26 @@ def main():
                 # 保存到文件
                 # 使用相对路径，基于项目根目录
 
-                file_name = f"peer-{index}.txt"
-                file_project_relative_path = f"peers/{file_name}"
-                file_path = os.path.join(project_path, file_project_relative_path)
-                os.makedirs(os.path.dirname(file_path), exist_ok=True)
-                with open(file_path, 'w', encoding='utf-8') as f:
-                    f.write(r['address'])
+                # file_name = f"peer-{index}.txt"
+                # file_project_relative_path = f"peers/{file_name}"
+                # file_path = os.path.join(project_path, file_project_relative_path)
+                # os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                # with open(file_path, 'w', encoding='utf-8') as f:
+                #     f.write(r['address'])
                 
-                available_peers.append({
-                    "url": r['address'], 
-                    "fileName": file_name
-                })
+                # available_peers.append({
+                #     "url": r['address'], 
+                #     "fileName": file_name
+                # })
         
         # 保存元数据
-        with open(peer_meta_path, 'w', encoding='utf-8') as f:
-            meta = {
-                "count": len(available_peers),
-                "baseUrl": "https://raw.githubusercontent.com/710850609/EasyTier-Lite/refs/heads/main/peers",
-                "peers": available_peers,
-            }
-            json.dump(meta, f, ensure_ascii=False, indent=2)
+        # with open(peer_meta_path, 'w', encoding='utf-8') as f:
+        #     meta = {
+        #         "count": len(available_peers),
+        #         "baseUrl": "https://raw.githubusercontent.com/710850609/EasyTier-Lite/refs/heads/main/peers",
+        #         "peers": available_peers,
+        #     }
+        #     json.dump(meta, f, ensure_ascii=False, indent=2)
     
     # 输出不可用的地址
     if failed:
