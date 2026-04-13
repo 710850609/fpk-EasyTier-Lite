@@ -1,1 +1,1 @@
-udp://et.ruixuan.online:11010
+tcp://47.96.28.190:9994

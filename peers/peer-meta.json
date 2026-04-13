@@ -1,21 +1,21 @@
 {
-  "count": 16,
+  "count": 15,
   "baseUrl": "https://raw.githubusercontent.com/710850609/EasyTier-Lite/refs/heads/main/peers",
   "peers": [
     {
-      "url": "tcp://kddi10gbps.xzcloudnode.sbs:49784",
+      "url": "tcp://106.15.202.147:11010",
       "fileName": "peer-1.txt"
     },
     {
-      "url": "tcp://106.15.202.147:11010",
+      "url": "tcp://kddi10gbps.xzcloudnode.sbs:49784",
       "fileName": "peer-2.txt"
     },
     {
-      "url": "udp://et.ruixuan.online:11010",
+      "url": "tcp://47.96.28.190:9994",
       "fileName": "peer-3.txt"
     },
     {
-      "url": "tcp://47.96.28.190:9994",
+      "url": "tcp://103.184.47.79:11010",
       "fileName": "peer-4.txt"
     },
     {
@@ -23,48 +23,44 @@
       "fileName": "peer-5.txt"
     },
     {
-      "url": "tcp://et.ruixuan.online:11010",
+      "url": "tcp://39.108.52.138:11010",
       "fileName": "peer-6.txt"
     },
     {
-      "url": "tcp://ros.scpsl.com.cn:11010",
+      "url": "tcp://112.19.8.19:11010",
       "fileName": "peer-7.txt"
     },
     {
-      "url": "tcp://39.108.52.138:11010",
+      "url": "tcp://47.121.195.130:11010",
       "fileName": "peer-8.txt"
     },
     {
-      "url": "tcp://103.184.47.79:11010",
+      "url": "tcp://et.ruixuan.online:11010",
       "fileName": "peer-9.txt"
     },
     {
-      "url": "tcp://47.121.195.130:11010",
+      "url": "udp://et.ruixuan.online:11010",
       "fileName": "peer-10.txt"
     },
     {
-      "url": "tcp://112.19.8.19:11010",
+      "url": "udp://mukongyun.top:11010",
       "fileName": "peer-11.txt"
     },
     {
-      "url": "tcp://e.927425.xyz:10063",
+      "url": "tcp://ros.scpsl.com.cn:11010",
       "fileName": "peer-12.txt"
     },
     {
-      "url": "udp://boi.de5.net:11010",
+      "url": "tcp://boi.de5.net:11010",
       "fileName": "peer-13.txt"
     },
     {
-      "url": "udp://mukongyun.top:11010",
+      "url": "tcp://et.scpsl.com.cn:11010",
       "fileName": "peer-14.txt"
     },
     {
-      "url": "tcp://boi.de5.net:11010",
+      "url": "udp://boi.de5.net:11010",
       "fileName": "peer-15.txt"
-    },
-    {
-      "url": "tcp://et.scpsl.com.cn:11010",
-      "fileName": "peer-16.txt"
     }
   ]
 }
