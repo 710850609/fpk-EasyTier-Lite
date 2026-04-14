@@ -677,6 +677,11 @@ onMounted(async () => {
   // 加载公共节点
   api.configs.publicPeers().then(data => {
     publicPeerOptions.value = data.data
+    if (fastSettingMode.value && config.value.peer.length === 0) {
+      // 快速设置，默认最多取前5个
+      const peers = publicPeerOptions.value.slice(0, 5).map(e => e.uri)
+      config.value.peer.unshift(...peers)
+    }
   })
   loadConfig()
 })

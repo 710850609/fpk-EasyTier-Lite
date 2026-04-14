@@ -66,7 +66,7 @@ def update_peers():
     print(f"\n总计获取 {len(results)} 个节点，去重后 {len(unique_peers)} 个")
     
     # 写入文件
-    output_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'peer-list.txt')
+    output_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'peer-source.txt')
     
     # 确保目录存在
     os.makedirs(os.path.dirname(output_path), exist_ok=True)

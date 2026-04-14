@@ -41,6 +41,7 @@ def github_mirrors(*kwargs):
         sources = [
             { "value": "", "label": "不使用"},
             { "value": "https://ghfast.top", "label": "ghfast.top"},
+            { "value": "https://ghproxy.net", "label": "ghproxy.net"},
             { "value": "https://gh.llkk.cc", "label": "gh.llkk.cc"},
             { "value": "https://gh-proxy.org", "label": "gh-proxy.org"},
         ]
