@@ -15,7 +15,12 @@ import urllib.error
 # dynv6 API 配置
 API_BASE = "https://dynv6.com/api/v2"
 # 从环境变量获取 Token，如果没有则使用默认值（需要替换）
-DYNV6_TOKEN = os.environ.get("DYNV6_TOKEN", Path("DYNV6_TOKEN.txt").read_text().strip())
+DYNV6_TOKEN = os.environ.get("DYNV6_TOKEN")
+if not DYNV6_TOKEN and Path("DYNV6_TOKEN.txt").exists():
+    DYNV6_TOKEN = Path("DYNV6_TOKEN.txt").read_text().strip()
+if not DYNV6_TOKEN:
+    print("错误: 请设置 DYNV6_TOKEN 环境变量或 DYNV6_TOKEN.txt 文件")
+    sys.exit(1)
 
 
 def api_request(method, endpoint, data=None):
