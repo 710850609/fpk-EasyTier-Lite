@@ -21,6 +21,8 @@ jobs:
           python3 main.py
 
       - name: 更新仓库
+        env:
+          GH_TOKEN: ${{ secrets.DYNV6_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

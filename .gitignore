@@ -15,7 +15,7 @@ peers/src/.venv
 peers/src/__pycache__
 peers/*.log
 peers/bin/*
-peers/DYNV6_TOKEN.txt
+peers/src/DYNV6_TOKEN.txt
 
 
 server/.venv
@@ -38,6 +38,8 @@ frontend/dist
 frontend/dist-ssr
 frontend/auto-imports.d.ts
 frontend/components.d.ts
+
+gui
 
 *.local
 # Editor directories and files
