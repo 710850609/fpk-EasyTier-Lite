@@ -1,7 +1,6 @@
 tcp://ros.scpsl.com.cn:11010
 udp://mukongyun.top:11010
 udp://ec.6mahua.top:11010
-tcp://kddi10gbps.xzcloudnode.sbs:49784
 tcp://112.19.8.19:11010
 tcp://8.148.29.206:11010
 tcp://160.202.238.39:20665
