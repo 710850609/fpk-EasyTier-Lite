@@ -44,6 +44,7 @@ def github_mirrors(*kwargs):
             { "value": "https://ghproxy.net", "label": "ghproxy.net"},
             { "value": "https://gh.llkk.cc", "label": "gh.llkk.cc"},
             { "value": "https://gh-proxy.org", "label": "gh-proxy.org"},
+            { "value": "https://gh.felicity.ac.cn", "label": "gh.felicity.ac.cn"},
         ]
         http_util.http_response_ok({ 'selected': selected, 'sources': sources })
     except Exception as e:

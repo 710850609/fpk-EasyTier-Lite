@@ -140,7 +140,8 @@ def public_peers(data, *kwargs):
     github_proxy = github_util.get_github_proxy();
     for key, item in peer_meta["peers"].items():
         peer = f"{key}"
-        if peer not in config_peers_set:
+        # 过滤未启用：空uri
+        if peer not in config_peers_set and len(item.get('uri').strip()) > 0:
             peer_uris.append(peer)
     peers = []
     for uri in peer_uris:
