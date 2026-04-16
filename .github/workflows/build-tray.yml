@@ -18,7 +18,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'
+        python-version: '3.9.13'
     
     - name: Install dependencies
       run: |
@@ -51,7 +51,7 @@ jobs:
         docker run --rm --platform linux/arm64 \
           -v ${{ github.workspace }}:/workspace \
           -w /workspace \
-          python:3.12-slim \
+          python:3.9.13-slim \
           bash -c "
             apt-get update && apt-get install -y binutils &&
             pip install pyinstaller pystray pillow &&
@@ -74,7 +74,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'
+        python-version: '3.9.13'
     
     - name: Install dependencies
       run: |
@@ -100,7 +100,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'
+        python-version: '3.9.13'
     
     - name: Install dependencies
       run: |
@@ -126,7 +126,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'
+        python-version: '3.9.13'
         architecture: arm64
     
     - name: Install dependencies
