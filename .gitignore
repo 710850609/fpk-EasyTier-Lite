@@ -64,3 +64,4 @@ frontend/.idea
 *.njsproj
 *.sln
 *.sw?
+*.idea
