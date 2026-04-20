@@ -122,10 +122,18 @@ jobs:
           githubToken: ${{ github.token }}
           install: |
             apt-get update -q -y
-            apt-get install -q -y python3 python3-pip
+            apt-get install -q -y build-essential libssl-dev zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libreadline-dev libffi-dev curl
+            curl -O https://www.python.org/ftp/python/3.8.18/Python-3.8.18.tgz
+            tar -xzf Python-3.8.18.tgz
+            cd Python-3.8.18
+            ./configure --enable-optimizations --prefix=/usr/local
+            make -j$(nproc)
+            make altinstall
+            cd ..
+            rm -rf Python-3.8.18 Python-3.8.18.tgz
           run: |
             cd src/backend
-            python3 build.py
+            python3.8 build.py
 
       - name: Upload Linux ARM64 artifact
         uses: actions/upload-artifact@v4
