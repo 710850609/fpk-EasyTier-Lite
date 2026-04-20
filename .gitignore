@@ -3,12 +3,30 @@ temp.json
 *.fpk
 *.log
 *.zip
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.spec
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# EasyTier-Lite
 EasyTier-Lite/app/bin/*
 EasyTier-Lite/app/server
 EasyTier-Lite/app/frontend
 EasyTier-Lite/app/backend
 EasyTier-Lite/app/default.toml
-
 
 peers/.venv
 peers/src/.venv
@@ -17,14 +35,12 @@ peers/*.log
 peers/bin/*
 peers/src/DYNV6_TOKEN.txt
 
-
 server/.venv
 server/*/__pycache__
 server/__pycache__
 server/build
 server/dist
 server/*.spec
-
 
 frontend/logs
 frontend/npm-debug.log*
@@ -41,32 +57,24 @@ frontend/components.d.ts
 src/backend/.venv
 src/backend/*.log
 src/backend/__pycache__
+src/backend/__pycache__
 src/backend/build
 src/backend/dist
 src/bin
 src/build
 src/dist
 src/cgi
-src/gui/.venv
-src/gui/build
-src/gui/dist
-src/gui/*.spec
 
-
-gui-go
-dist
-build
-
-__pycache__
-*.local
-# Editor directories and files
-frontend/.vscode
+__IDp
+/
+ iora 
+*.ewp
+*sawn
+*~
+ files
+# OSde
 !.vscode/extensions.json
-frontend/.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
+Thnmbn.lb
+
 *.sw?
 *.idea
