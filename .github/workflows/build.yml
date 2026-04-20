@@ -58,10 +58,6 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Install dependencies
-        run: |
-          pip install pyinstaller tomlkit requests
-
       - name: Build Windows x64
         run: |
           cd src/backend
@@ -90,10 +86,6 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Install dependencies
-        run: |
-          pip install pyinstaller tomlkit requests
-
       - name: Build Linux x64
         run: |
           cd src/backend
@@ -107,43 +99,69 @@ jobs:
 
   build-linux-arm64:
     needs: build-frontend
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04-arm
     steps:
       - uses: actions/checkout@v4
-
+      
+      - name: Install Python 3.8
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.8'
+          architecture: 'arm64'  # 明确指定 ARM 架构
+      
+      - name: Check Python version
+        run: python --version  # 将输出您指定的 Python 版本，如 3.8.x
       - name: Download frontend artifact
         uses: actions/download-artifact@v4
         with:
           name: frontend-dist
           path: frontend/dist
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: arm64
+      - name: Build Linux arm64
+        run: |
+          cd src/backend
+          python build.py
 
-      - name: Build Linux ARM64
-        uses: uraimo/run-on-arch-action@v2
-        with:
-          arch: aarch64
-          distro: ubuntu18.04
-          githubToken: ${{ github.token }}
-          install: |
-            apt-get update -q -y
-            apt-get install -q -y software-properties-common
-            add-apt-repository -y ppa:deadsnakes/ppa
-            apt-get update -q -y
-            apt-get install -q -y python3.8 python3.8-pip
-            python3.8 -m pip install pyinstaller tomlkit requests
-          run: |
-            cd src/backend
-            python3.8 build.py
-
-      - name: Upload Linux ARM64 artifact
+      - name: Upload Linux arm64 artifact
         uses: actions/upload-artifact@v4
         with:
           name: EasyTierLite-Server-linux-arm64
           path: src/backend/dist/*.zip
+
+
+    # runs-on: ubuntu-latest
+    # steps:
+    #   - uses: actions/checkout@v4
+
+    #   - name: Download frontend artifact
+    #     uses: actions/download-artifact@v4
+    #     with:
+    #       name: frontend-dist
+    #       path: frontend/dist
+
+    #   - name: Set up QEMU
+    #     uses: docker/setup-qemu-action@v3
+    #     with:
+    #       platforms: arm64
+
+    #   - name: Build Linux ARM64
+    #     uses: uraimo/run-on-arch-action@v2
+    #     with:
+    #       arch: aarch64
+    #       distro: ubuntu18.04
+    #       githubToken: ${{ github.token }}
+    #       install: |
+    #         apt-get update -q -y
+    #         apt-get install -q -y python3 python3-pip
+    #       run: |
+    #         cd src/backend
+    #         python3 build.py
+
+    #   - name: Upload Linux ARM64 artifact
+    #     uses: actions/upload-artifact@v4
+    #     with:
+    #       name: EasyTierLite-Server-linux-arm64
+    #       path: src/backend/dist/*.zip
 
   build-macos-x64:
     needs: build-frontend
@@ -161,10 +179,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Install dependencies
-        run: |
-          pip install pyinstaller tomlkit requests
 
       - name: Build macOS x64
         run: |
