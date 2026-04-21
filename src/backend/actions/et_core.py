@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import sys
-from pathlib import Path
-import utils.http_util as http_util
-import utils.common_util as common_util
-import utils.github_util as github_util
-import actions.services as et_service
 import logging
 import os
 import platform
-import zipfile
-import time
 import shutil
+import sys
+import time
+import zipfile
+from pathlib import Path
+
+import actions.services as et_service
+import utils.common_util as common_util
+import utils.github_util as github_util
+import utils.http_util as http_util
 
 TRIM_APPNAME = os.getenv('TRIM_APPNAME', 'EasyTier-Lite')
 TRIM_APPDEST = os.getenv('TRIM_APPDEST', f'/var/apps/{TRIM_APPNAME}/target')
@@ -46,14 +47,16 @@ def install(data, *kwargs):
         http_util.http_response_error('版本不能为空')
 
     arch = __get_arch()
-    url = f"https://github.com/easyTier/easytier/releases/download/{version}/easytier-linux-{arch}-{version}.zip"
+    platform = 'linux' if sys.platform == 'linux' else ('windows' if sys.platform == 'win32' else 'macos')
+    url = f"https://github.com/easyTier/easytier/releases/download/{version}/easytier-{platform}-{arch}-{version}.zip"
     logging.info(f"内核下载地址: {url}")
-    zip_file = f'{ET_BIN_DIR}/easytier-linux-{arch}-{version}.zip'
+    zip_file = f'{ET_BIN_DIR}/easytier-{platform}-{arch}-{version}.zip'
     github_util.download_file(url, zip_file)
     unzip_temp_dir = __unzip(zip_file, f'{ET_BIN_DIR}')
     et_service.stop()
-    shutil.copy2(f'{unzip_temp_dir}/easytier-linux-{arch}/easytier-core', f'{ET_BIN_DIR}/easytier-core')
-    shutil.copy2(f'{unzip_temp_dir}/easytier-linux-{arch}/easytier-cli', f'{ET_BIN_DIR}/easytier-cli')
+    for item in Path(f'{unzip_temp_dir}/easytier-{platform}-{arch}').iterdir():
+        shutil.move(str(item), f'{ET_BIN_DIR}/{item.name}')
+        logging.info(f"移动: {item.name}")
     Path(zip_file).unlink()
     shutil.rmtree(unzip_temp_dir)
     et_service.start()

@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import json
+import os
 import sys
 
 import utils.common_util as cmd_util
-import utils.http_util as http_util
-import json
-import os
 
 TRIM_APPNAME = os.getenv('TRIM_APPNAME', 'EasyTier-Lite')
 TRIM_APPDEST = os.getenv('TRIM_APPDEST', f'/var/apps/{TRIM_APPNAME}/target')

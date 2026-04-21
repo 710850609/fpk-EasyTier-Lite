@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from pathlib import Path
-import utils.http_util as http_util
 import logging
 import os
+from pathlib import Path
 
-from htt_cgi.cgi import HttpException
+import utils.http_util as http_util
+from http_dispatcher.dispatcher import HttpException
 
 TRIM_APPNAME = os.getenv('TRIM_APPNAME', 'EasyTier-Lite')
 TRIM_APPDEST = os.getenv('TRIM_APPDEST', f'/var/apps/{TRIM_APPNAME}/target')

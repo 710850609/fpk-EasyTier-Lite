@@ -178,9 +178,10 @@ if __name__ == '__main__':
     if tray_thread:
         def start_web():
             # 执行 CGI 脚本
-            http_server.run(host, port)
+            http_server.start_server(host, port, base_url)
         server_thread = threading.Thread(target=start_web, daemon=True)
         server_thread.start()
+        webbrowser.open(f'http://{host}:{port}{base_url}')
         # 使用事件等待，支持中断
         try:
             while not _stop_event.is_set():

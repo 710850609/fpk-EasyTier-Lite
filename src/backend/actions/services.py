@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import sys
-
-import utils.http_util as http_util
-import utils.process_util as process_util
-import os
 import logging
+import os
+import sys
 from pathlib import Path
 
+import utils.process_util as process_util
 
 TRIM_APPNAME = os.getenv('TRIM_APPNAME', 'EasyTier-Lite')
 TRIM_APPDEST = os.getenv('TRIM_APPDEST', f'/var/apps/{TRIM_APPNAME}/target')

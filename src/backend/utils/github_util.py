@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from pathlib import Path
 import logging
-import re
-import logging
-from pathlib import Path
-import requests
 import os
+import re
+from pathlib import Path
+
+import requests
 
 TRIM_APPNAME = os.getenv('TRIM_APPNAME', 'EasyTier-Lite')
 TRIM_APPDEST = os.getenv('TRIM_APPDEST', f'/var/apps/{TRIM_APPNAME}/target')
@@ -17,7 +16,7 @@ ET_CONFIG_FILE = f'{TRIM_SHARE_DIR}/config.toml'
 ET_CONFIG_INIT_FILE = f'{TRIM_PKGVAR}/.init'
 ET_BIN_DIR = f"{TRIM_APPDEST}/bin"
 
-GITHUB_PROXY_FILE = f"{TRIM_APPDEST}/github_proxy_url.txt";
+GITHUB_PROXY_FILE = f"{TRIM_APPDEST}/github_proxy_url.txt"
 
 
 def get_latest_version(api_url) -> str:
@@ -64,7 +63,7 @@ def get_download_url_proxy(url: str) -> str:
         url = proxy_url + '/' + url;
     return url;
 
-def download_file(url: str, output_path: Path, desc: str = "") -> bool:
+def download_file(url: str, output_path: str, desc: str = ""):
     """下载文件，带进度显示"""
     try:
         url = get_download_url_proxy(url)            

@@ -91,14 +91,15 @@ class HttpResponse:
 
     def output_cgi(self):
         if self.file:
-            disposition = self.get_file_disposition()
             # 文件大小
             file_size = os.path.getsize(self.file)
             mime_type = self.mime_type or "application/octet-stream"
             # ===== 关键：必须先发送状态头 =====
             sys.stdout.buffer.write(b"Status: 200 OK\r\n")
             sys.stdout.buffer.write(f"Content-Type: {mime_type}\r\n".encode())
-            sys.stdout.buffer.write(f"Content-Disposition: {disposition}\r\n".encode())
+            disposition = self.get_file_disposition()
+            if disposition:
+                sys.stdout.buffer.write(f"Content-Disposition: {disposition}\r\n".encode())
             sys.stdout.buffer.write(f"Content-Length: {file_size}\r\n".encode())
             sys.stdout.buffer.write(b"\r\n")  # 头结束空行
             sys.stdout.buffer.flush()

@@ -3,7 +3,6 @@
 
 import logging
 import os
-import shutil
 import time
 import zipfile
 from pathlib import Path
@@ -12,7 +11,7 @@ import actions.configs as configs
 import utils.common_util as common_util
 import utils.et_util as et_util
 import utils.github_util as github_util
-from htt_cgi.cgi import HttpResponse
+from http_dispatcher.dispatcher import HttpResponse
 
 TRIM_APPNAME = os.getenv('TRIM_APPNAME', 'EasyTier-Lite')
 TRIM_APPDEST = os.getenv('TRIM_APPDEST', f'/var/apps/{TRIM_APPNAME}/target')
@@ -56,8 +55,8 @@ def _get_et_mgr_package(et_mgr_version: str, download_dir: str):
     download_file = download_dir + f"/easytier-manager-pro-v{last_version}.zip"
     if Path(download_file).exists():
         logging.debug(f"已存在缓存:{download_file}")
-        return download_file;
-    logging.debug(f"不存在缓存，开始下载 {download_file}");
+        return download_file
+    logging.debug(f"不存在缓存，开始下载 {download_file}")
     download_url = f"https://github.com/EasyTier/easytier-manager/releases/download/v{last_version}/easytier-manager-pro.zip"
     github_proxy = github_util.get_github_proxy()
     if github_proxy and github_proxy != '':

@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import json
+import logging
 import os
 import sys
 from urllib.parse import quote
-import logging
 
 
 def http_response(status_code, data):

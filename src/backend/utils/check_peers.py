@@ -5,16 +5,17 @@ EasyTier 节点检测工具
 使用 easytier-core 和 easytier-cli 检测节点连通性和延迟
 """
 
-import os
-import sys
-import subprocess
-import time
 import json
-import socket
-import random
-import string
-import signal
 import logging
+import os
+import random
+import signal
+import socket
+import string
+import subprocess
+import sys
+import time
+
 
 def get_random_string(length=16):
     """获取随机字符串（指定长度）"""

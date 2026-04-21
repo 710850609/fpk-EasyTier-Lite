@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import utils.common_util as cmd_util
-import utils.http_util as http_util
-import utils.check_peers as check_util
-import utils.github_util as github_util
+import json
+import logging
+import os
+from pathlib import Path
+
 import requests
 import tomlkit
-import json
-import os
-import logging
-from pathlib import Path
+
+import utils.check_peers as check_util
+import utils.github_util as github_util
+import utils.http_util as http_util
 
 TRIM_APPNAME = os.getenv('TRIM_APPNAME', 'EasyTier-Lite')
 TRIM_APPDEST = os.getenv('TRIM_APPDEST', f'/var/apps/{TRIM_APPNAME}/target')
@@ -35,9 +36,9 @@ def check_peers(*kwargs):
     检查节点是否可用
     :param request_data: 请求数据（可选）
     """
-    peer_list = public_peers(data = {'refresh': False}, http_output=False)
+    peer_list = public_peers(data = {'refresh': False})
     if (len(peer_list) == 0):
-        peer_list = public_peers(data = {'refresh': True}, http_output=False)
+        peer_list = public_peers(data = {'refresh': True})
     # 提取 URI 列表
     peer_uris = [peer['uri'] for peer in peer_list]
     result = check_util.check_peers(ET_BIN_DIR, peer_uris, max_wait_second=6)
@@ -49,7 +50,7 @@ def check_peers(*kwargs):
     return peer_list
 
 
-def public_peers(data, http_output=True, *kwargs):
+def public_peers(data, *kwargs):
     refresh = data and 'refresh' in data and data['refresh'] or False
     peer_meta = __get_public_peers(refresh)
     peer_uris = []
@@ -74,9 +75,6 @@ def public_peers(data, http_output=True, *kwargs):
     for uri in peer_uris:
         label = uri
         peers.append({'label': label, 'uri': uri})
-    if http_output:
-        http_util.http_response_ok(peers)
-        pass
     return peers
 
 

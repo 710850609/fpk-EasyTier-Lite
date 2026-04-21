@@ -124,7 +124,7 @@ def build_executable():
         "--hidden-import", "utils.github_util",
         "--hidden-import", "utils.http_util",
         "--hidden-import", "utils.process_util",
-        "--hidden-import", "htt_cgi.api.htt_cgi",
+        "--hidden-import", "http_dispatcher.api.http_dispatcher",
         "--hidden-import", "PIL",
         "--hidden-import", "PIL.Image",
         "--add-data", f"{Path(__file__).absolute().parent.parent.parent}/frontend/dist{separator}frontend",

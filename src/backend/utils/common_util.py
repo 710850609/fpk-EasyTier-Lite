@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import subprocess
 import logging
-import shutil
 import os
+import shutil
+import subprocess
+
 
 def run_cmd(command, *args, shell=False):
     """
@@ -57,8 +58,6 @@ def move(src_path, dst_path):
         src_path: 源路径
         dst_path: 目标路径
     """
-    import shutil
-    import os
     
     # 确保源路径存在
     if not os.path.exists(src_path):

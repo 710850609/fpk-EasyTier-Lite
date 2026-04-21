@@ -1,3 +1,4 @@
 tomlkit
 requests<2.30.0
+psutil
 pystray

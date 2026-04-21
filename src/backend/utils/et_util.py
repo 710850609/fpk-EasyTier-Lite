@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from pathlib import Path
-import utils.github_util as github_util
-import utils.common_util as common_util
 import logging
-from pathlib import Path
 import time
+from pathlib import Path
+
+import utils.common_util as common_util
+import utils.github_util as github_util
 
 et_min_version = "2.5.0"
 

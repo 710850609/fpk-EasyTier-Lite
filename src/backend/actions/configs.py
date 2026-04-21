@@ -7,8 +7,7 @@ from pathlib import Path
 
 import tomlkit
 
-import utils.http_util as http_util
-from htt_cgi.cgi import HttpResponse
+from http_dispatcher.dispatcher import HttpResponse
 
 TRIM_APPNAME = os.getenv('TRIM_APPNAME', 'EasyTier-Lite')
 TRIM_APPDEST = os.getenv('TRIM_APPDEST', f'/var/apps/{TRIM_APPNAME}/target')
@@ -42,34 +41,6 @@ def save(data, *kwargs):
         f.write(tomlkit.dumps(doc))
     Path(ET_CONFIG_INIT_FILE).unlink(missing_ok=True)
 
-def save_with_comment(data, *kwargs):
-    with open(ET_CONFIG_FILE, "r", encoding="utf-8") as f:
-        src_doc = tomlkit.parse(f.read())
-    if not src_doc["network_identity"]:
-        src_doc["network_identity"] = {"network_name": '', "network_secret": ''}
-    __deep_merge(src_doc, data)
-    # 将原配置的所有内容复制到新文档
-    doc = tomlkit.document()
-    for key, value in src_doc.body:
-        if key == "flags":
-            flags_table = tomlkit.table()        
-            for fKey, fValue in value.items():
-                comment = __get_comment(fKey)                
-                if comment and fValue:
-                    flags_table.add(tomlkit.comment(comment))
-                    pass
-                flags_table.add(fKey, fValue)
-            doc["flags"] = flags_table
-        elif key is not None:
-            logging.info(f"key: {key}   --其他-->  value: {value}")
-            comment = __get_comment(key)                
-            if comment and value:
-                doc.add(tomlkit.comment(comment))
-            doc.add(key, value)
-    # 头部注释
-    with open(ET_CONFIG_FILE, "w", encoding="utf-8") as f:
-        f.write(tomlkit.dumps(doc))
-    Path(ET_CONFIG_INIT_FILE).unlink(missing_ok=True)
 
 def save_toml(data: str, *kwargs):
     try:
@@ -96,7 +67,6 @@ def download(*kwargs):
     tmp_file = copy()
     logging.info(f"{tmp_file}")
     return HttpResponse(file=tmp_file, download_name="config.toml")
-    # http_util.http_response_file(tmp_file, filename="et-fnos.toml")
 
 def copy(*kwargs): 
     tmp_file = '/tmp/EasyTier-Lite/config-copy.toml'
@@ -128,8 +98,3 @@ def __deep_merge(base, override):
         else:
             base[key] = value
     return base    
-
-def __get_comment(key):
-    if key and key in CONFIG_COMMENTS and CONFIG_COMMENTS[key]:
-        return CONFIG_COMMENTS[key]
-    return None

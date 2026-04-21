@@ -1,16 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from pathlib import Path
-from datetime import datetime
-import utils.http_util as http_util
-import utils.github_util as github_util
-import requests
 import logging
-import tomlkit
-import json
 import os
-import units.configs as configs
+from pathlib import Path
+
+import tomlkit
+
+import utils.http_util as http_util
 
 TRIM_APPNAME = os.getenv('TRIM_APPNAME', 'EasyTier-Lite')
 TRIM_APPDEST = os.getenv('TRIM_APPDEST', f'/var/apps/{TRIM_APPNAME}/target')

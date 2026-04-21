@@ -13,6 +13,8 @@ import subprocess
 import logging
 from pathlib import Path
 
+import psutil
+
 
 def strip_ansi(text):
     """去除 ANSI 转义序列"""
@@ -28,16 +30,7 @@ class ProcessManager:
 
 
     def __check_process(self, pid: int) -> bool:
-        """
-        检查进程是否存在
-        等效于: kill -0 ${pid} 2>/dev/null
-        """
-        try:
-            os.kill(pid, 0)
-            return True
-        except (OSError, ProcessLookupError):
-            return False
-
+        return psutil.pid_exists(pid)
 
     def status(self) -> bool:
         """
@@ -79,7 +72,6 @@ class ProcessManager:
                 # if '--no-color' not in self.start_cmd:
                 #     self.start_cmd += ' --no-color'
                 # Windows: 直接使用命令，创建新进程组
-                import subprocess
                 startupinfo = subprocess.STARTUPINFO()
                 startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
                 process = subprocess.Popen(
@@ -89,9 +81,8 @@ class ProcessManager:
                     stdin=subprocess.DEVNULL,
                     encoding='utf-8',
                     errors='replace',
-                    creationflags=subprocess.CREATE_NEW_PROCESS_GROUP,
+                    creationflags=subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.DETACHED_PROCESS,
                     startupinfo=startupinfo,
-                    shell=True
                 )
             else:
                 # Linux/macOS: 使用 bash -c
