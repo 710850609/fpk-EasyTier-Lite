@@ -1,70 +1,69 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import logging
-import os
 import sys
 from pathlib import Path
+from typing import Union
 
-import utils.process_util as process_util
-
-TRIM_APPNAME = os.getenv('TRIM_APPNAME', 'EasyTier-Lite')
-TRIM_APPDEST = os.getenv('TRIM_APPDEST', f'/var/apps/{TRIM_APPNAME}/target')
-TRIM_PKGVAR = os.getenv('TRIM_PKGVAR', f'/var/apps/{TRIM_APPNAME}/var')
-TRIM_SHARE_DIR = os.getenv('TRIM_SHARE_DIR', f'/var/apps/{TRIM_APPNAME}/shares/{TRIM_APPNAME}')
-
-ET_BIN_DIR = os.getenv('ET_BIN_DIR', f"{TRIM_APPDEST}/bin")
-CONFIG_DIR = os.getenv('CONFIG_DIR', f"{TRIM_SHARE_DIR}/bin")
-DATA_DIR = os.getenv('DATA_DIR', f"{TRIM_PKGVAR}/bin")
-
-ET_CONFIG_FILE = f'{CONFIG_DIR}/config.toml'
-ET_CONFIG_INIT_FILE = f'{DATA_DIR}/.init'
-ET_PEER_META_FILE = f'{DATA_DIR}/peer-txt-meta.json'
-ET_PID_FILE = f'{DATA_DIR}/app.pid'
-ET_RESTART_FLAG_FILE = f'{DATA_DIR}/.restart'
-GITHUB_PROXY_FILE = f"{DATA_DIR}/github_proxy_url.txt"
-START_CMD = f"{ET_BIN_DIR}/easytier-core --config-file {ET_CONFIG_FILE}"
-
-if sys.platform == 'win32':
-    START_CMD = f"{ET_BIN_DIR}/easytier-core.exe --config-file {ET_CONFIG_FILE}"
-
+from utils import check_peers
+from utils import process_util
+from utils import run_configs
+from utils.process_util import ProcessManager
 
 # 延迟初始化：使用单例模式
-_pm = None
+_pm = {}
 
-def _get_process_manager():
+def _get_process_manager(profile:str = None) -> Union[ProcessManager]:
     """获取 ProcessManager 实例（延迟初始化）"""
     global _pm
-    logging.info(f"START_CMD: {START_CMD}")
-    logging.info(f"ET_PID_FILE: {ET_PID_FILE}")
-    if _pm is None:
-        _pm = process_util.ProcessManager(START_CMD, ET_PID_FILE)
-    return _pm
+    pm_key = 'default' if profile is None else profile
+    cur_pm = _pm.get(pm_key)
+    if cur_pm is None:
+        pid_file = run_configs.et_pid_file(profile)
+        cur_pm = process_util.ProcessManager(pid_file)
+        _pm[pm_key] = cur_pm
+    return cur_pm
 
-def status(*kwargs):
-    pm = _get_process_manager()
+def status(profile:str = None, *kwargs):
+    pm = _get_process_manager(profile)
     running = pm.status()
     return {'running': running}
 
-def stop(*kwargs):
+def stop(profile:str = None, *kwargs):
     logging.info('停止ET服务')
-    pm = _get_process_manager()
+    pm = _get_process_manager(profile)
     pm.stop()
 
-def start(*kwargs):
+def start(profile:str = None, *kwargs):
     logging.info('启动ET服务')
-    pm = _get_process_manager()
-    pm.start()
+    pm = _get_process_manager(profile)
+    core_dir = run_configs.core_dir()
+    ext = '.exe' if sys.platform == 'win32' else ''
+    config_file = run_configs.et_config_file(profile)
+    rpc_port = check_peers.get_available_port()
+    cmd = f"{core_dir}/easytier-core{ext} --config-file {config_file} --rpc-portal 127.0.0.1{rpc_port}"
+    pm.start(cmd)
+    run_file = run_configs.et_run_file()
 
-def restart(*kwargs):
-    pm = _get_process_manager()
+
+def restart(profile:str = None, *kwargs):
+    pm = _get_process_manager(profile)
     logging.info(f"重启ET服务...")
+    restart_flag_file = run_configs.et_restart_flag_file()
     try:
         if pm.status():
             logging.info(f"停止ET服务...")
-            Path(ET_RESTART_FLAG_FILE).touch()
+            Path(restart_flag_file).touch()
             pm.stop()
         logging.info(f"启动ET服务...")
-        pm.start()
-        Path(ET_RESTART_FLAG_FILE).touch()
+        pm.start(_get_start_cmd())
+        Path(restart_flag_file).touch()
     finally:
-        Path(ET_RESTART_FLAG_FILE).unlink(missing_ok=True)
+        Path(restart_flag_file).unlink(missing_ok=True)
+
+def _get_start_cmd(profile:str = None) -> str:
+    core_dir = run_configs.core_dir()
+    ext = '.exe' if sys.platform == 'win32' else ''
+    config_file = run_configs.et_config_file(profile)
+    rpc_port = check_peers.get_available_port()
+    return f"{core_dir}/easytier-core{ext} --config-file {config_file} --rpc-portal 127.0.0.1{rpc_port}"

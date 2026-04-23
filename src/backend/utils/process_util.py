@@ -23,8 +23,7 @@ def strip_ansi(text):
 
 class ProcessManager:
 
-    def __init__(self, start_cmd: str, pid_file: str) -> None:
-        self.start_cmd = start_cmd
+    def __init__(self, pid_file: str) -> None:
         self.pid_file = Path(pid_file)
         pass
 
@@ -51,7 +50,7 @@ class ProcessManager:
         return False
 
 
-    def start(self) -> int:
+    def start(self, start_cmd:str) -> int:
         """
         启动进程
         """
@@ -75,7 +74,7 @@ class ProcessManager:
                 startupinfo = subprocess.STARTUPINFO()
                 startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
                 process = subprocess.Popen(
-                    self.start_cmd,
+                    start_cmd,
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.PIPE,
                     stdin=subprocess.DEVNULL,
@@ -87,7 +86,7 @@ class ProcessManager:
             else:
                 # Linux/macOS: 使用 bash -c
                 process = subprocess.Popen(
-                    ["bash", "-c", self.start_cmd],
+                    ["bash", "-c", start_cmd],
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.PIPE,
                     stdin=subprocess.DEVNULL,

@@ -11,31 +11,15 @@ import actions.configs as configs
 import utils.common_util as common_util
 import utils.et_util as et_util
 import utils.github_util as github_util
+from utils import run_configs
 from http_dispatcher.dispatcher import HttpResponse
 
-TRIM_APPNAME = os.getenv('TRIM_APPNAME', 'EasyTier-Lite')
-TRIM_APPDEST = os.getenv('TRIM_APPDEST', f'/var/apps/{TRIM_APPNAME}/target')
-TRIM_PKGVAR = os.getenv('TRIM_PKGVAR', f'/var/apps/{TRIM_APPNAME}/var')
-TRIM_SHARE_DIR = os.getenv('TRIM_SHARE_DIR', f'/var/apps/{TRIM_APPNAME}/shares/{TRIM_APPNAME}')
-TRIM_PKGTMP = os.getenv('TRIM_PKGTMP', f'/var/apps/{TRIM_APPNAME}/tmp')
-
-ET_BIN_DIR = os.getenv('ET_BIN_DIR', f"{TRIM_APPDEST}/bin")
-CONFIG_DIR = os.getenv('CONFIG_DIR', f"{TRIM_SHARE_DIR}/bin")
-DATA_DIR = os.getenv('DATA_DIR', f"{TRIM_PKGVAR}/bin")
-
-ET_CONFIG_FILE = f'{CONFIG_DIR}/config.toml'
-ET_CONFIG_INIT_FILE = f'{DATA_DIR}/.init'
-ET_PEER_META_FILE = f'{DATA_DIR}/peer-txt-meta.json'
-ET_PID_FILE = f'{DATA_DIR}/app.pid'
-ET_RESTART_FLAG_FILE = f'{DATA_DIR}/.restart'
-GITHUB_PROXY_FILE = f"{DATA_DIR}/github_proxy_url.txt"
-START_CMD = f"{ET_BIN_DIR}/easytier-core --config-file {ET_CONFIG_FILE}"
 
 et_min_version = "2.5.0"
 
 def download(*kwargs):
-    output_dir = DATA_DIR
-    download_temp_dir = f"{DATA_DIR}/tmp"
+    output_dir = run_configs.data_dir()
+    download_temp_dir = f"{output_dir}/tmp"
     et_version = et_util.get_latest_version()
     et_package = et_util.download_package(download_temp_dir, 'windows', 'x86_64', et_version)
     et_mgr_version = _get_et_mgr_latest_version()

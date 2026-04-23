@@ -12,55 +12,40 @@ from pathlib import Path
 import actions.services as et_service
 import utils.common_util as common_util
 import utils.github_util as github_util
-import utils.http_util as http_util
-
-TRIM_APPNAME = os.getenv('TRIM_APPNAME', 'EasyTier-Lite')
-TRIM_APPDEST = os.getenv('TRIM_APPDEST', f'/var/apps/{TRIM_APPNAME}/target')
-TRIM_PKGVAR = os.getenv('TRIM_PKGVAR', f'/var/apps/{TRIM_APPNAME}/var')
-TRIM_SHARE_DIR = os.getenv('TRIM_SHARE_DIR', f'/var/apps/{TRIM_APPNAME}/shares/{TRIM_APPNAME}')
-
-ET_BIN_DIR = os.getenv('ET_BIN_DIR', f"{TRIM_APPDEST}/bin")
-CONFIG_DIR = os.getenv('CONFIG_DIR', f"{TRIM_SHARE_DIR}/bin")
-DATA_DIR = os.getenv('DATA_DIR', f"{TRIM_PKGVAR}/bin")
-
-ET_CONFIG_FILE = f'{CONFIG_DIR}/config.toml'
-ET_CONFIG_INIT_FILE = f'{DATA_DIR}/.init'
-ET_PEER_META_FILE = f'{DATA_DIR}/peer-txt-meta.json'
-ET_PID_FILE = f'{DATA_DIR}/app.pid'
-ET_RESTART_FLAG_FILE = f'{DATA_DIR}/.restart'
-GITHUB_PROXY_FILE = f"{DATA_DIR}/github_proxy_url.txt"
-START_CMD = f"{ET_BIN_DIR}/easytier-core --config-file {ET_CONFIG_FILE}"
+from http_dispatcher.dispatcher import HttpException
+from utils import run_configs
 
 
 def version(*kwargs):
-    cmd = f'{ET_BIN_DIR}/easytier-core --version'
-    if sys.platform == 'win32':
-        cmd = f"{ET_BIN_DIR}/easytier-core.exe --version"
+    core_dir = run_configs.core_dir();
+    ext = ".exe" if sys.platform == "win32" else ""
+    cmd = f'{core_dir}/easytier-core{ext} --version'
     raw_version = common_util.run_cmd(cmd)
     raw_version = raw_version.replace('easytier-core ', '')
-    version = raw_version[:raw_version.index('-')]
-    return { 'version': f'v{version}', 'raw_version': raw_version }
+    et_version = raw_version[:raw_version.index('-')]
+    return { 'version': f'v{et_version}', 'raw_version': raw_version }
 
 def install(data, *kwargs):
-    version = data['version']
-    if not version:
-        http_util.http_response_error('版本不能为空')
+    et_version = data['version']
+    if not et_version:
+        raise HttpException('版本不能为空')
 
     arch = __get_arch()
     platform = 'linux' if sys.platform == 'linux' else ('windows' if sys.platform == 'win32' else 'macos')
-    url = f"https://github.com/easyTier/easytier/releases/download/{version}/easytier-{platform}-{arch}-{version}.zip"
+    url = f"https://github.com/easyTier/easytier/releases/download/{et_version}/easytier-{platform}-{arch}-{et_version}.zip"
     logging.info(f"内核下载地址: {url}")
-    zip_file = f'{ET_BIN_DIR}/easytier-{platform}-{arch}-{version}.zip'
+    core_dir = run_configs.core_dir()
+    zip_file = f'{core_dir}/easytier-{platform}-{arch}-{et_version}.zip'
     github_util.download_file(url, zip_file)
-    unzip_temp_dir = __unzip(zip_file, f'{ET_BIN_DIR}')
+    unzip_temp_dir = __unzip(zip_file, f'{core_dir}')
     et_service.stop()
     for item in Path(f'{unzip_temp_dir}/easytier-{platform}-{arch}').iterdir():
-        shutil.move(str(item), f'{ET_BIN_DIR}/{item.name}')
+        shutil.move(str(item), f'{core_dir}/{item.name}')
         logging.info(f"移动: {item.name}")
     Path(zip_file).unlink()
     shutil.rmtree(unzip_temp_dir)
     et_service.start()
-    return f'安装{version}版本成功'
+    return f'安装{et_version}版本成功'
 
 def __get_arch():
     machine = platform.machine()

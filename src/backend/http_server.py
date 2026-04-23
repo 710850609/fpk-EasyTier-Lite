@@ -20,7 +20,8 @@ if sys.platform == 'win32':
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
 def setup_env(base_uri: str):
-    global BASE_URI, BACKEND_PATH, FRONTEND_PATH, LOG_FILE, ET_BIN_DIR, LOG_DIR, CONFIG_DIR, DATA_DIR, PACKAGE_PATH
+    global BASE_URI, FRONTEND_PATH, CONFIG_DIR, CORE_DIR, DATA_DIR, LOG_DIR
+        # BACKEND_PATH, FRONTEND_PATH, LOG_FILE, ET_BIN_DIR, LOG_DIR, CONFIG_DIR, DATA_DIR, PACKAGE_PATH
     BASE_URI = base_uri
     # 是否在 PyInstaller 打包环境中
     WORK_DIR = None
@@ -30,29 +31,28 @@ def setup_env(base_uri: str):
         WORK_DIR = str(Path(os.path.dirname(sys.executable)).absolute())
         Path(WORK_DIR).mkdir(parents=True, exist_ok=True)
         FRONTEND_PATH = os.path.abspath(os.path.join(sys._MEIPASS, 'frontend'))
-        BACKEND_PATH = WORK_DIR
-        PACKAGE_PATH = str(sys._MEIPASS)
+        # BACKEND_PATH = WORK_DIR
+        # PACKAGE_PATH = str(sys._MEIPASS)
     else:
         print("本地模式运行...")
         project_root_path = Path(__file__).absolute().parent.parent.parent
         WORK_DIR = str(project_root_path.joinpath('temp').joinpath('EasyTier-Lite').absolute())
         Path(WORK_DIR).mkdir(parents=True, exist_ok=True)
         FRONTEND_PATH = str(project_root_path.joinpath('frontend').joinpath('dist'))
-        BACKEND_PATH = str(Path(__file__).absolute().parent)
-        PACKAGE_PATH = ''
+        # BACKEND_PATH = str(Path(__file__).absolute().parent)
+        # PACKAGE_PATH = ''
 
-    LOG_FILE = os.path.join(WORK_DIR, 'logs', 'server.log')
-    ET_BIN_DIR = os.path.join(WORK_DIR, 'core')
-    LOG_DIR = os.path.join(WORK_DIR, 'logs')
+    CORE_DIR = os.path.join(WORK_DIR, 'core')
     CONFIG_DIR = os.path.join(WORK_DIR, 'config')
     DATA_DIR = os.path.join(WORK_DIR, 'data')
+    LOG_DIR = os.path.join(WORK_DIR, 'logs')
 
-    Path(ET_BIN_DIR).mkdir(parents=True, exist_ok=True)
-    Path(LOG_DIR).mkdir(parents=True, exist_ok=True)
+    Path(CORE_DIR).mkdir(parents=True, exist_ok=True)
     Path(CONFIG_DIR).mkdir(parents=True, exist_ok=True)
     Path(DATA_DIR).mkdir(parents=True, exist_ok=True)
-    pass
+    Path(LOG_DIR).mkdir(parents=True, exist_ok=True)
 
+    LOG_FILE = os.path.join(LOG_DIR, 'server.log')
     logging.basicConfig(
         level=logging.DEBUG,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -64,11 +64,12 @@ def setup_env(base_uri: str):
     )
 
     logging.info(f"BASE_URI: {BASE_URI}")
-    logging.info(f"BACKEND_PATH: {BACKEND_PATH}")
+    # logging.info(f"BACKEND_PATH: {BACKEND_PATH}")
     logging.info(f"FRONTEND_PATH: {FRONTEND_PATH}")
-    logging.info(f"LOG_FILE: {LOG_FILE}")
+    logging.info(f"CORE_DIR: {CORE_DIR}")
     logging.info(f"CONFIG_DIR: {CONFIG_DIR}")
     logging.info(f"DATA_DIR: {DATA_DIR}")
+    logging.info(f"LOG_FILE: {LOG_FILE}")
 
 
 class CGIProxyHandler(BaseHTTPRequestHandler):
@@ -115,14 +116,13 @@ class CGIProxyHandler(BaseHTTPRequestHandler):
             # 构建环境变量
             env = os.environ.copy()
             env.update({
-                'PACKAGE_PATH': PACKAGE_PATH,
-                'BACKEND_PATH': BACKEND_PATH,
                 'FRONTEND_PATH': FRONTEND_PATH,
-                'LOG_DIR': LOG_DIR,
-                'LOG_FILE': LOG_FILE,
+                # 'PACKAGE_PATH': PACKAGE_PATH,
+                # 'BACKEND_PATH': BACKEND_PATH,
                 'CONFIG_DIR': CONFIG_DIR,
+                'CORE_DIR': CORE_DIR,
                 'DATA_DIR': DATA_DIR,
-                'ET_BIN_DIR': ET_BIN_DIR,
+                'LOG_DIR': LOG_DIR,
 
                 'REQUEST_METHOD': self.command,
                 'QUERY_STRING': query_string,

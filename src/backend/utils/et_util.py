@@ -12,7 +12,7 @@ et_min_version = "2.5.0"
 
 def get_package_name(system:str, arch: str, version: str=None):
     if system == 'android':
-        return 'app-universal-release.apk';
+        return 'app-universal-release.apk'
     elif system == 'windows' or arch == 'linux' or arch == 'macos':
         if version is None:
             version = get_latest_version()

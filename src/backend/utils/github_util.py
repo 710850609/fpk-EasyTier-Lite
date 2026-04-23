@@ -4,19 +4,9 @@ import logging
 import os
 import re
 from pathlib import Path
+from utils import run_configs
 
 import requests
-
-TRIM_APPNAME = os.getenv('TRIM_APPNAME', 'EasyTier-Lite')
-TRIM_APPDEST = os.getenv('TRIM_APPDEST', f'/var/apps/{TRIM_APPNAME}/target')
-TRIM_PKGVAR = os.getenv('TRIM_PKGVAR', f'/var/apps/{TRIM_APPNAME}/var')
-TRIM_SHARE_DIR = os.getenv('TRIM_SHARE_DIR', f'/var/apps/{TRIM_APPNAME}/shares/{TRIM_APPNAME}')
-
-ET_CONFIG_FILE = f'{TRIM_SHARE_DIR}/config.toml'
-ET_CONFIG_INIT_FILE = f'{TRIM_PKGVAR}/.init'
-ET_BIN_DIR = f"{TRIM_APPDEST}/bin"
-
-GITHUB_PROXY_FILE = f"{TRIM_APPDEST}/github_proxy_url.txt"
 
 
 def get_latest_version(api_url) -> str:
@@ -42,10 +32,11 @@ def get_latest_version(api_url) -> str:
 def get_github_proxy() -> str:
     """获取 GitHub 代理 URL"""
     try:
-        if not Path(GITHUB_PROXY_FILE).exists():
-            logging.warning(f"GitHub加速配置文件不存在: {GITHUB_PROXY_FILE}，不使用加速")
+        github_proxy_file = run_configs.github_proxy_file()
+        if not Path(github_proxy_file).exists():
+            logging.warning(f"GitHub加速配置文件不存在: {github_proxy_file}，不使用加速")
             return None
-        cfg_path = Path(GITHUB_PROXY_FILE);
+        cfg_path = Path(github_proxy_file)
         if cfg_path.exists():
             content = cfg_path.read_text().strip()
             # 去除空行
@@ -57,11 +48,11 @@ def get_github_proxy() -> str:
 
 def get_download_url_proxy(url: str) -> str:
     """获取 GitHub 代理 URL"""
-    proxy_url = get_github_proxy();
+    proxy_url = get_github_proxy()
     if proxy_url and proxy_url != '':
         logging.info(f"使用加速地址: {proxy_url}")
-        url = proxy_url + '/' + url;
-    return url;
+        url = proxy_url + '/' + url
+    return url
 
 def download_file(url: str, output_path: str, desc: str = ""):
     """下载文件，带进度显示"""

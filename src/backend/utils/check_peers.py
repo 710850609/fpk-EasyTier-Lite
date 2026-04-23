@@ -37,7 +37,6 @@ def get_available_port(start_port=15888, end_port=65535):
 def check_peers(bin_path, peer_list, max_wait_second = 10):
     """检测节点(节点list)"""
     core_path = os.path.join(bin_path, 'easytier-core.exe' if sys.platform == 'win32' else 'easytier-core')
-    
     rpc_port = get_available_port(16888, 65535)
     random_string = get_random_string(16)
     

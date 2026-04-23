@@ -97,7 +97,7 @@ def build_executable():
     separator = ";" if sys.platform == "win32" else ":"
 
     # 图标路径
-    icon_path = PROJECT_DIR / "icon.ico"
+    icon_path = PROJECT_DIR / "assets/icon.ico"
 
     # PyInstaller 命令
     cmd = [
@@ -110,6 +110,9 @@ def build_executable():
         "--specpath", str(BUILD_DIR),
         "--hidden-import", "tomlkit",
         "--hidden-import", "requests",
+        "--hidden-import", "psutil",
+        "--hidden-import", "PIL",
+        "--hidden-import", "PIL.Image",
         "--hidden-import", "actions.configs",
         "--hidden-import", "actions.et_core",
         "--hidden-import", "actions.monitor",
@@ -124,9 +127,7 @@ def build_executable():
         "--hidden-import", "utils.github_util",
         "--hidden-import", "utils.http_util",
         "--hidden-import", "utils.process_util",
-        "--hidden-import", "http_dispatcher.api.http_dispatcher",
-        "--hidden-import", "PIL",
-        "--hidden-import", "PIL.Image",
+        "--hidden-import", "http_dispatcher.http_dispatcher",
         "--add-data", f"{Path(__file__).absolute().parent.parent.parent}/frontend/dist{separator}frontend",
         "--add-data", f"{Path(__file__).absolute().parent}/assets{separator}assets",
         # str(PROJECT_DIR / "http_server.py ")
