@@ -51,7 +51,7 @@ def public_peers(data, *kwargs):
             pass
     config_peers_set = set(peer_uris)
 
-    for key, item in peer_meta["peers"].items():
+    for key, item in peer_meta.get("peers", []).items():
         peer = f"{key}"
         # 过滤未启用：空uri
         if peer not in config_peers_set and len(item.get('uri').strip()) > 0:

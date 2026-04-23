@@ -14,7 +14,7 @@ TRIM_SHARE_DIR = os.getenv('TRIM_SHARE_DIR', f'/var/apps/{TRIM_APPNAME}/shares/{
 
 CONFIG_DIR = os.getenv('CONFIG_DIR', f"{TRIM_SHARE_DIR}/configs")
 CORE_DIR = os.getenv('CORE_DIR', f"{TRIM_APPDEST}/bin")
-DATA_DIR = os.getenv('DATA_DIR', f"{TRIM_PKGVAR}/data")
+DATA_DIR = os.getenv('DATA_DIR', f"{TRIM_PKGVAR}")
 LOG_DIR = os.getenv('LOG_DIR', f"{TRIM_PKGVAR}/logs")
 
 

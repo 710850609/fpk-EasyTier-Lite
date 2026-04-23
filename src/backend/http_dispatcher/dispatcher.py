@@ -3,20 +3,21 @@
 """
 CGI模式实现，兼容飞牛CGI应用和普通http服务
 """
-import logging
 import importlib
+import json
+import logging
 import os
 import sys
-import json
 from pathlib import Path
 from urllib.parse import quote
 
 
 class HttpException(Exception):
 
-    def __init__(self, message, status_code=200):
+    def __init__(self, message, status_code=200, headers=None):
         self.status_code = status_code
         self.message = message
+        self.headers = headers
 
 class HttpRequest:
 
@@ -91,9 +92,25 @@ class HttpResponse:
 
     def output_cgi(self):
         if self.file:
+            mime_type = self.mime_type
+            if not mime_type:
+                ext = self.file.split(".")[-1].lower()
+                mime_map = {
+                    "html": "text/html; charset=utf-8",
+                    "css": "text/css; charset=utf-8",
+                    "js": "application/javascript; charset=utf-8",
+                    "json": "application/json; charset=utf-8",
+                    "png": "image/png",
+                    "jpg": "image/jpeg",
+                    "jpeg": "image/jpeg",
+                    "gif": "image/gif",
+                    "svg": "image/svg+xml",
+                    "woff": "font/woff",
+                    "woff2": "font/woff2",
+                }
+                mime_type = mime_map.get(ext, "application/octet-stream")
             # 文件大小
             file_size = os.path.getsize(self.file)
-            mime_type = self.mime_type or "application/octet-stream"
             # ===== 关键：必须先发送状态头 =====
             sys.stdout.buffer.write(b"Status: 200 OK\r\n")
             sys.stdout.buffer.write(f"Content-Type: {mime_type}\r\n".encode())
@@ -132,13 +149,17 @@ class HttpResponse:
 
 def get_request(base_uri="", body_data=None, cgi_module=True) -> HttpRequest:
     # 从环境变量获取http请求参数
-    method = os.environ.get('METHOD', '')
+    method = os.environ.get('REQUEST_METHOD', '')
     request_uri = os.environ.get('REQUEST_URI', '')
     query_string = os.environ.get('QUERY_STRING', '')
 
     if not request_uri.startswith(base_uri):
-        raise HttpException(f"请求地址必须以{base_uri}开头", 400)
-    uri = request_uri.replace(base_uri, '')
+        # 统一一份前端打包，自动重定向到合适飞牛的固定前置
+        logging.info(f"重定向到基础请求路径：{base_uri}")
+        raise HttpException(f"请求地址必须以{base_uri}开头", status_code=302, headers={'Location': base_uri})
+    uri = request_uri
+    if base_uri != '/':
+        uri = request_uri.replace(base_uri, '')
     uri_path = uri.split("?", 1)[0].split('/')[1:]
 
     content_type = os.environ.get('CONTENT_TYPE', '')
@@ -183,6 +204,7 @@ def http_handle(base_uri="/", body_data=None, cgi_module=True) -> HttpResponse:
     response = HttpResponse()
     try:
         request = get_request(base_uri, body_data, cgi_module)
+        logging.debug(f"request: {request.__dict__}")
         module_name = request.module_name
         function_name = request.function_name
         if not module_name and not function_name:
@@ -194,6 +216,7 @@ def http_handle(base_uri="/", body_data=None, cgi_module=True) -> HttpResponse:
                 resource_uri = 'index.html'
             resource_path = Path(frontend_path).joinpath(resource_uri).absolute()
             if not resource_path.exists() or resource_path.is_dir():
+                logging.error(f"访问资源不存在： {resource_path}")
                 raise HttpException(status_code=404, message=f"资源不存在： {request.request_uri}")
             response = HttpResponse(file=str(resource_path))
         else:
@@ -207,7 +230,7 @@ def http_handle(base_uri="/", body_data=None, cgi_module=True) -> HttpResponse:
     except Exception as e:
         if isinstance(e, HttpException):
             logging.exception(e)
-            response = HttpResponse(code=1, status_code=e.status_code, data=e.message)
+            response = HttpResponse(code=1, status_code=e.status_code, data=e.message, headers=e.headers)
         else:
             logging.exception("服务异常")
             response = HttpResponse(code=1, data=str(e))
@@ -216,6 +239,3 @@ def http_handle(base_uri="/", body_data=None, cgi_module=True) -> HttpResponse:
         if cgi_module:
             response.output_cgi()
         return response
-
-if __name__ == '__main__':
-    http_handle()

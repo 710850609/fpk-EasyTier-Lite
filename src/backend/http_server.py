@@ -7,6 +7,7 @@ import os
 import sys
 import urllib.parse
 from http.server import HTTPServer, BaseHTTPRequestHandler
+from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from socketserver import ThreadingMixIn
 import http_dispatcher.dispatcher as http_dispatcher
@@ -18,6 +19,13 @@ if sys.platform == 'win32':
     # 强制 stdout/stderr 使用 utf-8
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+
+BASE_URI:str = None
+FRONTEND_PATH:str = None
+CONFIG_DIR:str = None
+CORE_DIR:str = None
+DATA_DIR:str = None
+LOG_DIR:str = None
 
 def setup_env(base_uri: str):
     global BASE_URI, FRONTEND_PATH, CONFIG_DIR, CORE_DIR, DATA_DIR, LOG_DIR
@@ -53,15 +61,36 @@ def setup_env(base_uri: str):
     Path(LOG_DIR).mkdir(parents=True, exist_ok=True)
 
     LOG_FILE = os.path.join(LOG_DIR, 'server.log')
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S',
-        handlers=[
-            logging.FileHandler(LOG_FILE, encoding='utf-8'),  # 输出到文件
-            logging.StreamHandler(sys.stdout)  # 输出到控制台
-        ]
+    # logging.basicConfig(
+    #     level=logging.DEBUG,
+    #     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    #     datefmt='%Y-%m-%d %H:%M:%S',
+    #     handlers=[
+    #         logging.FileHandler(LOG_FILE, encoding='utf-8'),  # 输出到文件
+    #         logging.StreamHandler(sys.stdout)  # 输出到控制台
+    #     ]
+    # )
+    # 2. 设置日志级别（可选，默认为 WARNING，需要调低才能看到 INFO 及以上）
+    log_level = logging.DEBUG
+    root_logger = logging.getLogger()
+    root_logger.setLevel(log_level)
+    # 3. 创建 RotatingFileHandler
+    file_handler = RotatingFileHandler(
+        LOG_FILE,
+        maxBytes=20 * 1024 * 1024,  # 5 MB
+        backupCount=5,  # 保留5个备份
+        encoding='utf-8'
     )
+    # 4. 设置格式并添加 handler
+    formatter = logging.Formatter(fmt = '%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s', datefmt = "%Y-%m-%d %H:%M:%S")
+    file_handler.setFormatter(formatter)
+    console_handler = logging.StreamHandler(sys.stdout)  # 默认输出到 sys.stderr
+    console_handler.setLevel(log_level)  # 可选，设置控制台的最低级别
+    console_handler.setFormatter(formatter)
+
+    root_logger.handlers.clear()  # 清除所有已有 handler
+    root_logger.addHandler(file_handler)
+    root_logger.addHandler(console_handler)
 
     logging.info(f"BASE_URI: {BASE_URI}")
     # logging.info(f"BACKEND_PATH: {BACKEND_PATH}")
@@ -117,8 +146,6 @@ class CGIProxyHandler(BaseHTTPRequestHandler):
             env = os.environ.copy()
             env.update({
                 'FRONTEND_PATH': FRONTEND_PATH,
-                # 'PACKAGE_PATH': PACKAGE_PATH,
-                # 'BACKEND_PATH': BACKEND_PATH,
                 'CONFIG_DIR': CONFIG_DIR,
                 'CORE_DIR': CORE_DIR,
                 'DATA_DIR': DATA_DIR,
@@ -177,6 +204,9 @@ class CGIProxyHandler(BaseHTTPRequestHandler):
             else:
                 self.send_header('Content-Type', 'application/json; charset=utf-8')
 
+            if resp.headers is not None:
+                for key, value in resp.headers.items():
+                    self.send_header(key, value)
             self.end_headers()
             # 发送内容
             if resp.file:
@@ -188,85 +218,7 @@ class CGIProxyHandler(BaseHTTPRequestHandler):
         except Exception as e:
             logging.error(f"CGI execution error: {e}", exc_info=True)
             self.send_error(500, f"CGI execution error: {str(e)}")
-    
-    # def send_cgi_output(self, output):
-    #     """解析并发送 CGI 输出"""
-    #     try:
-    #         # 查找头部和内容的分隔符
-    #         header_end = output.find(b'\r\n\r\n')
-    #         if header_end == -1:
-    #             header_end = output.find(b'\n\n')
-    #
-    #         if header_end != -1:
-    #             headers_part = output[:header_end]
-    #             content = output[header_end + 2:]  # 跳过空行
-    #
-    #             # 解析头部
-    #             headers = headers_part.decode('utf-8', errors='ignore').splitlines()
-    #             status_code = 200
-    #             content_type_sent = False
-    #
-    #             for line in headers:
-    #                 line = line.strip()
-    #                 if not line:
-    #                     continue
-    #
-    #                 # 检查状态行
-    #                 if line.lower().startswith('status:'):
-    #                     try:
-    #                         parts = line.split(':', 1)
-    #                         status_part = parts[1].strip()
-    #                         status_code = int(status_part.split()[0])
-    #                     except (ValueError, IndexError):
-    #                         pass
-    #                 # 检查 Content-Type
-    #                 elif line.lower().startswith('content-type'):
-    #                     content_type_sent = True
-    #                     # 先发送状态码，再发送头部
-    #                     self.send_response(status_code)
-    #                     header_name = line.split(':', 1)[0].strip()
-    #                     header_value = line.split(':', 1)[1].strip()
-    #                     # 确保 header 值是 latin-1 编码
-    #                     header_value = header_value.encode('utf-8').decode('latin-1', 'replace')
-    #                     self.send_header(header_name, header_value)
-    #                 elif ':' in line:
-    #                     if not content_type_sent:
-    #                         self.send_response(status_code)
-    #                         content_type_sent = True
-    #                     header_name = line.split(':', 1)[0].strip()
-    #                     header_value = line.split(':', 1)[1].strip()
-    #                     # 确保 header 值是 latin-1 编码
-    #                     header_value = header_value.encode('utf-8').decode('latin-1', 'replace')
-    #                     self.send_header(header_name, header_value)
-    #
-    #             # 如果没有找到任何头部，发送默认响应
-    #             if not content_type_sent:
-    #                 self.send_response(status_code)
-    #                 self.send_header('Content-Type', 'text/plain; charset=utf-8')
-    #
-    #             self.end_headers()
-    #
-    #             # 发送内容
-    #             self.wfile.write(content)
-    #         else:
-    #             # 没有找到头部，直接输出内容
-    #             self.send_response(200)
-    #             self.end_headers()
-    #             self.wfile.write(output)
-                
-        except Exception as e:
-            logging.error(f"Error sending CGI output: {e}", exc_info=True)
-            # 如果解析失败，直接输出原始内容
-            try:
-                self.send_response(200)
-                self.end_headers()
-                self.wfile.write(output)
-            except:
-                self.send_error(500, "Failed to process CGI output")
-    
-    def log_message(self, format, *args):
-        """重写日志方法"""
-        logging.debug(f"{self.address_string()} - {format % args}")
+
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """支持多线程的 HTTP 服务器"""

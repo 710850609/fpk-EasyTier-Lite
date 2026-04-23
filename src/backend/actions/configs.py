@@ -18,6 +18,7 @@ def need_setting(*kwargs):
 
 def save(data, *kwargs):
     et_config_file = run_configs.et_config_file()
+    os.makedirs(os.path.dirname(et_config_file), exist_ok=True)
     with open(et_config_file, "r", encoding="utf-8") as f:
         doc = tomlkit.parse(f.read())
     if not doc["network_identity"]:
@@ -46,9 +47,11 @@ def save_toml(data: str, *kwargs):
 def get(params, *kwargs):
     file_name = params.get('fileName') if params else None
     et_config_file = run_configs.et_config_file(file_name)
-    with open(et_config_file, "r", encoding="utf-8") as f:
-        doc = tomlkit.parse(f.read())
-        return doc
+    if os.path.exists(et_config_file):
+        with open(et_config_file, "r", encoding="utf-8") as f:
+            doc = tomlkit.parse(f.read())
+            return doc
+    return {}
 
 def get_toml(*kwargs):
     et_config_file = run_configs.et_config_file()
@@ -61,7 +64,7 @@ def download(*kwargs):
     return HttpResponse(file=tmp_file, download_name="config.toml")
 
 def copy(*kwargs): 
-    tmp_file = '/tmp/EasyTier-Lite/config-copy.toml'
+    tmp_file = run_configs.data_dir() + '/tmp/config-copy.toml'
     
     # 确保目录存在
     os.makedirs(os.path.dirname(tmp_file), exist_ok=True)
