@@ -298,9 +298,9 @@ def copy_output(output_name, et_file):
     shutil.copy2(src_file, target_file)
     print(f"  复制到: {target_file}")
 
-    config_dir = Path(output_dir).joinpath('config')
-    config_dir.mkdir(parents=False, exist_ok=True)
-    shutil.copy2(PROJECT_DIR.parent.parent.joinpath('default.toml'), config_dir.joinpath('config.toml'))
+    # config_dir = Path(output_dir).joinpath('config')
+    # config_dir.mkdir(parents=False, exist_ok=True)
+    # shutil.copy2(PROJECT_DIR.parent.parent.joinpath('default.toml'), config_dir.joinpath('config.toml'))
 
     core_dir = Path(output_dir).joinpath('core')
     core_dir.mkdir(parents=False, exist_ok=True)

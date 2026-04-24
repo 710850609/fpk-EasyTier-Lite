@@ -10,6 +10,8 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from socketserver import ThreadingMixIn
+from typing import Optional
+
 import http_dispatcher.dispatcher as http_dispatcher
 
 # 配置日志
@@ -225,7 +227,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     daemon_threads = True
     allow_reuse_address = True
 
-def start_server(host='127.0.0.1', port=18080, base_uri=None):
+def build_server(host='127.0.0.1', port=18080, base_uri=None) -> Optional[ThreadedHTTPServer]:
     """启动 HTTP 服务器"""
     if base_uri is None:
         base_uri = "/cgi/ThirdParty/EasyTier-Lite/index.cgi"
@@ -238,12 +240,7 @@ def start_server(host='127.0.0.1', port=18080, base_uri=None):
     if acc_host == '0.0.0.0':
         acc_host = '127.0.0.1'
     logging.info(f"local access http://{acc_host}:{port}{base_uri}")
-    
-    try:
-        server.serve_forever()
-    except KeyboardInterrupt:
-        logging.info("Server stopped by user")
-        server.shutdown()
+    return server
 
 
 if __name__ == '__main__':
@@ -252,4 +249,9 @@ if __name__ == '__main__':
     parser.add_argument('--host', default='127.0.0.1', help='Host to bind to (default: 127.0.0.1)')
     parser.add_argument('--port', type=int, default=18080, help='Port to bind to (default: 18080)')
     args = parser.parse_args()
-    start_server(args.host, args.port)
+    server = build_server(args.host, args.port)
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        logging.info("Server stopped by user")
+        server.shutdown()

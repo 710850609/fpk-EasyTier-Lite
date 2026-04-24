@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 from typing import Union, Optional
 
+from backend.http_dispatcher.dispatcher import HttpException
 from utils import check_peers
 from utils import process_util
 from utils import run_configs
@@ -38,24 +39,14 @@ def start(profile:str = None, *kwargs):
     logging.info('启动ET服务')
     config_file = run_configs.et_config_file(profile)
     if not Path(config_file).exists():
-        logging.info(f"配置文件不存在，生成启动命令: {config_file}")
-        return None
+        raise HttpException(f"不存在配置文件，请先确认配置")
     core_dir = run_configs.core_dir()
     ext = '.exe' if sys.platform == 'win32' else ''
     rpc_port = check_peers.get_available_port()
-    return f"{core_dir}/easytier-core{ext} --config-file {config_file} --rpc-portal 127.0.0.1:{rpc_port}"
-    if cmd is None:
-        logging.info(f"启动命令: {cmd}")
-        return
+    cmd = f"{core_dir}/easytier-core{ext} --config-file {config_file} --rpc-portal 0.0.0.0:{rpc_port}"
     logging.info(f"启动命令: {cmd}")
     pm = _get_process_manager(profile)
-    core_dir = run_configs.core_dir()
-    ext = '.exe' if sys.platform == 'win32' else ''
-    config_file = run_configs.et_config_file(profile)
-    rpc_port = check_peers.get_available_port()
-    cmd = f"{core_dir}/easytier-core{ext} --config-file {config_file} --rpc-portal 127.0.0.1{rpc_port}"
     pm.start(cmd)
-    run_file = run_configs.et_run_file()
 
 
 def restart(profile:str = None, *kwargs):
@@ -68,7 +59,7 @@ def restart(profile:str = None, *kwargs):
         # Path(restart_flag_file).touch()
         pm.stop()
     logging.info(f"启动ET服务...")
-    pm.start(profile)
+    start()
         # Path(restart_flag_file).touch()
     # finally:
         # Path(restart_flag_file).unlink(missing_ok=True)

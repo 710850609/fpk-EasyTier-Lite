@@ -9,52 +9,37 @@ import threading
 import http_server
 from PIL import Image, ImageDraw
 
-global pystray
-def use_stray():
-    try:
-        import pystray
-    except Exception as e:
-        if "Namespace AyatanaAppIndicator3 not available" in str(e):
-            # 强制使用 GTK 后端（避免 AppIndicator 缺失问题）
-            # 必须在 import pystray 之前设置
-            if platform.system() == "Linux":
-                os.environ['PYSTRAY_BACKEND'] = 'gtk'
-                print(f"{e}。强制Linux使用 GTK 环境")
-                import pystray
-        else:
-            print(f"pystray 模块加载失败，无法使用托盘图标功能: {e}")
-            raise ImportError("pystray 模块加载失败") from e
 
 
 
-   # 检测是否为 X11 环境
-def is_x11_backend():
-    """检测当前是否使用 X11 后端（不支持中文）"""
-    # 如果强制使用了 GTK 后端，返回 False（支持中文）
-    if os.environ.get('PYSTRAY_BACKEND') == 'gtk':
-        return False
-    
-    # 检查环境变量
-    if os.environ.get('PYSTRAY_BACKEND') == 'xorg':
-        return True
-    
-    # 检查 DISPLAY 环境变量（X11 特征）
-    if os.environ.get('DISPLAY') and not os.environ.get('WAYLAND_DISPLAY'):
-        return sys.platform.startswith('linux')
-    
-    return False
+# 全局图标引用，用于信号处理
+_global_icon = None
+_global_server = None
 
-# 设置 pystray 后端为 gtk 以支持中文（X11 后端使用 latin-1 编码，不支持中文）
-# 可选后端: appindicator, gtk, xorg, darwin, win32
-# os.environ['PYSTRAY_BACKEND'] = 'gtk'
 
 host='127.0.0.1'
 port=5666
 base_url = '/cgi/ThirdParty/EasyTier-Lite/index.cgi'
 
 def start_web():
-    # 执行 CGI 脚本
-    http_server.start_server(host, port, base_url)
+    def web_server():
+        global _global_server
+        _global_server = http_server.build_server(host, port, base_url)
+        try:
+            _global_server.serve_forever()
+        except KeyboardInterrupt:
+            logging.info("Server stopped by user")
+            _global_server.shutdown()
+
+    server_thread = threading.Thread(target=web_server, daemon=True)
+    server_thread.start()
+    return server_thread
+
+def stop_web():
+    if _global_server:
+        logging.info(f"停止Web服务...")
+        _global_server.shutdown()
+
 
 # --- 1. 定义菜单项的功能 ---
 def on_open_browser(icon, item):
@@ -63,8 +48,9 @@ def on_open_browser(icon, item):
 
 def on_quit(icon, item):
     """点击菜单时，退出程序"""
+    stop_web()
     icon.stop()
-    sys.exit(0)
+    _stop_event.set()  # 通知主线程退出
 
 def get_resource_dir():
     if getattr(sys, 'frozen', False):
@@ -89,11 +75,25 @@ def create_image():
         draw.rectangle((width/4, height/4, width*3/4, height*3/4), fill='white')
         return image
 
-# 全局图标引用，用于信号处理
-_global_icon = None
-
 def setup_tray_icon():
     global _global_icon
+
+    # 设置 pystray 后端为 gtk 以支持中文（X11 后端使用 latin-1 编码，不支持中文）
+    # 可选后端: appindicator, gtk, xorg, darwin, win32
+    # os.environ['PYSTRAY_BACKEND'] = 'gtk'
+    try:
+        import pystray
+    except Exception as e:
+        if "Namespace AyatanaAppIndicator3 not available" in str(e):
+            # 强制使用 GTK 后端（避免 AppIndicator 缺失问题）
+            # 必须在 import pystray 之前设置
+            if platform.system() == "Linux":
+                os.environ['PYSTRAY_BACKEND'] = 'gtk'
+                print(f"{e}。强制Linux使用 GTK 环境")
+                import pystray
+        else:
+            print(f"pystray 模块加载失败，无法使用托盘图标功能: {e}")
+            raise ImportError("pystray 模块加载失败") from e
     
     # 根据环境选择语言
     use_chinese = not is_x11_backend()
@@ -117,6 +117,24 @@ def setup_tray_icon():
     except Exception as e:
         print(f"Tray icon error: {e}")
         print("Note: System tray requires a desktop environment")
+
+
+# 检测是否为 X11 环境
+def is_x11_backend():
+    """检测当前是否使用 X11 后端（不支持中文）"""
+    # 如果强制使用了 GTK 后端，返回 False（支持中文）
+    if os.environ.get('PYSTRAY_BACKEND') == 'gtk':
+        return False
+
+    # 检查环境变量
+    if os.environ.get('PYSTRAY_BACKEND') == 'xorg':
+        return True
+
+    # 检查 DISPLAY 环境变量（X11 特征）
+    if os.environ.get('DISPLAY') and not os.environ.get('WAYLAND_DISPLAY'):
+        return sys.platform.startswith('linux')
+
+    return False
 
 def start_tray():
     """启动托盘图标（如果支持）"""
@@ -146,7 +164,8 @@ def setup_windows_console_handler():
         
         def handler(ctrl_type):
             if ctrl_type in (CTRL_C_EVENT, CTRL_BREAK_EVENT, CTRL_CLOSE_EVENT):
-                print("\n收到退出信号，正在关闭...")
+                logging.info("收到退出信号，正在关闭...")
+                stop_web()
                 if _global_icon:
                     _global_icon.stop()
                 _stop_event.set()
@@ -169,7 +188,8 @@ def setup():
     # --- 3. 主程序启动托盘线程 ---
     # 注册 Ctrl+C 信号处理（必须在主线程）
     def signal_handler(sig, frame):
-        print("\n收到退出信号，正在关闭...")
+        logging.info("收到退出信号，正在关闭...")
+        stop_web()
         if _global_icon:
             _global_icon.stop()
         _stop_event.set()
@@ -184,18 +204,15 @@ def setup():
         signal.signal(signal.SIGTERM, signal_handler)
 
     tray_thread = start_tray()
+    start_web()
+    webbrowser.open(f'http://{host}:{port}{base_url}')
     if tray_thread:
-        server_thread = threading.Thread(target=start_web, daemon=True)
-        server_thread.start()
-        webbrowser.open(f'http://{host}:{port}{base_url}')
         # 使用事件等待，支持中断
         try:
             while not _stop_event.is_set():
-                _stop_event.wait(0.1)
+                _stop_event.wait(1)
         except KeyboardInterrupt:
             print("\n收到 KeyboardInterrupt，正在关闭...")
-            if _global_icon:
-                _global_icon.stop()
     else:
         print("Running without system tray...")
         # 保持程序运行
@@ -206,10 +223,4 @@ def setup():
                 break
 
 if __name__ == '__main__':
-    try:
-        use_stray()
-        raise Exception()
-        setup()
-    except Exception as e:
-        logging.error(f"不支持系统托盘，退化不使用系统托盘: {e}")
-        start_web()
+    setup()

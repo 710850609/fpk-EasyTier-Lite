@@ -8,7 +8,7 @@ from pathlib import Path
 import requests
 import tomlkit
 
-from backend.http_dispatcher.dispatcher import HttpException
+from http_dispatcher.dispatcher import HttpException
 from utils import check_peers as check_util, run_configs
 from utils import github_util
 
