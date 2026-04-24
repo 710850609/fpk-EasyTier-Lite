@@ -1,0 +1,105 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+此脚本为飞牛专用，主要用于避免空跑时，让飞牛按需识别为应用开启状态。方便进入界面操作
+开启应用，没有et运行，识别为运行中
+关闭应用，识别为停用
+重启系统，根据上次运行状态，提供方法给飞牛拉起应用，并启动原来的运行服务
+"""
+import logging
+import os.path
+import sys
+from pathlib import Path
+
+import psutil
+
+from actions import services
+from utils import run_configs
+
+fn_check_file = run_configs.fn_check_file()
+
+def setup_log():
+    log_dir = run_configs.log_dir()
+    Path(log_dir).mkdir(parents=True, exist_ok=True)
+    log_file = log_dir + '/cmd.log'
+
+    log_level = logging.DEBUG
+    root_logger = logging.getLogger()
+    root_logger.setLevel(log_level)
+    # 3. 创建 RotatingFileHandler
+    from logging.handlers import RotatingFileHandler
+    file_handler = RotatingFileHandler(
+        log_file,
+        maxBytes=10 * 1024 * 1024,  # 5 MB
+        backupCount=5,  # 保留5个备份
+        encoding='utf-8'
+    )
+    # 4. 设置格式并添加 handler
+    formatter = logging.Formatter(fmt='%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s',
+                                  datefmt="%Y-%m-%d %H:%M:%S")
+    file_handler.setFormatter(formatter)
+    # console_handler = logging.StreamHandler(sys.stdout)  # 默认输出到 sys.stderr
+    # console_handler.setLevel(log_level)  # 可选，设置控制台的最低级别
+    # console_handler.setFormatter(formatter)
+
+    root_logger.handlers.clear()  # 清除所有已有 handler
+    root_logger.addHandler(file_handler)
+    # root_logger.addHandler(console_handler)
+
+def status():
+    """
+    应用启动前检查一次
+    应用运行期间定期轮询检查
+    检查文件的开机时间是否为当前开机时间
+    0 表示应用正在运行
+    3 表示应用未运行
+    """
+    if not os.path.exists(fn_check_file):
+        return 3
+    boot_time_timestamp = psutil.boot_time()
+    with open(fn_check_file, 'r') as f:
+        data = f.readline()
+        if data == str(boot_time_timestamp):
+            return 0
+        return 3
+
+def start():
+    """
+    先调用 status(), 未执行时才调用 start()
+    启动成功后，把 开机时间 写入 文件
+    """
+    services.start_all()
+    check_file = Path(fn_check_file)
+    if not check_file.exists():
+        check_file.touch()
+    with open(fn_check_file, 'w') as f:
+        f.write(str(psutil.boot_time()))
+
+def stop():
+    """
+    先调用 status(), 未执行时才调用 stop()
+    停止应用，不设置
+    """
+    services.stop_all()
+
+if __name__ == '__main__':
+    try:
+        setup_log()
+        args = sys.argv
+        if len(args) != 2:
+            print(f"传入参数错误： {args}")
+            sys.exit(1)
+        method = args[1]
+        if method == "start":
+            start()
+        elif method == "stop":
+            stop()
+        elif method == "status":
+            result = status()
+            sys.exit(result)
+        else:
+            raise AssertionError(f"不支持的参数 {method}")
+    except Exception as e:
+        logging.error(e)
+        logging.exception(e)
+        sys.exit(1)
