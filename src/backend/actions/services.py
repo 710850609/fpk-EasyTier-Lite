@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 from typing import Union, Optional
 
-from backend.http_dispatcher.dispatcher import HttpException
+from http_dispatcher.dispatcher import HttpException
 from utils import check_peers
 from utils import process_util
 from utils import run_configs

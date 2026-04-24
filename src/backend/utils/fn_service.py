@@ -68,7 +68,10 @@ def start():
     先调用 status(), 未执行时才调用 start()
     启动成功后，把 开机时间 写入 文件
     """
-    services.start_all()
+
+    config_file_list = run_configs.et_config_files()
+    if len(config_file_list) > 0:
+        services.start_all()
     check_file = Path(fn_check_file)
     if not check_file.exists():
         check_file.touch()
