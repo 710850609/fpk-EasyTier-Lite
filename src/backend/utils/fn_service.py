@@ -14,37 +14,9 @@ from pathlib import Path
 import psutil
 
 from actions import services
-from utils import run_configs
+from utils import run_configs, log_util
 
 fn_check_file = run_configs.fn_check_file()
-
-def setup_log():
-    log_dir = run_configs.log_dir()
-    Path(log_dir).mkdir(parents=True, exist_ok=True)
-    log_file = log_dir + '/cmd.log'
-
-    log_level = logging.DEBUG
-    root_logger = logging.getLogger()
-    root_logger.setLevel(log_level)
-    # 3. 创建 RotatingFileHandler
-    from logging.handlers import RotatingFileHandler
-    file_handler = RotatingFileHandler(
-        log_file,
-        maxBytes=10 * 1024 * 1024,  # 5 MB
-        backupCount=5,  # 保留5个备份
-        encoding='utf-8'
-    )
-    # 4. 设置格式并添加 handler
-    formatter = logging.Formatter(fmt='%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s',
-                                  datefmt="%Y-%m-%d %H:%M:%S")
-    file_handler.setFormatter(formatter)
-    # console_handler = logging.StreamHandler(sys.stdout)  # 默认输出到 sys.stderr
-    # console_handler.setLevel(log_level)  # 可选，设置控制台的最低级别
-    # console_handler.setFormatter(formatter)
-
-    root_logger.handlers.clear()  # 清除所有已有 handler
-    root_logger.addHandler(file_handler)
-    # root_logger.addHandler(console_handler)
 
 def status():
     """
@@ -68,7 +40,7 @@ def start():
     先调用 status(), 未执行时才调用 start()
     启动成功后，把 开机时间 写入 文件
     """
-
+    Path(run_configs.config_dir()).mkdir(parents=True, exist_ok=True)
     config_file_list = run_configs.et_config_files()
     if len(config_file_list) > 0:
         services.start_all()
@@ -84,10 +56,11 @@ def stop():
     停止应用，不设置
     """
     services.stop_all()
+    Path(fn_check_file).unlink(missing_ok=True)
 
 if __name__ == '__main__':
     try:
-        setup_log()
+        log_util.setup_log(log_file=os.path.join(run_configs.log_dir(), 'cmd.log'), log_level=logging.INFO, enabled_console=False)
         args = sys.argv
         if len(args) != 2:
             print(f"传入参数错误： {args}")

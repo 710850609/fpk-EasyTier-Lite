@@ -1,16 +1,14 @@
 import logging
 import os
-import sys
 import platform
 import signal
-import webbrowser
+import sys
 import threading
+import webbrowser
 
-import http_server
 from PIL import Image, ImageDraw
 
-
-
+import http_server
 
 # 全局图标引用，用于信号处理
 _global_icon = None

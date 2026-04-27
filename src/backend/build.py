@@ -54,8 +54,8 @@ def clean_build():
 def install_deps():
     """安装依赖"""
     print("[2/5] 安装依赖...")
-    deps = ["pyinstaller", "tomlkit", "requests", "pillow", "pystray"]
-    mirror = "-i https://pypi.tuna.tsinghua.edu.cn/simple"
+    # deps = ["pyinstaller", "tomlkit", "requests", "pillow", "pystray"]
+    # mirror = "-i https://pypi.tuna.tsinghua.edu.cn/simple"
     
     # 检测是否在虚拟环境中
     in_venv = hasattr(sys, 'real_prefix') or (
@@ -69,8 +69,16 @@ def install_deps():
     else:
         break_system = ""
         print("  检测到虚拟环境")
-    
-    return run_command(f"pip install {' '.join(deps)} {mirror} {break_system}")
+
+
+    print("  安装base依赖")
+    if not run_command(f'pip install -r requirements-base.txt {break_system}'):
+        return False
+    print("  安装gui依赖")
+    if not run_command(f'pip install -r requirements-gui.txt {break_system}'):
+        return False
+    return True
+    # return run_command(f"pip install {' '.join(deps)} {mirror} {break_system}")
 
 def get_platform_name():
     """获取平台名称"""

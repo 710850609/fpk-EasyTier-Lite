@@ -7,20 +7,12 @@ import os
 import sys
 import urllib.parse
 from http.server import HTTPServer, BaseHTTPRequestHandler
-from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from socketserver import ThreadingMixIn
 from typing import Optional
 
 import http_dispatcher.dispatcher as http_dispatcher
-
-# 配置日志
-# Windows 控制台编码处理
-if sys.platform == 'win32':
-    import io
-    # 强制 stdout/stderr 使用 utf-8
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+from utils import log_util
 
 BASE_URI:str = None
 FRONTEND_PATH:str = None
@@ -62,45 +54,12 @@ def setup_env(base_uri: str):
     Path(DATA_DIR).mkdir(parents=True, exist_ok=True)
     Path(LOG_DIR).mkdir(parents=True, exist_ok=True)
 
-    LOG_FILE = os.path.join(LOG_DIR, 'server.log')
-    # logging.basicConfig(
-    #     level=logging.DEBUG,
-    #     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    #     datefmt='%Y-%m-%d %H:%M:%S',
-    #     handlers=[
-    #         logging.FileHandler(LOG_FILE, encoding='utf-8'),  # 输出到文件
-    #         logging.StreamHandler(sys.stdout)  # 输出到控制台
-    #     ]
-    # )
-    # 2. 设置日志级别（可选，默认为 WARNING，需要调低才能看到 INFO 及以上）
-    log_level = logging.DEBUG
-    root_logger = logging.getLogger()
-    root_logger.setLevel(log_level)
-    # 3. 创建 RotatingFileHandler
-    file_handler = RotatingFileHandler(
-        LOG_FILE,
-        maxBytes=20 * 1024 * 1024,  # 5 MB
-        backupCount=5,  # 保留5个备份
-        encoding='utf-8'
-    )
-    # 4. 设置格式并添加 handler
-    formatter = logging.Formatter(fmt = '%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s', datefmt = "%Y-%m-%d %H:%M:%S")
-    file_handler.setFormatter(formatter)
-    console_handler = logging.StreamHandler(sys.stdout)  # 默认输出到 sys.stderr
-    console_handler.setLevel(log_level)  # 可选，设置控制台的最低级别
-    console_handler.setFormatter(formatter)
-
-    root_logger.handlers.clear()  # 清除所有已有 handler
-    root_logger.addHandler(file_handler)
-    root_logger.addHandler(console_handler)
-
     logging.info(f"BASE_URI: {BASE_URI}")
-    # logging.info(f"BACKEND_PATH: {BACKEND_PATH}")
     logging.info(f"FRONTEND_PATH: {FRONTEND_PATH}")
     logging.info(f"CORE_DIR: {CORE_DIR}")
     logging.info(f"CONFIG_DIR: {CONFIG_DIR}")
     logging.info(f"DATA_DIR: {DATA_DIR}")
-    logging.info(f"LOG_FILE: {LOG_FILE}")
+    logging.info(f"LOG_DIR: {LOG_DIR}")
 
 
 class CGIProxyHandler(BaseHTTPRequestHandler):
@@ -229,9 +188,9 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
 def build_server(host='127.0.0.1', port=18080, base_uri=None) -> Optional[ThreadedHTTPServer]:
     """启动 HTTP 服务器"""
-    if base_uri is None:
-        base_uri = "/cgi/ThirdParty/EasyTier-Lite/index.cgi"
-    setup_env(base_uri)
+    BASE_URI = "/cgi/ThirdParty/EasyTier-Lite/index.cgi"
+    setup_env(BASE_URI)
+    log_util.setup_log(log_file=os.path.join(LOG_DIR, 'app.log'), log_level=logging.DEBUG, enabled_console=True)
     logging.info(f"HTTP服务启动中....")
     server = ThreadedHTTPServer((host, port), CGIProxyHandler)
     logging.info(f"Starting HTTP server on {host}:{port}")
@@ -249,6 +208,7 @@ if __name__ == '__main__':
     parser.add_argument('--host', default='127.0.0.1', help='Host to bind to (default: 127.0.0.1)')
     parser.add_argument('--port', type=int, default=18080, help='Port to bind to (default: 18080)')
     args = parser.parse_args()
+
     server = build_server(args.host, args.port)
     try:
         server.serve_forever()

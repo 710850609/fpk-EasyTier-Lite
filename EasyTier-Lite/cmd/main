@@ -99,7 +99,7 @@ fn_service() {
     # 处理 echo 默认不支持\n换行
     msg=$(printf "invoke ${action}\n  cmd: ${cmd}\n  return_code: ${return_code}\n  result : ${result}")
     log_msg "${msg}"
-    if [[ $return_code != 1 ]] && [[ ! ($action == 'status' && return_code == 3) ]]; then
+    if [[ $return_code != 0 ]] && [[ ! ($action == 'status' && $return_code == 3) ]]; then
       echo $(printf "调用 ${action} 返回结果码 ${return_code} \n${result}") > $TRIM_TEMP_LOGFILE
     fi
     return $return_code
@@ -118,8 +118,7 @@ stop)
     ;;
 status)
     # check application status command. exit 0 if running, exit 3 if not running
-    exist $(fn_service status)
-#    exist 0
+    exit $(fn_service status)
 #    if status; then
 #        exit 0
 #    elif [ -f "${RESTART_FLAG_FILE}" ]; then
