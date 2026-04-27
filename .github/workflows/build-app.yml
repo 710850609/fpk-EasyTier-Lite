@@ -1,4 +1,4 @@
-name: Build Tray App
+name: Build App
 
 on:
   # push:
