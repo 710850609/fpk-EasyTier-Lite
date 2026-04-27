@@ -70,7 +70,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: windows-x64
-        path: dist/EasyTier-Lite-windows-x64.zip
+        path: backend/dist/EasyTier-Lite-windows-x64.zip
 
   # Linux AMD64
   build-linux-amd64:
@@ -103,7 +103,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: linux-x64
-        path: dist/EasyTier-Lite-linux-x64.zip
+        path: backend/dist/EasyTier-Lite-linux-x64.zip
 
   # Linux ARM64 (使用 QEMU 模拟)
   build-linux-arm64:
@@ -124,18 +124,16 @@ jobs:
           -w /workspace \
           python:${{ env.PYTHON_VERSION }}-slim \
           bash -c "
-            apt-get update && apt-get install -y binutils &&
             pip install --upgrade pip &&
-            pip install pyinstaller pystray pillow &&
-            cd src/gui &&
-            python build_stray.py
+            cd backend &&
+            python3 build.py
           "
     
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: tray-linux-arm64
-        path: dist/EasyTierLite-Tray-linux-arm64
+        name: linux-arm64
+        path: backend/dist/EasyTierLite-linux-arm64.zip
 
   # macOS AMD64
   build-macos-amd64:
@@ -168,7 +166,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: macos-x64
-        path: dist/EasyTierLite-macos-x64.zip
+        path: backend/dist/EasyTierLite-macos-x64.zip
 
   # macOS ARM64 (Apple Silicon)
   build-macos-arm64:
@@ -202,7 +200,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: macos-arm64
-        path: dist/EasyTierLite-macos-arm64.zip
+        path: backend/dist/EasyTierLite-macos-arm64.zip
 
   # 发布 Release
   release:

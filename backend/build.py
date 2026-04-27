@@ -331,7 +331,7 @@ def copy_output(output_name, et_file):
             if item.is_file():
                 arch_name = item.relative_to(output_dir)
                 zf.write(item, arch_name)
-    return True
+    return True, zipfile_name
 
 def main():
     """主函数"""
@@ -363,13 +363,14 @@ def main():
         print(f"[错误] 下载easytier失败")
         sys.exit(1)
 
-    if not copy_output(output_name, et_file):
+    result, output_name = copy_output(output_name, et_file)
+    if not result:
         print("[错误] 复制文件失败")
         sys.exit(1)
 
     print("=" * 50)
     print("打包完成!")
-    print(f"输出: {DIST_DIR}")
+    print(f"输出: {output_name}")
     print("=" * 50)
 
 if __name__ == "__main__":
