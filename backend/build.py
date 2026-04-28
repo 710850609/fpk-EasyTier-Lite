@@ -42,12 +42,15 @@ def run_command(cmd, cwd=None):
 def install_deps():
     """安装依赖"""
     print(" 安装依赖...")
+    # 检测是否在 CI 环境
+    in_ci = os.environ.get('CI') == 'true' or os.environ.get('GITHUB_ACTIONS') == 'true'
     # 检测是否在虚拟环境中
     in_venv = hasattr(sys, 'real_prefix') or (
         hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix
     )
-    if in_venv:
-        print(f"  检测到已在虚拟环境中，直接安装")
+    if in_venv or in_ci:
+
+        print(f"  检测到已在 {'虚拟' if in_venv else 'CI' } 环境中，直接安装")
         pip_cmd = "pip"
         python_path = "python3"
     else:
