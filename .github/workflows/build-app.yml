@@ -94,9 +94,8 @@ jobs:
           name: frontend-dist
           path: frontend/dist
 
-  # Windows AMD64
   build-windows-amd64:
-    if: env.BUILD_WINDOWS == 'true'
+    if: ${{ env.BUILD_WINDOWS == 'true' }}
     needs: build-frontend
     runs-on: windows-latest
     steps:
@@ -115,7 +114,6 @@ jobs:
       with:
         name: frontend-dist
         path: frontend/dist
-
     - name: Build
       run: |
         cd backend
@@ -126,9 +124,8 @@ jobs:
         name: windows-x64
         path: backend/dist/*.zip
 
-  # Linux AMD64
   build-linux-amd64:
-    if: env.BUILD_LINUX_AMD64 == 'true'
+    if: ${{ env.BUILD_LINUX_AMD64 == 'true' }}
     needs: build-frontend
     runs-on: ubuntu-latest
     steps:
@@ -158,9 +155,8 @@ jobs:
         name: linux-x64
         path: backend/dist/*.zip
 
-  # Linux ARM64 (使用 QEMU 模拟)
   build-linux-arm64:
-    if: env.BUILD_LINUX_ARM64 == 'true'
+    if: ${{ env.BUILD_LINUX_ARM64 == 'true' }}
     needs: build-frontend
     runs-on: ubuntu-latest
     steps:
@@ -198,9 +194,8 @@ jobs:
         name: linux-arm64
         path: backend/dist/*.zip
 
-  # Linux RISC-V 64 (使用 QEMU 模拟)
   build-linux-riscv64:
-    if: env.BUILD_LINUX_RISCV64 == 'true'
+    if: ${{ env.BUILD_LINUX_RISCV64 == 'true' }}
     needs: build-frontend
     runs-on: ubuntu-latest
     steps:
@@ -238,9 +233,8 @@ jobs:
         name: linux-riscv64
         path: backend/dist/*.zip
 
-  # macOS AMD64 (Intel x86_64) 通过 Rosetta 2 在 ARM64 运行器上构建
   build-macos-amd64:
-    if: env.BUILD_MACOS_AMD64 == 'true'
+    if: ${{ env.BUILD_MACOS_AMD64 == 'true' }}
     needs: build-frontend
     runs-on: macos-latest          # ARM64 运行器，内置 Rosetta 2
     steps:
@@ -273,9 +267,8 @@ jobs:
         name: macos-x64
         path: backend/dist/*.zip
 
-  # macOS ARM64 (Apple Silicon) - 如需原生 ARM64 构建，将 BUILD_MACOS_ARM64 改为 true
   build-macos-arm64:
-    if: env.BUILD_MACOS_ARM64 == 'true'
+    if: ${{ env.BUILD_MACOS_ARM64 == 'true' }}
     needs: build-frontend
     runs-on: macos-latest
     steps:
@@ -306,7 +299,6 @@ jobs:
         name: macos-arm64
         path: backend/dist/*.zip
 
-  # 发布 Release
   release:
     needs: [build-info, build-windows-amd64, build-linux-amd64, build-linux-arm64, build-linux-riscv64, build-macos-amd64, build-macos-arm64]
     runs-on: ubuntu-latest
