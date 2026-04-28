@@ -27,7 +27,7 @@ DIST_DIR = PROJECT_DIR / "dist"
 
 def run_command(cmd, cwd=None):
     """执行命令并返回结果"""
-    print(f"执行: {cmd}")
+    print(f"  执行: {cmd}")
     try:
         # Windows 使用 utf-8 编码
         encoding = 'utf-8' if sys.platform == "win32" else None
@@ -57,9 +57,9 @@ def install_deps():
         print(f"  检测到不在虚拟环境中，创建Python虚拟环境")
         project_dir = os.path.dirname(os.path.abspath(__file__))
         venv_dir = os.path.join(project_dir, ".venv")
-        if not os.path.exists(venv_dir):
-            print(f"  创建虚拟环境: {venv_dir}")
-            venv.create(venv_dir, with_pip=True)
+        print(f"  创建虚拟环境: {venv_dir}")
+        venv.create(venv_dir, with_pip=True)
+        # if not os.path.exists(venv_dir):
         # 确定虚拟环境的 pip 路径
         if sys.platform == "win32":
             pip_path = os.path.join(venv_dir, "Scripts", "pip.exe")
