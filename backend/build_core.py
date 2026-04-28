@@ -188,7 +188,8 @@ def get_easytier_platform():
         "x86_64": "x86_64",
         "amd64": "x86_64",
         "aarch64": "aarch64",
-        "arm64": "aarch64"
+        "arm64": "aarch64",
+        "riscv64": "riscv64"
     }
     
     sys_name = sys_map.get(system, system)
