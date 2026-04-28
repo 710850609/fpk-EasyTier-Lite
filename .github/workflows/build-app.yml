@@ -11,6 +11,9 @@ on:
 env:
   PYTHON_VERSION: '3.9.13'
 
+permissions:
+  contents: write
+
 jobs:
   build-info:
     runs-on: ubuntu-latest
