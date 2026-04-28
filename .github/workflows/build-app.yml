@@ -30,12 +30,10 @@ jobs:
       release_notes: ${{ steps.release-info.outputs.release_notes }}
     steps:
       - uses: actions/checkout@v4
-
       - name: Get Release Version And Notes
         id: release-info
         run: |
           CHANGE_LOG_FILE="${{ github.workspace }}/CHANGELOG.md"
-          
           CHANGE_VER=$(awk '/^## / {print $2; exit}' "${CHANGE_LOG_FILE}")
           prerelease='true'
           version="${CHANGE_VER}-$(date +'%Y%m%d%H%M%S')"
@@ -46,7 +44,6 @@ jobs:
             prerelease='false'
             version="${CHANGE_VER}"
           fi
-          
           awk -v ver="$CHANGE_VER" '
                 $0 ~ "^## " ver { found=1; next }
                 found && $0 ~ "^## " { exit }
@@ -73,253 +70,224 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '24'
           cache: 'npm'
-
       - name: Install dependencies
-        run: |
-          cd frontend
-          npm install
+        run: cd frontend && npm install
       - name: Build frontend
-        run: |
-          cd frontend
-          npm run build
+        run: cd frontend && npm run build
       - name: Upload frontend artifact
         uses: actions/upload-artifact@v4
         with:
           name: frontend-dist
           path: frontend/dist
 
+  # ⬇️ 所有平台的 if 条件已统一使用 fromJSON 转换
   build-windows-amd64:
-    if: env.BUILD_WINDOWS == 'true'
+    if: ${{ fromJSON(env.BUILD_WINDOWS) }}
     needs: build-frontend
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
-
-    - name: Upgrade pip
-      run: |
-        pip install --upgrade pip
-    - name: Download frontend
-      uses: actions/download-artifact@v4
-      with:
-        name: frontend-dist
-        path: frontend/dist
-    - name: Build
-      run: |
-        cd backend
-        python build.py
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: windows-x64
-        path: backend/dist/*.zip
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Upgrade pip
+        run: pip install --upgrade pip
+      - name: Download frontend
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+      - name: Build
+        run: cd backend && python build.py
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-x64
+          path: backend/dist/*.zip
 
   build-linux-amd64:
-    if: env.BUILD_LINUX_AMD64 == 'true'
+    if: ${{ fromJSON(env.BUILD_LINUX_AMD64) }}
     needs: build-frontend
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
-
-    - name: Upgrade pip
-      run: |
-        pip install --upgrade pip
-    - name: Download frontend
-      uses: actions/download-artifact@v4
-      with:
-        name: frontend-dist
-        path: frontend/dist
-
-    - name: Build
-      run: |
-        cd backend
-        python3 build.py
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: linux-x64
-        path: backend/dist/*.zip
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Upgrade pip
+        run: pip install --upgrade pip
+      - name: Download frontend
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+      - name: Build
+        run: cd backend && python3 build.py
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-x64
+          path: backend/dist/*.zip
 
   build-linux-arm64:
-    if: env.BUILD_LINUX_ARM64 == 'true'
+    if: ${{ fromJSON(env.BUILD_LINUX_ARM64) }}
     needs: build-frontend
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
-      with:
-        platforms: arm64
-
-    - name: Download frontend
-      uses: actions/download-artifact@v4
-      with:
-        name: frontend-dist
-        path: frontend/dist
-
-    - name: Build in ARM64 container
-      run: |
-        docker run --rm --platform linux/arm64 \
-          -v ${{ github.workspace }}:/workspace \
-          -w /workspace \
-          -e CI=true \
-          -e GITHUB_ACTIONS=true \
-          python:${{ env.PYTHON_VERSION }}-slim \
-          bash -c "
-            export PIP_ROOT_USER_ACTION=ignore
-            apt-get update && apt-get install -y binutils &&
-            pip install --upgrade pip &&
-            cd backend &&
-            python3 build.py
-          "
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: linux-arm64
-        path: backend/dist/*.zip
+      - uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - name: Download frontend
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+      - name: Build in ARM64 container
+        run: |
+          docker run --rm --platform linux/arm64 \
+            -v ${{ github.workspace }}:/workspace \
+            -w /workspace \
+            -e CI=true \
+            -e GITHUB_ACTIONS=true \
+            python:${{ env.PYTHON_VERSION }}-slim \
+            bash -c "
+              export PIP_ROOT_USER_ACTION=ignore
+              apt-get update && apt-get install -y binutils &&
+              pip install --upgrade pip &&
+              cd backend &&
+              python3 build.py
+            "
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-arm64
+          path: backend/dist/*.zip
 
   build-linux-riscv64:
-    if: env.BUILD_LINUX_RISCV64 == 'true'
+    if: ${{ fromJSON(env.BUILD_LINUX_RISCV64) }}
     needs: build-frontend
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
-      with:
-        platforms: riscv64
-
-    - name: Download frontend
-      uses: actions/download-artifact@v4
-      with:
-        name: frontend-dist
-        path: frontend/dist
-
-    - name: Build in RISC-V64 container
-      run: |
-        docker run --rm --platform linux/riscv64 \
-          -v ${{ github.workspace }}:/workspace \
-          -w /workspace \
-          -e CI=true \
-          -e GITHUB_ACTIONS=true \
-          riscv64/python \
-          bash -c "
-            export PIP_ROOT_USER_ACTION=ignore
-            apt-get update && apt-get install -y binutils &&
-            pip install --upgrade pip &&
-            cd backend &&
-            python3 build.py
-          "
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: linux-riscv64
-        path: backend/dist/*.zip
+      - uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: riscv64
+      - name: Download frontend
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+      - name: Build in RISC-V64 container
+        run: |
+          docker run --rm --platform linux/riscv64 \
+            -v ${{ github.workspace }}:/workspace \
+            -w /workspace \
+            -e CI=true \
+            -e GITHUB_ACTIONS=true \
+            riscv64/python \
+            bash -c "
+              export PIP_ROOT_USER_ACTION=ignore
+              apt-get update && apt-get install -y binutils &&
+              pip install --upgrade pip &&
+              cd backend &&
+              python3 build.py
+            "
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-riscv64
+          path: backend/dist/*.zip
 
   build-macos-amd64:
-    if: env.BUILD_MACOS_AMD64 == 'true'
-    needs: build-frontend
-    runs-on: macos-latest          # ARM64 运行器，内置 Rosetta 2
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Python (x86_64)
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
-        architecture: 'x64'        # 强制安装 Intel 版 Python
-
-    - name: Upgrade pip (x86_64)
-      run: |
-        arch -x86_64 pip install --upgrade pip
-
-    - name: Download frontend
-      uses: actions/download-artifact@v4
-      with:
-        name: frontend-dist
-        path: frontend/dist
-
-    - name: Build (x86_64)
-      run: |
-        cd backend
-        arch -x86_64 python3 build.py
-
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: macos-x64
-        path: backend/dist/*.zip
-
-  build-macos-arm64:
-    if: env.BUILD_MACOS_ARM64 == 'true'
+    if: ${{ fromJSON(env.BUILD_MACOS_AMD64) }}
     needs: build-frontend
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - name: Set up Python (x86_64)
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          architecture: 'x64'
+      - name: Upgrade pip (x86_64)
+        run: arch -x86_64 pip install --upgrade pip
+      - name: Download frontend
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+      - name: Build (x86_64)
+        run: |
+          cd backend
+          arch -x86_64 python3 build.py
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-x64
+          path: backend/dist/*.zip
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
-        architecture: arm64
-
-    - name: Upgrade pip
-      run: |
-        pip install --upgrade pip
-    - name: Download frontend
-      uses: actions/download-artifact@v4
-      with:
-        name: frontend-dist
-        path: frontend/dist
-
-    - name: Build
-      run: |
-        cd backend
-        python3 build.py
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: macos-arm64
-        path: backend/dist/*.zip
+  build-macos-arm64:
+    if: ${{ fromJSON(env.BUILD_MACOS_ARM64) }}
+    needs: build-frontend
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          architecture: arm64
+      - name: Upgrade pip
+        run: pip install --upgrade pip
+      - name: Download frontend
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+      - name: Build
+        run: cd backend && python3 build.py
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-arm64
+          path: backend/dist/*.zip
 
   release:
-    needs: [build-info, build-windows-amd64, build-linux-amd64, build-linux-arm64, build-linux-riscv64, build-macos-amd64, build-macos-arm64]
+    needs:
+      - build-info
+      - build-windows-amd64
+      - build-linux-amd64
+      - build-linux-arm64
+      - build-linux-riscv64
+      - build-macos-amd64
+      - build-macos-arm64
     runs-on: ubuntu-latest
-
     steps:
-    - name: Download all artifacts
-      uses: actions/download-artifact@v4
-      with:
-        path: artifacts
-
-    - name: Create Release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: |
-          artifacts/*/*.zip
-          artifacts/*/*.fpk
-        name: ${{ needs.build-info.outputs.version }}
-        tag_name: ${{ needs.build-info.outputs.version }}
-        draft: ${{ needs.build-info.outputs.prerelease == 'true' }}
-        prerelease: ${{ needs.build-info.outputs.prerelease == 'true' }}
-        body: ${{ needs.build-info.outputs.release_notes }}
-        fail_on_unmatched_files: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            artifacts/*/*.zip
+            artifacts/*/*.fpk
+          name: ${{ needs.build-info.outputs.version }}
+          tag_name: ${{ needs.build-info.outputs.version }}
+          draft: ${{ needs.build-info.outputs.prerelease == 'true' }}
+          prerelease: ${{ needs.build-info.outputs.prerelease == 'true' }}
+          body: ${{ needs.build-info.outputs.release_notes }}
+          fail_on_unmatched_files: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
