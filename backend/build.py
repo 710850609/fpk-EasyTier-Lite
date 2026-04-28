@@ -6,6 +6,7 @@ EasyTier-Lite Server 多平台打包脚本
 """
 
 import os
+import platform
 import sys
 import subprocess
 import shutil
@@ -338,6 +339,7 @@ def main():
     print("=" * 50)
     print("EasyTier-Lite Server 多平台打包")
     print(f"当前平台: {get_platform_name()}")
+    print(f"当前Python版本: {platform.python_version()}")
     print("=" * 50)
 
     # 检查 Python

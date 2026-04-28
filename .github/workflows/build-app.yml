@@ -52,6 +52,7 @@ jobs:
               cat release_notes.txt
               echo "EOF"
             } >> $GITHUB_OUTPUT
+          
     
 
   build-frontend:
@@ -207,7 +208,7 @@ jobs:
         docker run --rm --platform linux/riscv64 \
           -v ${{ github.workspace }}:/workspace \
           -w /workspace \
-          python:${{ env.PYTHON_VERSION }}-slim \
+          riscv64/ubuntu \
           bash -c "
             apt-get update && apt-get install -y binutils &&
             pip install --upgrade pip &&
