@@ -10,6 +10,13 @@ on:
 
 env:
   PYTHON_VERSION: '3.9.13'
+  # 平台构建开关（设为 false 可跳过对应平台的构建）
+  BUILD_WINDOWS: true
+  BUILD_LINUX_AMD64: true
+  BUILD_LINUX_ARM64: true
+  BUILD_LINUX_RISCV64: false
+  BUILD_MACOS_AMD64: true
+  BUILD_MACOS_ARM64: false
 
 permissions:
   contents: write
@@ -61,8 +68,6 @@ jobs:
             cat release_notes.txt
             echo "EOF"
           } >> $GITHUB_OUTPUT
-          
-    
 
   build-frontend:
     runs-on: ubuntu-latest
@@ -93,6 +98,7 @@ jobs:
 
   # Windows AMD64
   build-windows-amd64:
+    if: env.BUILD_WINDOWS == 'true'
     needs: build-frontend
     runs-on: windows-latest
     steps:
@@ -126,11 +132,12 @@ jobs:
 
   # Linux AMD64
   build-linux-amd64:
+    if: env.BUILD_LINUX_AMD64 == 'true'
     needs: build-frontend
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
@@ -150,7 +157,7 @@ jobs:
       run: |
         cd backend
         python3 build.py
-    
+
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
@@ -159,11 +166,12 @@ jobs:
 
   # Linux ARM64 (使用 QEMU 模拟)
   build-linux-arm64:
+    if: env.BUILD_LINUX_ARM64 == 'true'
     needs: build-frontend
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
       with:
@@ -174,7 +182,7 @@ jobs:
       with:
         name: frontend-dist
         path: frontend/dist
-    
+
     - name: Build in ARM64 container
       run: |
         docker run --rm --platform linux/arm64 \
@@ -190,7 +198,7 @@ jobs:
             cd backend &&
             python3 build.py
           "
-    
+
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
@@ -199,6 +207,7 @@ jobs:
 
   # Linux RISC-V 64 (使用 QEMU 模拟)
   build-linux-riscv64:
+    if: env.BUILD_LINUX_RISCV64 == 'true'
     needs: build-frontend
     runs-on: ubuntu-latest
     steps:
@@ -240,19 +249,22 @@ jobs:
 
   # macOS AMD64
   build-macos-amd64:
+    if: env.BUILD_MACOS_AMD64 == 'true'
     needs: build-frontend
-    runs-on: macos-13  # ← 唯一还在的 Intel 运行器
+    runs-on: macos-latest  # ← macos-13 唯一支持的 Intel 运行器。 GitHub action 已经不再支持，无法构建
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
+        architecture: 'x64'              # 强制安装 x86_64 版本的 Python
 
     - name: Upgrade pip
       run: |
-        pip install --upgrade pip
+#        pip install --upgrade pip
+        arch -x86_64 pip install --upgrade pip
 
     - name: Download frontend
       uses: actions/download-artifact@v4
@@ -263,8 +275,9 @@ jobs:
     - name: Build
       run: |
         cd backend
-        python3 build.py
-    
+#        python3 build.py
+        arch -x86_64 python3 build.py
+
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
@@ -273,17 +286,18 @@ jobs:
 
   # macOS ARM64 (Apple Silicon)
   build-macos-arm64:
+    if: env.BUILD_MACOS_ARM64 == 'true'
     needs: build-frontend
-    runs-on: macos-14  # 或 macos-latest macOS 14 开始支持 ARM64
+    runs-on: macos-latest  # 或 macos-latest macOS 14 开始支持 ARM64
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
         architecture: arm64
-    
+
     - name: Upgrade pip
       run: |
         pip install --upgrade pip
@@ -298,7 +312,7 @@ jobs:
       run: |
         cd backend
         python3 build.py
-    
+
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
@@ -308,15 +322,14 @@ jobs:
   # 发布 Release
   release:
     needs: [build-info, build-windows-amd64, build-linux-amd64, build-linux-arm64, build-linux-riscv64, build-macos-amd64, build-macos-arm64]
-#    needs: [build-info, build-windows-amd64, build-linux-amd64]
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Download all artifacts
       uses: actions/download-artifact@v4
       with:
         path: artifacts
-    
+
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
