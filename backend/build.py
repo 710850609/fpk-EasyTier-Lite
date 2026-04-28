@@ -6,12 +6,9 @@ EasyTier-Lite Server 多平台打包脚本
 """
 
 import os
-import platform
-import sys
 import subprocess
-import shutil
+import sys
 import venv
-import zipfile
 from pathlib import Path
 
 # Fix Windows console encoding for GitHub Actions
@@ -86,6 +83,7 @@ def install_deps():
 if __name__ == "__main__":
     os.environ['PYTHONUTF8'] = "1"
     python_path, pip_cmd = install_deps()
+    print("", flush=True)
     build_script_path = os.path.join(os.path.dirname(__file__), "build_core.py")
     result = subprocess.run([str(python_path), build_script_path])
     sys.exit(result.returncode)

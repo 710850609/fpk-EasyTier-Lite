@@ -123,6 +123,7 @@ def build_executable():
 
     # PyInstaller 命令
     cmd = [
+        # sys.executable, "-m", "pyinstaller",
         "pyinstaller",
         "--onefile",  # 单文件
         "--clean",    # 清理缓存
@@ -353,6 +354,8 @@ def main():
     print("EasyTier-Lite Server 多平台打包")
     print(f"当前平台: {get_platform_name()}")
     print(f"当前Python版本: {platform.python_version()}")
+    print(f"当前Python: {sys.executable}")
+    print(f"Python 路径: {sys.path}")
     print("=" * 50)
 
     # 检查 Python
